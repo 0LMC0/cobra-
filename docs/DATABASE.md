@@ -48,6 +48,8 @@ La función `public.has_org_role(org uuid, min_role org_role) returns boolean` e
 - RPC `create_organization(...)`: crea la empresa y la membresía *owner* en una transacción.
 
 ### Fase 2 — Núcleo de cobranzas
+Implementado en `supabase/migrations/20261117000001_core.sql`. Diferencias con el plan original: `customers` suma `contact_name`, `whatsapp_number` (sólo dígitos), `whatsapp_ok` y `reminders_paused`; `charges` suma `promised_for` y `promised_on`; los pagos se registran con el RPC `record_payment` (pago, imputaciones y auditoría en una transacción). `charge_adjustments` y `attachments` quedan para más adelante.
+
 - `customers`:
   - Datos: nombre o razón social, email, teléfono, CUIT opcional, dirección, organización relacionada, moneda preferida, notas, `status` (`active` | `archived`) y `contact_opt_out`.
   - Índice único parcial `(org_id, lower(email)) where status='active' and email is not null` para prevenir duplicados.

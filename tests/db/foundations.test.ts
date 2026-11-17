@@ -11,7 +11,7 @@ describe('fundaciones: empresas, miembros y roles', () => {
   let beto: string // dueño de la empresa B, ajeno a A
   let caro: string // se suma a A con distintos roles
   let orgA: string
-  let orgB: string
+  let orgB: string // empresa de Beto: se crea para que exista una segunda empresa
 
   beforeAll(async () => {
     db = await createTestDb()
@@ -20,6 +20,7 @@ describe('fundaciones: empresas, miembros y roles', () => {
     caro = await db.createUser('Caro Colaboradora')
     orgA = await createOrg(db, ana, 'Estudio A')
     orgB = await createOrg(db, beto, 'Estudio B')
+    expect(orgB).toBeTruthy()
   })
   afterAll(() => db.close())
 

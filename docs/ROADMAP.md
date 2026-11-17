@@ -36,7 +36,8 @@ Estado al **15/11/2026**.
 3. Recorrer registro → email → onboarding → `/app` → logout → login.
 4. Escribir los tests de aislamiento entre organizaciones.
 
-## Fase 2 — Producto principal ⬜
+## Fase 2 — Producto principal 🟡
+- ✅ **Migración del núcleo** (`20261117000001_core.sql`, 23 tests en `tests/db/core.test.ts`): clientes (con celular de WhatsApp y permiso), abonos, cobros (con promesa de pago), pagos, imputaciones, vista `charge_balances` y RPC `record_payment` idempotente. Referencias con `org_id` para que nada apunte a otra empresa; pagos inmutables que sólo se anulan con motivo; nunca se mezclan monedas ni se cobra de más.
 - Migración: `customers`, `agreements`, `agreement_price_changes`, `charges`, `charge_adjustments`, `payments`, `payment_allocations`, `attachments`, vista `charge_balances`, triggers de auditoría.
 - Clientes: CRUD, archivo, búsqueda, filtros, deduplicación, CSV in/out, ficha con línea de tiempo.
 - Abonos y generación idempotente de cobros por período.
