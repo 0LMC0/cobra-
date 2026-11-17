@@ -1,4 +1,6 @@
 import { ArrowRight, Bell, Building2, Check, CircleAlert, FileText, HandCoins, UserPlus, Wallet } from 'lucide-react'
+import Link from 'next/link'
+import { ButtonLink } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
 import { TodayReminders, type TodayReminder } from './today-reminders'
 
@@ -9,16 +11,13 @@ import { TodayReminders, type TodayReminder } from './today-reminders'
 export type OnboardingStep = 'company' | 'first_customer' | 'first_charge' | 'reminders' | 'done'
 
 const STEPS = [
-  { key: 'company', icon: Building2, title: 'Crear tu empresa', desc: 'Moneda, zona horaria y datos de contacto.' },
-  { key: 'first_customer', icon: UserPlus, title: 'Cargar tu primer cliente', desc: 'A quién le cobrás y a qué email le llegan los avisos.' },
-  { key: 'first_charge', icon: FileText, title: 'Crear tu primer cobro o abono', desc: 'Cuánto te paga y cuándo vence.' },
-  { key: 'reminders', icon: Bell, title: 'Activar los recordatorios', desc: 'Cobra+ le avisa por email antes y después del vencimiento.' },
+  { key: 'company', icon: Building2, title: 'Crear tu empresa', desc: 'Moneda, zona horaria y datos de contacto.', href: '/app/configuracion', cta: 'Ver' },
+  { key: 'first_customer', icon: UserPlus, title: 'Cargar tu primer cliente', desc: 'A quién le cobrás y a qué email le llegan los avisos.', href: '/app/clientes/nuevo', cta: 'Cargar cliente' },
+  { key: 'first_charge', icon: FileText, title: 'Crear tu primer cobro o abono', desc: 'Cuánto te paga y cuándo vence. Se crea desde la ficha del cliente.', href: '/app/clientes', cta: 'Ir a clientes' },
+  { key: 'reminders', icon: Bell, title: 'Activar los recordatorios', desc: 'Cobra+ le avisa por email antes y después del vencimiento.', href: '/app/configuracion', cta: 'Activar' },
 ] as const
 
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
-
-/** Pasos que todavía no tienen pantalla en esta versión. */
-const NOT_BUILT = new Set(['first_customer', 'first_charge', 'reminders'])
 
 export function HomeView({
   dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [],
@@ -86,26 +85,21 @@ export function HomeView({
                   <div className="min-w-0 flex-1">
                     <p className={cn('text-[15.5px] font-bold', done && 'text-muted line-through decoration-1')}>{s.title}</p>
                     <p className="text-[13.5px] text-muted">{s.desc}</p>
-                    {current && NOT_BUILT.has(s.key) && (
-                      <span className="mt-2 inline-block rounded-full bg-surface px-2.5 py-1 text-[12px] font-bold text-muted ring-1 ring-line-2 sm:hidden">Próximamente</span>
+                    {current && (
+                      <span className="mt-3 block sm:hidden"><ButtonLink href={s.href} size="sm">{s.cta} <ArrowRight className="size-3.5" /></ButtonLink></span>
                     )}
                   </div>
                   {done ? (
                     <span className="hidden text-[13px] font-bold text-ok sm:inline">Listo</span>
-                  ) : current && NOT_BUILT.has(s.key) ? (
-                    <span className="hidden shrink-0 rounded-full bg-surface px-2.5 py-1 text-[12px] font-bold text-muted ring-1 ring-line-2 sm:inline">Próximamente</span>
                   ) : current ? (
-                    <ArrowRight className="size-5 shrink-0 text-brand-text" />
-                  ) : null}
+                    <span className="hidden shrink-0 sm:block"><ButtonLink href={s.href} size="sm">{s.cta} <ArrowRight className="size-3.5" /></ButtonLink></span>
+                  ) : (
+                    <Link href={s.href} className="hidden text-[13px] font-semibold text-muted hover:text-ink sm:inline">Ver</Link>
+                  )}
                 </li>
               )
             })}
           </ol>
-          {NOT_BUILT.has(next.key) && (
-            <p className="border-t border-line bg-surface-2 px-5 py-3 text-[13px] text-muted sm:px-6">
-              Estamos terminando las pantallas de clientes y cobros. Te avisamos por email cuando estén listas.
-            </p>
-          )}
         </section>
       )}
 

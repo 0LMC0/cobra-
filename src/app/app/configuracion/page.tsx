@@ -7,6 +7,8 @@ import { ROLE_LABEL, isOrgRole, can } from '@/domain/roles'
 import { DEFAULT_DIGEST_FREQUENCY, type DigestFrequency } from '@/domain/digest'
 import { DigestPreferenceForm } from '@/components/app/digest-preference'
 import { setDigestFrequency } from '@/server/actions/preferences'
+import { ReminderSettingsForm } from '@/components/app/reminder-settings-form'
+import { updateReminderSettings } from '@/server/actions/reminder-settings'
 
 export const metadata: Metadata = { title: 'Configuración' }
 
@@ -29,6 +31,12 @@ export default async function SettingsPage() {
     .maybeSingle()
   const digestFrequency = (me?.digest_frequency as DigestFrequency | undefined) ?? DEFAULT_DIGEST_FREQUENCY
 
+  const { data: sending } = await supabase
+    .from('organizations')
+    .select('reminders_enabled, transfer_alias, reply_to_email')
+    .eq('id', org.id)
+    .maybeSingle()
+
   const rows: [string, string][] = [
     ['Nombre', org.name],
     ['Rubro', org.industry ?? '—'],
@@ -45,6 +53,19 @@ export default async function SettingsPage() {
         <p className="eyebrow">Tu cuenta</p>
         <h1 className="text-[36px] sm:text-[42px]"><span className="marker">Configuración</span></h1>
       </header>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[19px]">Avisos automáticos a tus clientes</h2>
+        <Card className="p-5">
+          <ReminderSettingsForm
+            action={updateReminderSettings}
+            enabled={Boolean(sending?.reminders_enabled)}
+            transferAlias={sending?.transfer_alias ?? null}
+            replyTo={sending?.reply_to_email ?? org.contact_email ?? null}
+            canEdit={can(ctx.role, 'org.update')}
+          />
+        </Card>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-[19px]">Resumen por email</h2>

@@ -47,3 +47,11 @@ Corre, en orden, typecheck, lint, tests y build.
    - `NEXT_PUBLIC_LAUNCHED` queda en `false` hasta el lanzamiento.
 3. Agregá el dominio de producción a las Redirect URLs de Supabase.
 4. **No se despliega a producción sin aprobación explícita** (ver ROADMAP, checklist de lanzamiento).
+
+## Emails automáticos (Fase 3)
+1. Crear una cuenta en Resend, verificar el dominio desde el que salen los avisos y generar una API key.
+2. En `.env.local` (y en Vercel): `RESEND_API_KEY`, `EMAIL_FROM="Cobra+ <avisos@tu-dominio.com>"` y `CRON_SECRET` (generalo con `openssl rand -hex 32`).
+3. El proceso diario es `/api/cron/daily`. Vercel lo llama de lunes a viernes a las 12:00 UTC (9:00 en Argentina) según `vercel.json`. Para probarlo a mano:
+   `curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/daily`
+   Sin `RESEND_API_KEY` responde `dryRun: true` con cuántos emails saldrían y no manda nada.
+

@@ -48,7 +48,8 @@ Estado al **15/11/2026**.
 - Onboarding pasos 2 y 3.
 - Playwright: recorrido del MVP hasta el paso 7.
 
-## Fase 3 — Automatización ⬜
+## Fase 3 — Automatización 🟡
+- 🟡 **Envío automático por email** (armado y probado; falta conectarlo a Supabase y a Resend): migración `20261118000001_reminders.sql` (`reminder_deliveries` con unicidad cobro + paso + canal, y datos de envío de la empresa), textos en `src/domain/emails.ts`, plan del día en `src/domain/daily-plan.ts` (12 tests), envío con Resend en `src/server/email/mailer.ts` y proceso diario en `/api/cron/daily` (lunes a viernes 9:00 de Argentina, `vercel.json`, protegido con `CRON_SECRET`). Sin `RESEND_API_KEY` corre en modo prueba y no manda nada. Se activa desde Configuración → "Avisos automáticos". Pendiente: reintentos de los envíos fallidos y baja con un clic.
 - 🟡 **Reglas de avisos** (`src/domain/reminders.ts`, 14 tests): secuencia por defecto −5, −1, 0, +3 y +7, sólo días hábiles y sin feriados, promesa de pago, corte al pagar, pausa, baja y pase a quien cobra. Falta conectarlas a la base y al envío.
 - **Promesa de pago:** anotar la fecha prometida, silencio hasta ese día y un solo seguimiento.
 - 🟡 **WhatsApp con un toque** (`src/domain/whatsapp.ts`, 21 tests; botón en `src/components/app/whatsapp-button.tsx`; lista "Para avisar hoy" en el inicio): convierte el celular argentino al formato de WhatsApp (saca el 0 y el 15), arma el mensaje según el momento (antes, vence hoy, atrasado, último aviso, promesa) y abre el chat listo para enviar. Falta conectarlo a los datos reales (Fase 2) y registrar cuándo se usó.
