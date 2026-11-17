@@ -32,6 +32,8 @@ export type CustomerView = {
   whatsappNumber: string | null
   whatsappOk: boolean
   notes: string | null
+  /** Pidió no recibir avisos automáticos (link de baja del email). */
+  optedOut: boolean
   /** Lo que debe, separado por moneda (nunca se suman monedas). */
   owed: { currency: CurrencyCode; balanceMinor: number }[]
   overdueCount: number
@@ -96,18 +98,18 @@ function summarize(charges: ChargeView[]) {
 
 type CustomerRow = {
   id: string; name: string; contact_name: string | null; email: string | null; phone: string | null
-  whatsapp_number: string | null; whatsapp_ok: boolean; notes: string | null
+  whatsapp_number: string | null; whatsapp_ok: boolean; notes: string | null; contact_opt_out: boolean
 }
 
 function toCustomer(r: CustomerRow, charges: ChargeView[]): CustomerView {
   return {
     id: r.id, name: r.name, contactName: r.contact_name, email: r.email, phone: r.phone,
-    whatsappNumber: r.whatsapp_number, whatsappOk: r.whatsapp_ok, notes: r.notes,
+    whatsappNumber: r.whatsapp_number, whatsappOk: r.whatsapp_ok, notes: r.notes, optedOut: Boolean(r.contact_opt_out),
     ...summarize(charges.filter((c) => c.customerId === r.id)),
   }
 }
 
-const CUSTOMER_FIELDS = 'id, name, contact_name, email, phone, whatsapp_number, whatsapp_ok, notes'
+const CUSTOMER_FIELDS = 'id, name, contact_name, email, phone, whatsapp_number, whatsapp_ok, notes, contact_opt_out'
 
 export async function listCustomers(orgId: string, today: IsoDate): Promise<CustomerView[]> {
   const supabase = await createClient()

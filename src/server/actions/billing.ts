@@ -4,8 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AuthorizationError, authorize, type OrgContext } from '@/server/auth'
-import { chargeSchema, customerSchema, paymentSchema } from '@/domain/forms'
-import { addMonths } from '@/domain/dates'
+import { chargeSchema, customerSchema, paymentSchema, promiseSchema } from '@/domain/forms'
+import { addMonths, formatDate, todayIn } from '@/domain/dates'
 import { hasRole } from '@/domain/roles'
 import type { FormState } from './form-state'
 
@@ -115,4 +115,41 @@ export async function recordPayment(_: FormState, formData: FormData): Promise<F
   }
   revalidatePath('/app', 'layout')
   return { ok: d.partial ? 'Pago parcial registrado. El resto sigue pendiente.' : 'Pago registrado. Los avisos de este cobro se frenan.' }
+}
+
+/** Anota la fecha que el cliente prometió pagar: los avisos se frenan hasta ese día. */
+export async function setPromise(_: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await guard()
+  if (isState(ctx)) return ctx
+  const today = todayIn(ctx.org.timezone)
+  const parsed = promiseSchema(today).safeParse(Object.fromEntries(formData))
+  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors }
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('charges')
+    .update({ promised_for: parsed.data.promisedFor, promised_on: today })
+    .eq('org_id', ctx.org.id)
+    .eq('id', parsed.data.chargeId)
+    .eq('state', 'open')
+    .select('id')
+  if (error || !data?.length) return { error: 'No pudimos anotar la promesa. Probá de nuevo.' }
+  revalidatePath('/app', 'layout')
+  return { ok: `Anotado. Cobra+ no le escribe hasta el ${formatDate(parsed.data.promisedFor, { day: 'numeric', month: 'long' })}; si ese día no pagó, le manda un recordatorio.` }
+}
+
+/** Saca la promesa: vuelven los avisos normales. */
+export async function clearPromise(_: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await guard()
+  if (isState(ctx)) return ctx
+  const chargeId = String(formData.get('chargeId') ?? '')
+  if (!/^[0-9a-f-]{36}$/i.test(chargeId)) return { error: 'No encontramos ese cobro.' }
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('charges')
+    .update({ promised_for: null, promised_on: null })
+    .eq('org_id', ctx.org.id)
+    .eq('id', chargeId)
+  if (error) return { error: 'No pudimos sacar la promesa. Probá de nuevo.' }
+  revalidatePath('/app', 'layout')
+  return { ok: 'Listo: vuelven los avisos normales.' }
 }

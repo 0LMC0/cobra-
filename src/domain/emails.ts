@@ -45,6 +45,8 @@ export type ReminderEmailInput = {
   dueDate: IsoDate
   promisedFor?: IsoDate | null
   transferAlias?: string | null
+  /** Link de baja con un clic. Sin link, se pide responder el email. */
+  unsubscribeUrl?: string | null
 }
 
 const longDate = (d: IsoDate) => formatDate(d, { weekday: 'long', day: 'numeric', month: 'long' })
@@ -69,14 +71,20 @@ export function renderReminderEmail(m: ReminderEmailInput): RenderedEmail {
   const body = `Te escribimos de ${m.businessName}: ${v.line}`
   const alias = m.transferAlias ? `Podés transferir al alias ${m.transferAlias}.` : null
   const paid = 'Si ya lo pagaste, respondé este email con el comprobante y listo. ¡Gracias!'
-  const footer = `Este aviso lo envía Cobra+ en nombre de ${m.businessName}. Si no querés recibir más recordatorios, respondé este email y los desactivamos.`
+  const footerIntro = `Este aviso lo envía Cobra+ en nombre de ${m.businessName}.`
+  const footer = m.unsubscribeUrl
+    ? `${footerIntro} Si no querés recibir más recordatorios, desactivalos acá: ${m.unsubscribeUrl}`
+    : `${footerIntro} Si no querés recibir más recordatorios, respondé este email y los desactivamos.`
+  const footerHtml = m.unsubscribeUrl
+    ? `${escapeHtml(footerIntro)} Si no querés recibir más recordatorios, <a href="${escapeHtml(m.unsubscribeUrl)}" style="color:${MUTED}">desactivalos acá</a>.`
+    : escapeHtml(footer)
 
   const text = [greeting, '', body, ...(alias ? ['', alias] : []), '', paid, '', '—', footer].join('\n')
   const html = layout({
     heading: escapeHtml(v.subject.replace(/ · .*/, '')),
     paragraphs: [escapeHtml(greeting), escapeHtml(body), escapeHtml(paid)],
     box: `<p style="margin:0;font-size:15px;color:${INK}"><b>${escapeHtml(Concept)}</b><br>${escapeHtml(amount)} · vence el ${escapeHtml(due)}${alias ? `<br>${escapeHtml(alias)}` : ''}</p>`,
-    footer: escapeHtml(footer),
+    footer: footerHtml,
   })
   return { subject, text, html }
 }

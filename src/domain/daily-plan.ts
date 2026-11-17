@@ -36,7 +36,7 @@ export type PlanCharge = {
 
 export type PlanMember = { orgId: string; userId: string; email: string; firstName: string | null; frequency: DigestFrequency; lastSentOn: IsoDate | null }
 
-export type ReminderSend = { kind: 'reminder'; orgId: string; chargeId: string; stepId: string; sendOn: IsoDate; to: string; replyTo: string | null; fromName: string; email: RenderedEmail }
+export type ReminderSend = { kind: 'reminder'; orgId: string; chargeId: string; stepId: string; sendOn: IsoDate; to: string; replyTo: string | null; fromName: string; unsubscribeUrl: string | null; email: RenderedEmail }
 export type DigestSend = { kind: 'digest'; orgId: string; userId: string; sendOn: IsoDate; to: string; email: RenderedEmail }
 
 const MOMENT: Record<ReminderKind | 'promise_followup', ReminderMoment> = {
@@ -51,6 +51,8 @@ export function planDailyEmails(input: {
   /** Claves "chargeId:stepId" de avisos ya registrados. */
   alreadySent: Set<string>
   appUrl: string
+  /** Arma el link de baja firmado de cada cliente (la firma vive en el servidor). */
+  unsubscribeUrlFor?: (customerId: string) => string
 }): { reminders: ReminderSend[]; digests: DigestSend[] } {
   const customers = new Map(input.customers.map((c) => [c.id, c]))
   const reminders: ReminderSend[] = []
@@ -73,13 +75,14 @@ export function planDailyEmails(input: {
         })
         for (const step of remindersToSendOn(plan, org.today)) {
           if (input.alreadySent.has(`${charge.id}:${step.stepId}`)) continue
+          const unsubscribeUrl = input.unsubscribeUrlFor?.(customer.id) ?? null
           reminders.push({
             kind: 'reminder', orgId: org.id, chargeId: charge.id, stepId: step.stepId, sendOn: org.today,
-            to: customer.email, replyTo: org.replyTo, fromName: org.name,
+            to: customer.email, replyTo: org.replyTo, fromName: org.name, unsubscribeUrl,
             email: renderReminderEmail({
               moment: MOMENT[step.kind], customerName: customer.name, contactName: customer.contactName, businessName: org.name,
               concept: charge.concept, amountMinor: charge.balanceMinor, currency: charge.currency, dueDate: charge.dueDate,
-              promisedFor: charge.promisedFor, transferAlias: org.transferAlias,
+              promisedFor: charge.promisedFor, transferAlias: org.transferAlias, unsubscribeUrl,
             }),
           })
         }

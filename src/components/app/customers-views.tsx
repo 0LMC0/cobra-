@@ -7,7 +7,7 @@ import type { CurrencyCode } from '@/domain/money'
 import type { WhatsAppMoment } from '@/domain/whatsapp'
 import type { ChargeView, CustomerView } from '@/server/queries'
 import type { FormState } from '@/server/actions/form-state'
-import { ChargeForm, CustomerForm, PayButton } from './billing-forms'
+import { ChargeForm, CustomerForm, PayButton, PromiseButton } from './billing-forms'
 import { ChargeSummary, CustomersTable, Owed, initials } from './billing-ui'
 import { WhatsAppButton } from './whatsapp-button'
 
@@ -72,7 +72,7 @@ export function momentFor(c: ChargeView, today: string): WhatsAppMoment {
 }
 
 export function CustomerDetailView({
-  customer, charges, today, businessName, transferAlias, defaultCurrency, chargeAction, payAction, justCreated, backHref = '/app/clientes',
+  customer, charges, today, businessName, transferAlias, defaultCurrency, chargeAction, payAction, promiseAction, clearPromiseAction, justCreated, backHref = '/app/clientes',
 }: {
   customer: CustomerView
   charges: ChargeView[]
@@ -82,6 +82,8 @@ export function CustomerDetailView({
   defaultCurrency: CurrencyCode
   chargeAction: Action
   payAction: Action
+  promiseAction?: Action
+  clearPromiseAction?: Action
   justCreated?: boolean
   backHref?: string
 }) {
@@ -91,6 +93,12 @@ export function CustomerDetailView({
   return (
     <div className="flex flex-col gap-6">
       <Link href={backHref} className="inline-flex w-fit items-center gap-1.5 text-[14px] font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> Clientes</Link>
+
+      {customer.optedOut && (
+        <Alert tone="warn" title="Se dio de baja de los avisos">
+          Pidió no recibir más recordatorios automáticos por email. Podés seguir escribiéndole por WhatsApp o como prefieras.
+        </Alert>
+      )}
 
       {justCreated && <Alert tone="ok" title="Cliente guardado">Ahora creale su primer cobro: con eso Cobra+ ya sabe cuándo avisarle.</Alert>}
 
@@ -122,6 +130,7 @@ export function CustomerDetailView({
                   <ChargeSummary charge={c} />
                   <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                     <PayButton action={payAction} chargeId={c.id} balanceMinor={c.balanceMinor} currency={c.currency} today={today} />
+                    {promiseAction && clearPromiseAction && <PromiseButton action={promiseAction} clearAction={clearPromiseAction} chargeId={c.id} promisedFor={c.promisedFor} today={today} />}
                     {customer.whatsappOk && (
                       <WhatsAppButton
                         phone={customer.whatsappNumber ? `+${customer.whatsappNumber}` : null}

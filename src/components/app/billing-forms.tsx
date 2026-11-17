@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState, useEffect, useRef, useState } from 'react'
-import { Check, X } from 'lucide-react'
+import { CalendarClock, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Field, Input, Select } from '@/components/ui/field'
 import { FormFeedback } from '@/components/forms/form-feedback'
@@ -147,6 +147,49 @@ export function PayButton({ action, chargeId, balanceMinor, currency, today }: {
         </div>
       </details>
       <Button type="submit" size="md" loading={pending} className="self-start">{pending ? 'Guardando…' : 'Registrar pago'}</Button>
+    </form>
+  )
+}
+
+/* ───────────── Promesa de pago ───────────── */
+
+export function PromiseButton({ action, clearAction, chargeId, promisedFor, today }: { action: Action; clearAction: Action; chargeId: string; promisedFor: string | null; today: string }) {
+  const [open, setOpen] = useState(false)
+  const [state, formAction, pending] = useActionState(action, initialFormState)
+  const [clearState, clearFormAction, clearing] = useActionState(clearAction, initialFormState)
+
+  if (state.ok && !clearState.ok) return <p role="status" className="text-[13.5px] font-semibold text-purple">{state.ok}</p>
+  if (clearState.ok) return <p role="status" className="text-[13.5px] font-semibold text-muted">{clearState.ok}</p>
+
+  if (promisedFor) {
+    return (
+      <form action={clearFormAction}>
+        <input type="hidden" name="chargeId" value={chargeId} />
+        <Button type="submit" variant="secondary" size="md" loading={clearing} className="w-full sm:w-auto">
+          <X className="size-4" /> Sacar promesa
+        </Button>
+      </form>
+    )
+  }
+  if (!open) {
+    return (
+      <Button type="button" variant="secondary" size="md" onClick={() => setOpen(true)} className="w-full sm:w-auto">
+        <CalendarClock className="size-4 text-purple" /> Prometió pagar
+      </Button>
+    )
+  }
+  return (
+    <form action={formAction} className="flex w-full flex-col gap-3 rounded-[16px] bg-surface-2 p-4 ring-1 ring-line-2" noValidate>
+      <div className="flex items-center justify-between">
+        <p className="text-[15px] font-bold">¿Qué día te dijo que paga?</p>
+        <button type="button" onClick={() => setOpen(false)} aria-label="Cancelar" className="grid size-8 place-items-center rounded-[8px] text-muted hover:bg-surface-3"><X className="size-4" /></button>
+      </div>
+      <FormFeedback state={state} />
+      <input type="hidden" name="chargeId" value={chargeId} />
+      <Field label="Fecha" hint="Hasta ese día Cobra+ no le escribe. Si no paga, le recuerda una sola vez." error={firstError(state, 'promisedFor')}>
+        {(p) => <Input {...p} name="promisedFor" type="date" min={today} required autoFocus />}
+      </Field>
+      <Button type="submit" size="md" loading={pending} className="self-start">{pending ? 'Guardando…' : 'Anotar promesa'}</Button>
     </form>
   )
 }

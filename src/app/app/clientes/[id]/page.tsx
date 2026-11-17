@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { CustomerDetailView } from '@/components/app/customers-views'
 import { requireOrg } from '@/server/auth'
 import { getCustomer } from '@/server/queries'
-import { createCharge, recordPayment } from '@/server/actions/billing'
+import { clearPromise, createCharge, recordPayment, setPromise } from '@/server/actions/billing'
 import { todayIn } from '@/domain/dates'
 import { isCurrency } from '@/domain/money'
 
@@ -26,6 +26,8 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       defaultCurrency={isCurrency(org.currency) ? org.currency : 'ARS'}
       chargeAction={createCharge}
       payAction={recordPayment}
+      promiseAction={setPromise}
+      clearPromiseAction={clearPromise}
       justCreated={nuevo === '1'}
     />
   )

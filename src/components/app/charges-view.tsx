@@ -4,7 +4,7 @@ import { ButtonLink } from '@/components/ui/button'
 import { isCollectible } from '@/domain/charge-status'
 import type { ChargeListItem } from '@/server/queries'
 import type { FormState } from '@/server/actions/form-state'
-import { PayButton } from './billing-forms'
+import { PayButton, PromiseButton } from './billing-forms'
 import { ChargeSummary } from './billing-ui'
 import { momentFor } from './customers-views'
 import { WhatsAppButton } from './whatsapp-button'
@@ -14,7 +14,7 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 
 /** Todos los cobros en un solo lugar: lo que falta cobrar arriba, lo atrasado primero. */
 export function ChargesView({
-  charges, view, today, businessName, transferAlias, payAction, hrefBase = '/app',
+  charges, view, today, businessName, transferAlias, payAction, promiseAction, clearPromiseAction, hrefBase = '/app',
 }: {
   charges: ChargeListItem[]
   view: 'pendientes' | 'pagados'
@@ -22,6 +22,8 @@ export function ChargesView({
   businessName: string
   transferAlias?: string | null
   payAction: Action
+  promiseAction?: Action
+  clearPromiseAction?: Action
   hrefBase?: string
 }) {
   const pending = charges
@@ -79,6 +81,7 @@ export function ChargesView({
                   {view === 'pendientes' && (
                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                       <PayButton action={payAction} chargeId={c.id} balanceMinor={c.balanceMinor} currency={c.currency} today={today} />
+                    {promiseAction && clearPromiseAction && <PromiseButton action={promiseAction} clearAction={clearPromiseAction} chargeId={c.id} promisedFor={c.promisedFor} today={today} />}
                       {c.customerWhatsapp && (
                         <WhatsAppButton
                           phone={c.customerWhatsapp}

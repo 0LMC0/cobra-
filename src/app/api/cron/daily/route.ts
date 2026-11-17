@@ -7,6 +7,10 @@ import { todayIn } from '@/domain/dates'
 import type { DigestFrequency } from '@/domain/digest'
 import type { CurrencyCode } from '@/domain/money'
 import { siteUrl } from '@/config/env'
+import { unsubscribeToken } from '@/server/unsubscribe'
+
+/** Intentos por aviso: si una corrida falla, otra corrida del mismo día lo reintenta. */
+const MAX_ATTEMPTS = 3
 
 /**
  * Proceso diario (Vercel Cron, ver vercel.json): recordatorios a los clientes
@@ -40,11 +44,11 @@ export async function GET(req: Request) {
 
   const chargeIds = (chargesRes.data ?? []).map((c) => c.id as string)
   let balanceRows: { charge_id: string; balance_minor: number | string }[] = []
-  let sentRows: { charge_id: string; step_id: string }[] = []
+  let sentRows: { id: string; charge_id: string; step_id: string; status: string; attempts: number }[] = []
   if (chargeIds.length) {
     const [b, s] = await Promise.all([
       db.from('charge_balances').select('charge_id, balance_minor').in('charge_id', chargeIds),
-      db.from('reminder_deliveries').select('charge_id, step_id').in('charge_id', chargeIds).eq('channel', 'email'),
+      db.from('reminder_deliveries').select('id, charge_id, step_id, status, attempts').in('charge_id', chargeIds).eq('channel', 'email'),
     ])
     balanceRows = b.data ?? []
     sentRows = s.data ?? []
@@ -79,8 +83,10 @@ export async function GET(req: Request) {
 
   const plan = planDailyEmails({
     orgs, customers, charges, members,
-    alreadySent: new Set(sentRows.map((s) => `${s.charge_id}:${s.step_id}`)),
+    // Un aviso fallido no cuenta como enviado mientras le queden intentos.
+    alreadySent: new Set(sentRows.filter((s) => !(s.status === 'failed' && s.attempts < MAX_ATTEMPTS)).map((s) => `${s.charge_id}:${s.step_id}`)),
     appUrl: siteUrl(),
+    unsubscribeUrlFor: (customerId) => `${siteUrl()}/baja?t=${unsubscribeToken(customerId)}`,
   })
 
   if (!emailConfigured()) {
@@ -89,23 +95,38 @@ export async function GET(req: Request) {
 
   let sent = 0
   let failed = 0
+  const failedByKey = new Map(sentRows.filter((s) => s.status === 'failed').map((s) => [`${s.charge_id}:${s.step_id}`, s]))
   for (const r of plan.reminders) {
     // Primero se reserva el aviso: si otra ejecución ya lo tomó, no se manda.
-    const { data: claimed } = await db
-      .from('reminder_deliveries')
-      .upsert(
-        { org_id: r.orgId, charge_id: r.chargeId, step_id: r.stepId, channel: 'email', send_on: r.sendOn, recipient: r.to },
-        { onConflict: 'charge_id,step_id,channel', ignoreDuplicates: true },
-      )
-      .select('id')
-    const id = claimed?.[0]?.id
+    let id: string | undefined
+    const prev = failedByKey.get(`${r.chargeId}:${r.stepId}`)
+    if (prev) {
+      // Reintento: sólo si nadie lo tomó en el medio (mismo estado y mismos intentos).
+      const { data: retried } = await db
+        .from('reminder_deliveries')
+        .update({ status: 'queued', attempts: prev.attempts + 1 })
+        .eq('id', prev.id)
+        .eq('status', 'failed')
+        .eq('attempts', prev.attempts)
+        .select('id')
+      id = retried?.[0]?.id
+    } else {
+      const { data: claimed } = await db
+        .from('reminder_deliveries')
+        .upsert(
+          { org_id: r.orgId, charge_id: r.chargeId, step_id: r.stepId, channel: 'email', send_on: r.sendOn, recipient: r.to, status: 'queued', attempts: 1 },
+          { onConflict: 'charge_id,step_id,channel', ignoreDuplicates: true },
+        )
+        .select('id')
+      id = claimed?.[0]?.id
+    }
     if (!id) continue
-    const res = await sendEmail({ to: r.to, ...r.email, replyTo: r.replyTo, fromName: r.fromName })
+    const res = await sendEmail({ to: r.to, ...r.email, replyTo: r.replyTo, fromName: r.fromName, listUnsubscribeUrl: r.unsubscribeUrl?.replace('/baja?', '/api/baja?'), idempotencyKey: `aviso-${id}` })
     await db
       .from('reminder_deliveries')
       .update(res.ok
-        ? { status: 'sent', attempts: 1, provider_message_id: res.id, sent_at: new Date().toISOString() }
-        : { status: 'failed', attempts: 1, last_error: res.error })
+        ? { status: 'sent', provider_message_id: res.id, sent_at: new Date().toISOString(), last_error: null }
+        : { status: 'failed', last_error: res.error })
       .eq('id', id)
     if (res.ok) sent += 1
     else failed += 1

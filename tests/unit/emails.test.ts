@@ -22,6 +22,14 @@ describe('email de recordatorio', () => {
     expect(text).toContain('Si no querés recibir más recordatorios')
   })
 
+  it('con link de baja, lo pone en el texto y en el HTML', () => {
+    const url = 'https://cobra.example/baja?t=abc&x=1'
+    const e = renderReminderEmail({ ...base, moment: 'due', unsubscribeUrl: url })
+    expect(e.text).toContain(`desactivalos acá: ${url}`)
+    expect(e.html).toContain('href="https://cobra.example/baja?t=abc&amp;x=1"')
+    expect(renderReminderEmail({ ...base, moment: 'due' }).text).toContain('respondé este email y los desactivamos')
+  })
+
   it('cada momento tiene su asunto', () => {
     expect(renderReminderEmail({ ...base, moment: 'due' }).subject).toMatch(/^La cuota de noviembre: vence hoy/)
     expect(renderReminderEmail({ ...base, moment: 'after' }).subject).toMatch(/quedó pendiente/)

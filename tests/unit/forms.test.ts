@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { chargeSchema, customerSchema, paymentSchema } from '@/domain/forms'
+import { chargeSchema, customerSchema, paymentSchema, promiseSchema } from '@/domain/forms'
 
 const UUID = '6f1d1b4e-8c3a-4f2e-9b7d-2a1c3e4f5a6b'
 const errors = (r: { success: boolean; error?: { flatten: () => { fieldErrors: Record<string, string[] | undefined> } } }) =>
@@ -83,5 +83,19 @@ describe('formulario de pago', () => {
 
   it('rechaza un método desconocido', () => {
     expect(paymentSchema.safeParse({ ...base, amount: '1', method: 'bitcoin' }).success).toBe(false)
+  })
+})
+
+describe('promiseSchema', () => {
+  const today = '2026-11-17'
+  const id = UUID
+  it('acepta de hoy a 60 días', () => {
+    expect(promiseSchema(today).safeParse({ chargeId: id, promisedFor: '2026-11-20' }).success).toBe(true)
+    expect(promiseSchema(today).safeParse({ chargeId: id, promisedFor: today }).success).toBe(true)
+  })
+  it('rechaza fechas pasadas, muy lejanas o inválidas', () => {
+    expect(promiseSchema(today).safeParse({ chargeId: id, promisedFor: '2026-11-16' }).success).toBe(false)
+    expect(promiseSchema(today).safeParse({ chargeId: id, promisedFor: '2027-02-01' }).success).toBe(false)
+    expect(promiseSchema(today).safeParse({ chargeId: id, promisedFor: 'mañana' }).success).toBe(false)
   })
 })

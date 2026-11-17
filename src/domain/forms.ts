@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isIsoDate } from './dates'
+import { daysBetween, isIsoDate } from './dates'
 import { isCurrency, parseAmount, type CurrencyCode } from './money'
 import { toWhatsAppNumber } from './whatsapp'
 
@@ -92,3 +92,16 @@ export const paymentSchema = z
   })
 
 export type PaymentInput = z.output<typeof paymentSchema>
+
+/** Hasta cuántos días adelante se acepta una promesa de pago. */
+export const MAX_PROMISE_DAYS = 60
+
+/** Promesa de pago: "me dijo que paga el viernes". Desde hoy y hasta 60 días. */
+export function promiseSchema(today: string) {
+  return z.object({
+    chargeId: z.string().uuid(),
+    promisedFor: isoDate('Elegí la fecha que te prometió.')
+      .refine((d) => d >= today, 'Tiene que ser hoy o más adelante.')
+      .refine((d) => daysBetween(today, d) <= MAX_PROMISE_DAYS, `Elegí una fecha dentro de los próximos ${MAX_PROMISE_DAYS} días.`),
+  })
+}
