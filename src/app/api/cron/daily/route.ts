@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { emailConfigured, sendEmail } from '@/server/email/mailer'
 import { planDailyEmails, type PlanCharge, type PlanCustomer, type PlanMember, type PlanOrg } from '@/domain/daily-plan'
-import { todayIn } from '@/domain/dates'
+import { todayIn, type Frequency } from '@/domain/dates'
+import { periodsToGenerate } from '@/domain/agreements'
 import type { DigestFrequency } from '@/domain/digest'
 import type { CurrencyCode } from '@/domain/money'
 import { siteUrl } from '@/config/env'
@@ -20,6 +21,48 @@ const MAX_ATTEMPTS = 3
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+/** Crea los cobros de los abonos activos que vencen dentro de la semana. Devuelve cuántos creó. */
+async function generateAgreementCharges(db: ReturnType<typeof createAdminClient>): Promise<number> {
+  const [orgsRes, agreementsRes] = await Promise.all([
+    db.from('organizations').select('id, timezone'),
+    db.from('agreements')
+      .select('id, org_id, customer_id, name, amount_minor, currency, frequency, next_charge_date, end_date')
+      .eq('status', 'active')
+      .not('next_charge_date', 'is', null),
+  ])
+  if (orgsRes.error || agreementsRes.error) return 0
+  const tz = new Map((orgsRes.data ?? []).map((o) => [o.id as string, o.timezone as string]))
+  let created = 0
+  for (const a of agreementsRes.data ?? []) {
+    const today = todayIn(tz.get(a.org_id) ?? 'America/Argentina/Buenos_Aires')
+    const { periods, nextChargeDate } = periodsToGenerate(
+      { id: a.id, name: a.name, frequency: a.frequency as Frequency, nextChargeDate: a.next_charge_date, endDate: a.end_date },
+      today,
+    )
+    if (periods.length === 0 && nextChargeDate === a.next_charge_date) continue
+    if (periods.length) {
+      const { data, error } = await db
+        .from('charges')
+        .upsert(
+          periods.map((p) => ({
+            org_id: a.org_id, customer_id: a.customer_id, agreement_id: a.id, concept: p.concept,
+            amount_minor: a.amount_minor, currency: a.currency, due_date: p.dueDate, period_start: p.periodStart,
+          })),
+          { onConflict: 'agreement_id,period_start', ignoreDuplicates: true },
+        )
+        .select('id')
+      if (error) continue
+      created += data?.length ?? 0
+    }
+    // Sólo avanza si nadie lo movió en el medio.
+    await db.from('agreements')
+      .update({ next_charge_date: nextChargeDate, ...(nextChargeDate ? {} : { status: 'ended' }) })
+      .eq('id', a.id)
+      .eq('next_charge_date', a.next_charge_date)
+  }
+  return created
+}
+
 function authorized(req: Request): boolean {
   const secret = process.env.CRON_SECRET
   if (!secret) return false
@@ -31,6 +74,9 @@ function authorized(req: Request): boolean {
 export async function GET(req: Request) {
   if (!authorized(req)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   const db = createAdminClient()
+
+  // 1) Abonos: primero se generan los cobros que tocan, así ya entran en los avisos de hoy.
+  const generated = await generateAgreementCharges(db)
 
   const [orgsRes, customersRes, chargesRes, membersRes] = await Promise.all([
     db.from('organizations').select('id, name, timezone, reminders_enabled, transfer_alias, reply_to_email'),
@@ -90,7 +136,7 @@ export async function GET(req: Request) {
   })
 
   if (!emailConfigured()) {
-    return NextResponse.json({ dryRun: true, reminders: plan.reminders.length, digests: plan.digests.length, note: 'Falta RESEND_API_KEY o EMAIL_FROM: no se envió nada.' })
+    return NextResponse.json({ dryRun: true, generatedCharges: generated, reminders: plan.reminders.length, digests: plan.digests.length, note: 'Falta RESEND_API_KEY o EMAIL_FROM: no se envió nada.' })
   }
 
   let sent = 0
@@ -148,5 +194,5 @@ export async function GET(req: Request) {
     else failed += 1
   }
 
-  return NextResponse.json({ reminders: sent, digests, failed })
+  return NextResponse.json({ generatedCharges: generated, reminders: sent, digests, failed })
 }

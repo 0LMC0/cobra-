@@ -42,7 +42,7 @@ Estado al **15/11/2026**.
 - Migración: `customers`, `agreements`, `agreement_price_changes`, `charges`, `charge_adjustments`, `payments`, `payment_allocations`, `attachments`, vista `charge_balances`, triggers de auditoría.
 - ✅ **Pantalla Cobros** (`/app/cobros`): todos los cobros con su cliente, atrasados primero, "Pagó" y WhatsApp en cada uno, y pestaña de pagados. El menú sólo muestra lo que ya funciona.
 - Clientes: CRUD, archivo, búsqueda, filtros, deduplicación, CSV in/out, ficha con línea de tiempo.
-- Abonos y generación idempotente de cobros por período.
+- ✅ **Generación de cobros de abonos** (`src/domain/agreements.ts`, 7 tests): el proceso diario crea el cobro 7 días antes del vencimiento (así sale el aviso de −5), cambia el mes en el concepto y avanza la próxima fecha. Idempotente por `unique (agreement_id, period_start)`; probado contra Supabase corriéndolo dos veces. Falta: pantalla de abonos (pausar, editar precio, fecha de fin).
 - Cobros únicos, descuentos, recargos, reprogramación y cancelación.
 - Registro manual de pagos parciales y totales con imputación y comprobante.
 - 🟡 Dashboard real: totales del mes en la moneda principal (`src/domain/home.ts`, 5 tests) y "Para avisar hoy" con los datos reales. Faltan gráficos y totales de otras monedas.
