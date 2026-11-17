@@ -49,7 +49,8 @@ Estado al **15/11/2026**.
 ## Fase 3 — Automatización ⬜
 - 🟡 **Reglas de avisos** (`src/domain/reminders.ts`, 14 tests): secuencia por defecto −5, −1, 0, +3 y +7, sólo días hábiles y sin feriados, promesa de pago, corte al pagar, pausa, baja y pase a quien cobra. Falta conectarlas a la base y al envío.
 - **Promesa de pago:** anotar la fecha prometida, silencio hasta ese día y un solo seguimiento.
-- **WhatsApp con un toque:** mensaje armado por Cobra+ y enviado por quien cobra desde su WhatsApp (link `wa.me`). Sin API.
+- 🟡 **WhatsApp con un toque** (`src/domain/whatsapp.ts`, 21 tests; botón en `src/components/app/whatsapp-button.tsx`; lista "Para avisar hoy" en el inicio): convierte el celular argentino al formato de WhatsApp (saca el 0 y el 15), arma el mensaje según el momento (antes, vence hoy, atrasado, último aviso, promesa) y abre el chat listo para enviar. Falta conectarlo a los datos reales (Fase 2) y registrar cuándo se usó.
+- **WhatsApp automático (etapa 2):** API oficial de WhatsApp Business con un número de Cobra+ que escribe en nombre de cada empresa. Requiere cuenta comercial de Meta verificada, número propio, plantillas aprobadas y permiso del cliente. Costo por mensaje a confirmar en la tabla oficial de Meta. Después, opción de que cada empresa conecte su propio número (plan Business).
 - **Datos para transferir** por empresa en cada aviso. **Modo revisión** y **pausa por cliente**.
 - Plantillas editables con variables, reglas y pasos de recordatorio, `reminder_deliveries` idempotente.
 - Adaptador Resend, cron por hora, ventana horaria, reintentos con backoff, opt-out.

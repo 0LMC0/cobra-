@@ -1,5 +1,6 @@
 import { ArrowRight, Bell, Building2, Check, CircleAlert, FileText, HandCoins, UserPlus, Wallet } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { TodayReminders, type TodayReminder } from './today-reminders'
 
 /**
  * Inicio del panel. Componente de presentación puro: la página real le pasa
@@ -19,7 +20,16 @@ const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'r
 /** Pasos que todavía no tienen pantalla en esta versión. */
 const NOT_BUILT = new Set(['first_customer', 'first_charge', 'reminders'])
 
-export function HomeView({ dateLabel, onboardingStep, currency }: { dateLabel: string; onboardingStep: OnboardingStep; currency: string }) {
+export function HomeView({
+  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [],
+}: {
+  dateLabel: string
+  onboardingStep: OnboardingStep
+  currency: string
+  businessName?: string
+  transferAlias?: string | null
+  todayReminders?: TodayReminder[]
+}) {
   const reached = ORDER.indexOf(onboardingStep)
   const doneCount = Math.min(reached, STEPS.length)
   const next = STEPS[doneCount]
@@ -37,6 +47,8 @@ export function HomeView({ dateLabel, onboardingStep, currency }: { dateLabel: s
         <Kpi icon={HandCoins} label="Cobrado en el mes" currency={currency} tone="ok" />
         <Kpi icon={CircleAlert} label="Atrasado" currency={currency} tone="danger" />
       </section>
+
+      <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} />
 
       {onboardingStep !== 'done' && next && (
         <section aria-labelledby="setup-title" className="overflow-hidden rounded-[22px] bg-surface ring-1 ring-line-2">
