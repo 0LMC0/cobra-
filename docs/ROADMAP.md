@@ -7,6 +7,12 @@ Estado al **15/11/2026**.
 - 🟡 hecho pero sin verificar contra un Supabase real
 - ⬜ pendiente
 
+## Decisiones de ecosistema (17/11)
+- Cobra+ es una app de **PrimerosPrecios** (que va a tener varias apps; hoy la Academia y Cobra+).
+- Vive en **cobra.primerosprecios.com**, con despliegue propio: un problema en Cobra+ no toca la Academia.
+- **Cuentas separadas por ahora** (login y base propios). Unificar la cuenta de PrimerosPrecios queda para más adelante.
+- Emails desde el dominio de PrimerosPrecios (`avisos@primerosprecios.com`), que ya está en Resend.
+
 ## Fase 0 — Arquitectura ✅
 - ✅ Inspección: proyecto nuevo, separado de PrimerosPrecios. No reutiliza código ni base de datos.
 - ✅ Documentos: PRD, ARCHITECTURE, DATABASE, SECURITY, DESIGN_SYSTEM, SETUP y este ROADMAP.
