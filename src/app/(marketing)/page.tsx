@@ -6,7 +6,7 @@ import { MonthStrip } from '@/components/marketing/month-strip'
 import { DigestPreview, EmailPreview, HumanCases } from '@/components/marketing/story'
 import { Pricing } from '@/components/marketing/pricing'
 import { StickyCta } from '@/components/marketing/sticky-cta'
-import { TRIAL_DAYS } from '@/config/plans'
+import { MONTHLY_REMINDERS } from '@/config/plans'
 import { cn } from '@/lib/cn'
 
 const WHO = ['Agencias', 'Estudios contables', 'Estudios de diseño', 'Mantenimiento', 'Consultoras', 'Independientes']
@@ -15,7 +15,7 @@ const FAQ = [
   ['¿Para quién es?', 'Para quien les cobra a los mismos clientes todos los meses: agencias, estudios contables y de diseño, servicios de mantenimiento, consultoras y profesionales independientes.'],
   ['¿Cobra+ cobra la plata por mí?', 'No. El dinero va directo de tu cliente a tu cuenta, como siempre. Cobra+ sólo ordena tus cobros y avisa. Nunca recibimos ni guardamos tu plata.'],
   ['¿Cobra+ me avisa a mí también?', 'Sí. Te manda un resumen por email con quién te pagó, qué vence hoy y quién está atrasado. Sólo te escribe los días que hay novedades.'],
-  ['¿Cómo es la prueba gratis?', `Durante ${TRIAL_DAYS} días usás todo lo del plan Growth sin pagar nada. Cuando termina, seguís con el plan que elijas o cancelás.`],
+  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y el botón de WhatsApp sin límite. Si necesitás más avisos, te pasás a un plan pago.`],
   ['¿Puedo pasar mis clientes desde Excel?', 'Sí, desde un archivo CSV. Antes de importar te mostramos los repetidos y los datos con errores.'],
   ['¿Qué pasa si un cliente paga una parte?', 'Anotás el pago parcial. Lo que falta queda pendiente y los avisos siguen sólo por ese saldo.'],
   ['¿Puedo cobrar en pesos y en dólares?', 'Sí. Cada cobro tiene su moneda y los totales se muestran por separado. Nunca se suman monedas distintas.'],
@@ -40,7 +40,7 @@ export default function LandingPage() {
             </h1>
             <div className="flex flex-col items-start gap-3 lg:items-end lg:pb-1.5">
               <ButtonLink href="/registro" size="lg">
-                Probalo gratis {TRIAL_DAYS} días <ArrowRight className="size-4" />
+                Empezá gratis <ArrowRight className="size-4" />
               </ButtonLink>
               <p className="max-w-[19rem] text-[13.5px] font-semibold text-muted lg:text-right">
                 Cobra+ no toca tu plata: tus clientes te pagan a vos, como siempre.
@@ -141,7 +141,7 @@ export default function LandingPage() {
         id="precios"
         label="Precios"
         title="Elegí según cuántos clientes tenés."
-        intro={`En pesos o en dólares. Los primeros ${TRIAL_DAYS} días son gratis.`}
+        intro={`En pesos o en dólares. Empezás gratis, sin tarjeta, con ${MONTHLY_REMINDERS.free} avisos por mes.`}
       >
         <Pricing />
       </Section>
@@ -175,7 +175,7 @@ export default function LandingPage() {
           <h2 className="display-xl text-[36px] text-white min-[360px]:text-[42px] sm:text-[64px]">Cobrá más.<br />Perseguí menos.</h2>
           <div className="flex min-w-0 max-w-full flex-col items-start gap-3 lg:items-end">
             <ButtonLink href="/registro" size="lg" variant="secondary" className="max-w-full !text-brand">
-              Probalo gratis {TRIAL_DAYS} días <ArrowRight className="size-4" />
+              Empezá gratis <ArrowRight className="size-4" />
             </ButtonLink>
             <p className="text-[14px] font-semibold text-white/80">Cargás tus clientes y Cobra+ hace el resto.</p>
           </div>

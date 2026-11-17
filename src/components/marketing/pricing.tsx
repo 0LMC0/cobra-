@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Check, Clock3 } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button'
 import {
-  ANNUAL_DISCOUNT, PLANS, TRIAL_DAYS, formatPlanAmount, formatPlanPrice, monthlyPriceFor, yearlyTotalFor,
+  ANNUAL_DISCOUNT, FREE_PLAN, PLANS, formatPlanAmount, formatPlanPrice, monthlyPriceFor, yearlyTotalFor,
   type BillingInterval, type Currency,
 } from '@/config/plans'
 import { cn } from '@/lib/cn'
@@ -41,7 +41,27 @@ export function Pricing() {
         </Segmented>
       </div>
 
-      <div className="grid w-full grid-cols-1 items-stretch gap-6 lg:grid-cols-3 lg:gap-5">
+      <div className="grid w-full grid-cols-1 items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
+        {/* Gratis: para siempre, sin tarjeta. */}
+        <article className="relative flex flex-col rounded-[22px] border-[1.5px] border-line-2 bg-surface p-7">
+          <h3 className="text-[24px] tracking-[-0.03em]">{FREE_PLAN.name}</h3>
+          <p className="mt-0.5 text-[14.5px] text-muted">{FREE_PLAN.tagline}</p>
+          <p className="mt-6 flex flex-wrap items-end gap-x-1.5" aria-label="Gratis, para siempre">
+            <span className="mb-2 text-[15px] font-bold text-muted" aria-hidden>{symbol}</span>
+            <span className={cn('money leading-none', currency === 'ARS' ? 'text-[46px]' : 'text-[54px]')} aria-hidden>0</span>
+            <span className="mb-1.5 text-[14px] font-semibold text-muted" aria-hidden>para siempre</span>
+          </p>
+          <p className="mt-2 min-h-5 text-[13px] font-semibold text-muted">Sin tarjeta</p>
+          <ButtonLink href="/registro" size="lg" variant="secondary" className="mt-6 w-full">Empezá gratis</ButtonLink>
+          <ul className="mt-7 flex flex-col gap-3 border-t border-line-2 pt-6 text-[14.5px]">
+            {FREE_PLAN.features.map((f) => (
+              <li key={f} className="flex items-start gap-2.5 font-semibold">
+                <Check className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={3} /><span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
         {PLANS.map((p) => {
           const price = monthlyPriceFor(p, interval, currency)
           return (
@@ -68,8 +88,9 @@ export function Pricing() {
                 {interval === 'year' ? `${formatPlanPrice(yearlyTotalFor(p, currency), currency)} por año, en un pago` : 'Se paga mes a mes'}
               </p>
               <ButtonLink href="/registro" size="lg" variant={p.highlighted ? 'primary' : 'secondary'} className="mt-6 w-full">
-                Probar {TRIAL_DAYS} días gratis
+                Empezá gratis
               </ButtonLink>
+              <p className="mt-2 text-center text-[12.5px] font-semibold text-muted">Te pasás a {p.name} con Mercado Pago (muy pronto).</p>
               <ul className="mt-7 flex flex-col gap-3 border-t border-line-2 pt-6 text-[14.5px]">
                 {p.features.map((f) => (
                   <li key={f.label} className={cn('flex items-start gap-2.5 font-semibold', !f.available && 'text-faint')}>
@@ -86,7 +107,7 @@ export function Pricing() {
       </div>
 
       <p className="text-[14px] font-semibold text-muted">
-        Cancelás cuando quieras. Precios en {currency === 'ARS' ? 'pesos argentinos' : 'dólares estadounidenses'}, sin impuestos.
+        Los planes pagos se cancelan cuando quieras. Precios en {currency === 'ARS' ? 'pesos argentinos' : 'dólares estadounidenses'}, sin impuestos.
       </p>
     </div>
   )

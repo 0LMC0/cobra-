@@ -11,7 +11,7 @@ const DOCS = {
     sections: [
       ['Qué es Cobra+', 'Cobra+ es un software para organizar cobranzas y enviar recordatorios. No es una entidad financiera, no procesa pagos de tus clientes ni recibe o custodia dinero de terceros.'],
       ['Tu cuenta', 'Sos responsable de la información que cargás, de tener permiso para contactar a tus clientes y de mantener la confidencialidad de tu contraseña.'],
-      ['Planes y prueba', 'La prueba gratuita dura 14 días. Al finalizar, para seguir usando Cobra+ necesitás contratar un plan. Los precios y límites vigentes se publican en el sitio.'],
+      ['Planes', 'El plan Gratis no vence e incluye un tope de avisos automáticos por mes. Los planes pagos amplían esos límites y se cobran por adelantado, por mes o por año. Los precios y límites vigentes se publican en el sitio.'],
       ['Cancelación', 'Podés cancelar la renovación en cualquier momento. Mantenés el acceso hasta el fin del período pago y podés exportar tus datos.'],
       ['Uso aceptable', 'No podés usar Cobra+ para enviar comunicaciones engañosas, acosar a deudores ni contactar personas sin base legal para hacerlo.'],
       ['Responsabilidad', 'Cobra+ se ofrece “tal cual”. Hacemos lo razonable para que funcione de forma continua, pero no garantizamos que los recordatorios produzcan un pago.'],

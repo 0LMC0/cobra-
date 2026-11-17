@@ -71,7 +71,11 @@ Estado al **15/11/2026**.
 - 🟡 **Resumen por email para quien cobra** (decidido el 16/11/2026; frecuencia elegible el 17/11): reglas en `src/domain/digest.ts` (10 tests), preferencia por persona en `organization_members.digest_frequency` (por defecto cada 3 días; también diario, semanal o apagado) y selector en Configuración. Sólo sale si hay algo para mirar y nunca los fines de semana. Falta el envío (cron + Resend).
 - Onboarding paso 4.
 
-## Fase 4 — Monetización ⬜
+## Fase 4 — Monetización 🟡
+- ✅ **Plan Gratis** (decisión 17/11): para siempre, sin tarjeta, 10 avisos automáticos por mes (`MONTHLY_REMINDERS` en `src/config/plans.ts`). El tope lo aplica el proceso diario en el servidor y, si no alcanza, salen primero los más urgentes (`src/domain/quota.ts`). El botón de WhatsApp no cuenta. Uso del mes en Configuración y aviso en el inicio cuando quedan 2 o menos.
+- ✅ **Tabla `subscriptions`** (migración `20261120000001`, aplicada): plan de cada empresa; sin fila = Gratis. Sólo escribe el servidor (webhooks); nadie puede cambiarse el plan desde el navegador (3 tests de base).
+- ⬜ **Planes pagos con Mercado Pago** (Suscripciones/preapproval): checkout, webhook firmado e idempotente que escribe `subscriptions`, cancelar renovación, panel de facturación. Necesita credenciales de PRUEBA de la cuenta que cobra.
+- ⬜ Límites de clientes y usuarios por plan en la base (trigger), no sólo en la app.
 - `billing_subscriptions`, `billing_events` y trial de 14 días **con tarjeta** (ver PRD): se pide la tarjeta al empezar la prueba, se informa la fecha y el monto del primer cobro y se avisa por email antes de cobrar. La landing no menciona la tarjeta.
 - Límites en el servidor (clientes activos y usuarios), invitaciones de equipo.
 - Panel de facturación. Adaptador `manual` y luego el proveedor elegido.

@@ -9,6 +9,9 @@ import { DigestPreferenceForm } from '@/components/app/digest-preference'
 import { setDigestFrequency } from '@/server/actions/preferences'
 import { ReminderSettingsForm } from '@/components/app/reminder-settings-form'
 import { updateReminderSettings } from '@/server/actions/reminder-settings'
+import { PlanUsageCard } from '@/components/app/plan-usage'
+import { getPlanUsage } from '@/server/queries'
+import { todayIn } from '@/domain/dates'
 
 export const metadata: Metadata = { title: 'Configuración' }
 
@@ -37,6 +40,8 @@ export default async function SettingsPage() {
     .eq('id', org.id)
     .maybeSingle()
 
+  const usage = await getPlanUsage(org.id, todayIn(org.timezone))
+
   const rows: [string, string][] = [
     ['Nombre', org.name],
     ['Rubro', org.industry ?? '—'],
@@ -53,6 +58,11 @@ export default async function SettingsPage() {
         <p className="eyebrow">Tu cuenta</p>
         <h1 className="text-[36px] sm:text-[42px]"><span className="marker">Configuración</span></h1>
       </header>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[19px]">Tu plan</h2>
+        <PlanUsageCard usage={usage} />
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-[19px]">Avisos automáticos a tus clientes</h2>

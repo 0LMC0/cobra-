@@ -1,6 +1,7 @@
 import { buildDigest, shouldSendDigest, type DigestCharge, type DigestFrequency } from './digest'
 import type { IsoDate } from './dates'
 import type { CurrencyCode } from './money'
+import { applyReminderQuota } from './quota'
 import { planReminders, remindersToSendOn, type ReminderKind } from './reminders'
 import { renderDigestEmail, renderReminderEmail, type ReminderMoment, type RenderedEmail } from './emails'
 
@@ -17,6 +18,8 @@ export type PlanOrg = {
   transferAlias: string | null
   replyTo: string | null
   holidays?: IsoDate[]
+  /** Avisos automáticos que le quedan este mes según su plan. Sin dato o null = sin tope. */
+  remainingReminders?: number | null
 }
 
 export type PlanCustomer = { id: string; orgId: string; name: string; contactName: string | null; email: string | null; optOut: boolean; paused: boolean }
@@ -53,15 +56,17 @@ export function planDailyEmails(input: {
   appUrl: string
   /** Arma el link de baja firmado de cada cliente (la firma vive en el servidor). */
   unsubscribeUrlFor?: (customerId: string) => string
-}): { reminders: ReminderSend[]; digests: DigestSend[] } {
+}): { reminders: ReminderSend[]; digests: DigestSend[]; held: { orgId: string; count: number }[] } {
   const customers = new Map(input.customers.map((c) => [c.id, c]))
   const reminders: ReminderSend[] = []
   const digests: DigestSend[] = []
+  const held: { orgId: string; count: number }[] = []
 
   for (const org of input.orgs) {
     const charges = input.charges.filter((c) => c.orgId === org.id && c.balanceMinor > 0)
 
     if (org.remindersEnabled) {
+      const orgReminders: ReminderSend[] = []
       for (const charge of charges) {
         const customer = customers.get(charge.customerId)
         if (!customer || !customer.email || customer.optOut) continue
@@ -76,7 +81,7 @@ export function planDailyEmails(input: {
         for (const step of remindersToSendOn(plan, org.today)) {
           if (input.alreadySent.has(`${charge.id}:${step.stepId}`)) continue
           const unsubscribeUrl = input.unsubscribeUrlFor?.(customer.id) ?? null
-          reminders.push({
+          orgReminders.push({
             kind: 'reminder', orgId: org.id, chargeId: charge.id, stepId: step.stepId, sendOn: org.today,
             to: customer.email, replyTo: org.replyTo, fromName: org.name, unsubscribeUrl,
             email: renderReminderEmail({
@@ -87,6 +92,10 @@ export function planDailyEmails(input: {
           })
         }
       }
+      // Tope del plan (Gratis: 10 por mes): salen primero los más urgentes.
+      const quota = applyReminderQuota(orgReminders, org.remainingReminders ?? null)
+      reminders.push(...quota.send)
+      if (quota.held.length) held.push({ orgId: org.id, count: quota.held.length })
     }
 
     const digestCharges: DigestCharge[] = charges.map((c) => ({
@@ -102,5 +111,5 @@ export function planDailyEmails(input: {
       })
     }
   }
-  return { reminders, digests }
+  return { reminders, digests, held }
 }

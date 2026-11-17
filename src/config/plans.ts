@@ -28,6 +28,40 @@ export const ANNUAL_DISCOUNT = 0.2
 export const ARS_PRICE_REFERENCE = { usdRate: 1570, date: '2026-11-07' } as const
 export const TRIAL_DAYS = 14
 
+/** Plan de cada empresa. Sin suscripción paga, es 'free'. */
+export type PlanTier = 'free' | PlanId
+
+/**
+ * Plan Gratis: súper básico, para siempre. Lo que lo limita son los avisos
+ * automáticos por mes; el botón de WhatsApp no cuenta (lo manda la persona).
+ */
+export const FREE_PLAN = {
+  id: 'free' as const,
+  name: 'Gratis',
+  tagline: 'Para arrancar con tus primeros clientes.',
+  features: [
+    '10 avisos automáticos por mes',
+    'Botón de WhatsApp con el mensaje listo',
+    'Panel de cobranzas y vencimientos',
+    'Historial de cada cliente',
+    '1 usuario',
+  ],
+}
+
+/** Avisos automáticos por mes según el plan. null = sin tope. */
+export const MONTHLY_REMINDERS: Record<PlanTier, number | null> = {
+  free: 10,
+  starter: null,
+  growth: null,
+  business: null,
+}
+
+export const PLAN_NAME: Record<PlanTier, string> = { free: 'Gratis', starter: 'Starter', growth: 'Growth', business: 'Business' }
+
+export function isPlanTier(v: unknown): v is PlanTier {
+  return typeof v === 'string' && v in MONTHLY_REMINDERS
+}
+
 export const PLANS: readonly Plan[] = [
   {
     id: 'starter',
@@ -39,7 +73,7 @@ export const PLANS: readonly Plan[] = [
     features: [
       { label: 'Hasta 30 clientes activos', available: true },
       { label: 'Cobros únicos y recurrentes', available: true },
-      { label: 'Recordatorios básicos por email', available: true },
+      { label: 'Avisos automáticos por email sin tope', available: true },
       { label: 'Panel de cobranzas y vencimientos', available: true },
       { label: '1 usuario', available: true },
     ],

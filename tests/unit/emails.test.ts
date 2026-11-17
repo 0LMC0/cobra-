@@ -85,6 +85,14 @@ describe('plan del día', () => {
     expect(digests.map((d) => d.to)).toEqual(['ana@martinez.example'])
   })
 
+  it('con el tope del plan Gratis agotado no sale el aviso, pero el resumen sí', () => {
+    const r = run({ orgs: [{ ...org, remainingReminders: 0 }] })
+    expect(r.reminders).toEqual([])
+    expect(r.held).toEqual([{ orgId: 'o1', count: 1 }])
+    expect(r.digests).toHaveLength(1)
+    expect(run({ orgs: [{ ...org, remainingReminders: 1 }] }).reminders).toHaveLength(1)
+  })
+
   it('nunca repite un aviso ya registrado', () => {
     expect(run({ alreadySent: new Set(['c1:atraso']) }).reminders).toEqual([])
   })

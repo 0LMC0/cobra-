@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button'
-import { TRIAL_DAYS } from '@/config/plans'
 import { cn } from '@/lib/cn'
 
 /** Barra fija en el celular, aparece cuando el hero ya quedó atrás. */
@@ -25,8 +24,8 @@ export function StickyCta() {
       inert={!show}
     >
       <p className="text-[13.5px] leading-tight font-extrabold max-[359px]:hidden">
-        {TRIAL_DAYS} días gratis
-        <span className="block text-[12px] font-semibold text-muted">Cancelás cuando quieras</span>
+        Gratis para siempre
+        <span className="block text-[12px] font-semibold text-muted">Sin tarjeta</span>
       </p>
       <ButtonLink href="/registro" size="md" className="max-[359px]:w-full">
         Empezá gratis <ArrowRight className="size-4" />

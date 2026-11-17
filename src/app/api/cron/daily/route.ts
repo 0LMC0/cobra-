@@ -8,6 +8,9 @@ import { periodsToGenerate } from '@/domain/agreements'
 import type { DigestFrequency } from '@/domain/digest'
 import type { CurrencyCode } from '@/domain/money'
 import { siteUrl } from '@/config/env'
+import { MONTHLY_REMINDERS } from '@/config/plans'
+import { effectivePlan } from '@/domain/plan-status'
+import { monthStart, remainingReminders } from '@/domain/quota'
 import { unsubscribeToken } from '@/server/unsubscribe'
 
 /** Intentos por aviso: si una corrida falla, otra corrida del mismo día lo reintenta. */
@@ -101,9 +104,24 @@ export async function GET(req: Request) {
   }
   const balance = new Map(balanceRows.map((b) => [b.charge_id, Number(b.balance_minor)]))
 
+  // Plan de cada empresa y avisos ya usados este mes (Gratis: 10 por mes).
+  const todays = new Map((orgsRes.data ?? []).map((o) => [o.id as string, todayIn(o.timezone)]))
+  const earliestMonth = [...todays.values()].map(monthStart).sort()[0] ?? monthStart(todayIn('America/Argentina/Buenos_Aires'))
+  const [subsRes, usageRes] = await Promise.all([
+    db.from('subscriptions').select('org_id, plan, status, current_period_end'),
+    db.from('reminder_deliveries').select('org_id, send_on').eq('channel', 'email').in('status', ['sent', 'queued']).gte('send_on', earliestMonth),
+  ])
+  if (subsRes.error || usageRes.error) return NextResponse.json({ error: 'No se pudieron leer los planes' }, { status: 500 })
+  const subs = new Map((subsRes.data ?? []).map((x) => [x.org_id as string, { plan: x.plan as string, status: x.status as string, currentPeriodEnd: x.current_period_end as string | null }]))
+  const usedThisMonth = (orgId: string) => {
+    const start = monthStart(todays.get(orgId)!)
+    return (usageRes.data ?? []).filter((d) => d.org_id === orgId && (d.send_on as string) >= start).length
+  }
+
   const orgs: PlanOrg[] = (orgsRes.data ?? []).map((o) => ({
-    id: o.id, name: o.name, today: todayIn(o.timezone), remindersEnabled: o.reminders_enabled,
+    id: o.id, name: o.name, today: todays.get(o.id)!, remindersEnabled: o.reminders_enabled,
     transferAlias: o.transfer_alias, replyTo: o.reply_to_email,
+    remainingReminders: remainingReminders(MONTHLY_REMINDERS[effectivePlan(subs.get(o.id) ?? null)], usedThisMonth(o.id)),
   }))
   const customers: PlanCustomer[] = (customersRes.data ?? []).map((c) => ({
     id: c.id, orgId: c.org_id, name: c.name, contactName: c.contact_name, email: c.email, optOut: c.contact_opt_out, paused: c.reminders_paused,
@@ -136,7 +154,7 @@ export async function GET(req: Request) {
   })
 
   if (!emailConfigured()) {
-    return NextResponse.json({ dryRun: true, generatedCharges: generated, reminders: plan.reminders.length, digests: plan.digests.length, note: 'Falta RESEND_API_KEY o EMAIL_FROM: no se envió nada.' })
+    return NextResponse.json({ dryRun: true, generatedCharges: generated, reminders: plan.reminders.length, digests: plan.digests.length, heldByPlanLimit: plan.held, note: 'Falta RESEND_API_KEY o EMAIL_FROM: no se envió nada.' })
   }
 
   let sent = 0
@@ -194,5 +212,5 @@ export async function GET(req: Request) {
     else failed += 1
   }
 
-  return NextResponse.json({ generatedCharges: generated, reminders: sent, digests, failed })
+  return NextResponse.json({ generatedCharges: generated, reminders: sent, heldByPlanLimit: plan.held, digests, failed })
 }

@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { chargeStatus, type ChargeStatus, type StoredChargeState } from '@/domain/charge-status'
 import type { IsoDate } from '@/domain/dates'
 import type { CurrencyCode } from '@/domain/money'
+import { MONTHLY_REMINDERS, type PlanTier } from '@/config/plans'
+import { effectivePlan } from '@/domain/plan-status'
+import { monthStart } from '@/domain/quota'
 import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
 import { homeTotals, remindersForToday, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
 
@@ -290,4 +293,26 @@ export async function listPayments(orgId: string): Promise<PaymentListItem[]> {
     reference: p.reference as string | null, status: p.status as 'confirmed' | 'voided', voidedReason: p.voided_reason as string | null,
     createdAt: p.created_at as string,
   }))
+}
+
+/* ───────────── Plan y uso del mes ───────────── */
+
+export type PlanUsage = { plan: PlanTier; limit: number | null; used: number; monthLabel: string }
+
+/** Plan vigente y cuántos avisos automáticos salieron este mes. */
+export async function getPlanUsage(orgId: string, today: IsoDate): Promise<PlanUsage> {
+  const supabase = await createClient()
+  const [subRes, usageRes] = await Promise.all([
+    supabase.from('subscriptions').select('plan, status, current_period_end').eq('org_id', orgId).maybeSingle(),
+    supabase.from('reminder_deliveries').select('id', { count: 'exact', head: true })
+      .eq('org_id', orgId).eq('channel', 'email').in('status', ['sent', 'queued']).gte('send_on', monthStart(today)),
+  ])
+  const sub = subRes.data ? { plan: subRes.data.plan as string, status: subRes.data.status as string, currentPeriodEnd: subRes.data.current_period_end as string | null } : null
+  const plan = effectivePlan(sub)
+  return {
+    plan,
+    limit: MONTHLY_REMINDERS[plan],
+    used: usageRes.count ?? 0,
+    monthLabel: new Intl.DateTimeFormat('es-AR', { month: 'long', timeZone: 'UTC' }).format(new Date(`${today}T12:00:00Z`)),
+  }
 }
