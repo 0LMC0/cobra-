@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { FileText, Users } from 'lucide-react'
-import { ButtonLink } from '@/components/ui/button'
+import { Download, FileText, Users } from 'lucide-react'
+import { ButtonLink, buttonClass } from '@/components/ui/button'
 import { isCollectible } from '@/domain/charge-status'
 import type { ChargeListItem } from '@/server/queries'
 import type { FormState } from '@/server/actions/form-state'
@@ -35,7 +35,8 @@ export function ChargesView({
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
         <h1 className="text-[34px] sm:text-[40px]">Cobros</h1>
         <p className="text-[14.5px] text-muted">
           {charges.length === 0
@@ -44,6 +45,13 @@ export function ChargesView({
               ? 'Nadie te debe nada.'
               : `${pending.length} para cobrar${overdue ? ` · ${overdue} atrasado${overdue === 1 ? '' : 's'}` : ''}`}
         </p>
+        </div>
+        {charges.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            <a href={`${hrefBase}/exportar/cobros`} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Cobros en CSV</a>
+            <a href={`${hrefBase}/exportar/pagos`} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Pagos en CSV</a>
+          </div>
+        )}
       </header>
 
       {charges.length === 0 ? (

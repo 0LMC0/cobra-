@@ -268,3 +268,26 @@ export async function getCustomerTimeline(orgId: string, customer: { id: string;
     })),
   })
 }
+
+/* ───────────── Pagos (para exportar) ───────────── */
+
+export type PaymentListItem = {
+  customerName: string; paidOn: IsoDate; currency: CurrencyCode; amountMinor: number; method: string
+  reference: string | null; status: 'confirmed' | 'voided'; voidedReason: string | null; createdAt: string
+}
+
+export async function listPayments(orgId: string): Promise<PaymentListItem[]> {
+  const supabase = await createClient()
+  const [paymentsRes, customersRes] = await Promise.all([
+    supabase.from('payments').select('customer_id, paid_on, currency, amount_minor, method, reference, status, voided_reason, created_at').eq('org_id', orgId),
+    supabase.from('customers').select('id, name').eq('org_id', orgId),
+  ])
+  if (paymentsRes.error || customersRes.error) throw new Error('No pudimos cargar los pagos.')
+  const names = new Map((customersRes.data ?? []).map((c) => [c.id as string, c.name as string]))
+  return (paymentsRes.data ?? []).map((p) => ({
+    customerName: names.get(p.customer_id as string) ?? 'Cliente',
+    paidOn: p.paid_on as IsoDate, currency: p.currency as CurrencyCode, amountMinor: Number(p.amount_minor), method: p.method as string,
+    reference: p.reference as string | null, status: p.status as 'confirmed' | 'voided', voidedReason: p.voided_reason as string | null,
+    createdAt: p.created_at as string,
+  }))
+}

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { ArrowLeft, Mail, Pencil, Phone, Plus, Search, UserPlus } from 'lucide-react'
-import { ButtonLink } from '@/components/ui/button'
+import { ArrowLeft, Download, Mail, Pencil, Phone, Plus, Search, UserPlus } from 'lucide-react'
+import { ButtonLink, buttonClass } from '@/components/ui/button'
 import { Alert } from '@/components/ui/misc'
 import { isCollectible } from '@/domain/charge-status'
 import { CUSTOMER_VIEWS, type CustomerView as CustomerListView } from '@/domain/customer-filter'
@@ -20,7 +20,7 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 /* ───────────── Lista de clientes ───────────── */
 
 export function CustomersListView({
-  customers, newHref = '/app/clientes/nuevo', hrefBase, q = '', view = 'todos', activeCount, archivedCount = 0, canEdit = true,
+  customers, newHref = '/app/clientes/nuevo', hrefBase, q = '', view = 'todos', activeCount, archivedCount = 0, canEdit = true, exportHref,
 }: {
   customers: CustomerView[]
   newHref?: string
@@ -33,6 +33,8 @@ export function CustomersListView({
   /** Archivados, cuando no queda ningún activo. */
   archivedCount?: number
   canEdit?: boolean
+  /** Descarga en CSV de todos los clientes (activos y archivados). */
+  exportHref?: string
 }) {
   const base = hrefBase ?? '/app/clientes'
   const total = activeCount ?? customers.length
@@ -59,8 +61,15 @@ export function CustomersListView({
                 : `${total} ${total === 1 ? 'cliente' : 'clientes'}${view === 'todos' && !q ? ` · ${withDebt} con saldo pendiente` : ''}`}
           </p>
         </div>
-        {total > 0 && canEdit && view !== 'archivados' && (
-          <ButtonLink href={newHref}><Plus className="size-4" /> Nuevo cliente</ButtonLink>
+        {(total > 0 || archivedCount > 0) && (
+          <div className="flex flex-wrap gap-2">
+            {exportHref && (
+              <a href={exportHref} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Descargar CSV</a>
+            )}
+            {total > 0 && canEdit && view !== 'archivados' && (
+              <ButtonLink href={newHref}><Plus className="size-4" /> Nuevo cliente</ButtonLink>
+            )}
+          </div>
         )}
       </header>
 

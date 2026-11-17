@@ -27,6 +27,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       activeCount={active?.length}
       archivedCount={archivedCount}
       canEdit={hasRole(role, 'operator')}
+      exportHref="/app/exportar/clientes"
     />
   )
 }

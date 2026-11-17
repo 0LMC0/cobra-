@@ -17,6 +17,8 @@ const csp = [
 ].join('; ')
 
 const nextConfig: NextConfig = {
+  // Permite compilar en otra carpeta sin pisar el servidor de desarrollo (NEXT_DIST_DIR=.next-build).
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   poweredByHeader: false,
   async headers() {
     return [
