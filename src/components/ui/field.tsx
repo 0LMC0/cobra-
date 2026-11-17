@@ -28,19 +28,24 @@ type FieldProps = {
   hint?: string
   error?: string
   optional?: boolean
+  /** Algo a la derecha del label, como "¿La olvidaste?". */
+  aside?: React.ReactNode
   children: (props: { id: string; 'aria-invalid'?: boolean; 'aria-describedby'?: string }) => React.ReactNode
 }
 
 /** Label + control + ayuda/error, accesible por defecto. */
-export function Field({ label, hint, error, optional, children }: FieldProps) {
+export function Field({ label, hint, error, optional, aside, children }: FieldProps) {
   const id = useId()
   const descId = `${id}-desc`
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-[13.5px] font-bold text-ink">
-        {label}
-        {optional && <span className="ml-1.5 text-[12px] font-semibold text-faint">opcional</span>}
-      </label>
+      <div className="flex items-baseline justify-between gap-3">
+        <label htmlFor={id} className="text-[13.5px] font-bold text-ink">
+          {label}
+          {optional && <span className="ml-1.5 text-[12px] font-semibold text-faint">opcional</span>}
+        </label>
+        {aside}
+      </div>
       {children({ id, 'aria-invalid': error ? true : undefined, 'aria-describedby': error || hint ? descId : undefined })}
       {(error || hint) && (
         <p id={descId} className={cn('text-[12.5px]', error ? 'font-semibold text-danger' : 'text-muted')}>

@@ -9,9 +9,9 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
   const { siguiente, error } = await searchParams
   return (
     <>
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-[28px] font-extrabold leading-tight">Ingresá a tu cuenta</h1>
-        <p className="text-sm text-muted">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-[30px]">Ingresá a tu cuenta</h1>
+        <p className="text-[14.5px] text-muted">
           ¿No tenés cuenta? <Link href="/registro" className="font-semibold text-ink underline decoration-brand decoration-2 underline-offset-[3px]">Empezá gratis</Link>
         </p>
       </div>

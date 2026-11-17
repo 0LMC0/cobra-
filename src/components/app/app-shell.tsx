@@ -15,13 +15,15 @@ type Props = {
   role: OrgRole
   memberships: { orgId: string; name: string; role: OrgRole }[]
   activeOrgId: string
+  /** Sólo para la vista previa de desarrollo: qué ruta marcar como activa. */
+  previewPath?: string
 }
 
 function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'C'
 }
 
-export function AppShell({ children, orgName, isDemo, email, role, memberships, activeOrgId }: Props) {
+export function AppShell({ children, orgName, isDemo, email, role, memberships, activeOrgId, previewPath }: Props) {
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[256px_1fr]">
       {/* Barra lateral azul, como el panel de PrimerosPrecios */}
@@ -41,7 +43,7 @@ export function AppShell({ children, orgName, isDemo, email, role, memberships, 
         </div>
 
         <nav aria-label="Principal" className="mt-5 flex flex-1 flex-col gap-1">
-          {NAV.map((item) => <NavLink key={item.href} item={item} />)}
+          {NAV.map((item) => <NavLink key={item.href} href={item.href} pathOverride={previewPath} />)}
         </nav>
 
         <div className="flex items-center gap-2 border-t border-white/10 pt-3">
@@ -78,7 +80,7 @@ export function AppShell({ children, orgName, isDemo, email, role, memberships, 
 
       {/* Barra inferior mobile */}
       <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 gap-1 border-t border-line bg-surface px-2 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(23,34,56,.08)] lg:hidden">
-        {NAV.filter((i) => i.mobile).map((item) => <NavLink key={item.href} item={item} compact />)}
+        {NAV.filter((i) => i.mobile).map((item) => <NavLink key={item.href} href={item.href} compact pathOverride={previewPath} />)}
       </nav>
     </div>
   )

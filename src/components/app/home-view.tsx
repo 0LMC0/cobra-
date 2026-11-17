@@ -1,0 +1,126 @@
+import { ArrowRight, Bell, Building2, Check, CircleAlert, FileText, HandCoins, UserPlus, Wallet } from 'lucide-react'
+import { cn } from '@/lib/cn'
+
+/**
+ * Inicio del panel. Componente de presentación puro: la página real le pasa
+ * los datos de la empresa y la vista previa de desarrollo, datos de ejemplo.
+ */
+export type OnboardingStep = 'company' | 'first_customer' | 'first_charge' | 'reminders' | 'done'
+
+const STEPS = [
+  { key: 'company', icon: Building2, title: 'Crear tu empresa', desc: 'Moneda, zona horaria y datos de contacto.' },
+  { key: 'first_customer', icon: UserPlus, title: 'Cargar tu primer cliente', desc: 'A quién le cobrás y a qué email le llegan los avisos.' },
+  { key: 'first_charge', icon: FileText, title: 'Crear tu primer cobro o abono', desc: 'Cuánto te paga y cuándo vence.' },
+  { key: 'reminders', icon: Bell, title: 'Activar los recordatorios', desc: 'COBRA le avisa por email antes y después del vencimiento.' },
+] as const
+
+const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
+
+/** Pasos que todavía no tienen pantalla en esta versión. */
+const NOT_BUILT = new Set(['first_customer', 'first_charge', 'reminders'])
+
+export function HomeView({ dateLabel, onboardingStep, currency }: { dateLabel: string; onboardingStep: OnboardingStep; currency: string }) {
+  const reached = ORDER.indexOf(onboardingStep)
+  const doneCount = Math.min(reached, STEPS.length)
+  const next = STEPS[doneCount]
+
+  return (
+    <div className="flex flex-col gap-8">
+      <header className="flex flex-col gap-2">
+        <p className="text-[14px] font-semibold text-muted first-letter:uppercase">{dateLabel}</p>
+        <h1 className="text-[34px] sm:text-[40px]">Inicio</h1>
+      </header>
+
+      {/* Totales: muestran la forma del panel aunque todavía no haya datos */}
+      <section aria-label="Totales del mes" className="divide-y divide-line overflow-hidden rounded-[18px] bg-surface ring-1 ring-line-2 sm:grid sm:grid-cols-3 sm:gap-3 sm:divide-y-0 sm:overflow-visible sm:bg-transparent sm:ring-0">
+        <Kpi icon={Wallet} label="Falta cobrar" currency={currency} tone="brand" />
+        <Kpi icon={HandCoins} label="Cobrado en el mes" currency={currency} tone="ok" />
+        <Kpi icon={CircleAlert} label="Atrasado" currency={currency} tone="danger" />
+      </section>
+
+      {onboardingStep !== 'done' && next && (
+        <section aria-labelledby="setup-title" className="overflow-hidden rounded-[22px] bg-surface ring-1 ring-line-2">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
+            <div>
+              <h2 id="setup-title" className="text-[19px] tracking-[-0.02em]">Dejá COBRA lista para cobrar</h2>
+              <p className="text-[13.5px] text-muted">{doneCount} de {STEPS.length} pasos</p>
+            </div>
+            <div className="flex items-center gap-1.5" role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={STEPS.length} aria-label="Progreso de configuración">
+              {STEPS.map((s, i) => (
+                <span key={s.key} className={cn('h-2 w-9 rounded-full', i < doneCount ? 'bg-ok-bright' : i === doneCount ? 'bg-brand' : 'bg-surface-3')} />
+              ))}
+            </div>
+          </div>
+
+          <ol>
+            {STEPS.map((s, i) => {
+              const done = i < doneCount
+              const current = i === doneCount
+              const Icon = s.icon
+              return (
+                <li
+                  key={s.key}
+                  aria-current={current ? 'step' : undefined}
+                  className={cn('flex items-center gap-4 border-b border-line px-5 py-4 last:border-b-0 sm:px-6', current && 'bg-brand-soft/60')}
+                >
+                  <span
+                    className={cn(
+                      'grid size-10 shrink-0 place-items-center rounded-full',
+                      done ? 'bg-ok-bright text-white' : current ? 'bg-brand text-ink' : 'bg-surface-3 text-muted',
+                    )}
+                  >
+                    {done ? <Check className="size-5" strokeWidth={3} /> : <Icon className="size-[18px]" />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className={cn('text-[15.5px] font-bold', done && 'text-muted line-through decoration-1')}>{s.title}</p>
+                    <p className="text-[13.5px] text-muted">{s.desc}</p>
+                    {current && NOT_BUILT.has(s.key) && (
+                      <span className="mt-2 inline-block rounded-full bg-surface px-2.5 py-1 text-[12px] font-bold text-muted ring-1 ring-line-2 sm:hidden">Próximamente</span>
+                    )}
+                  </div>
+                  {done ? (
+                    <span className="hidden text-[13px] font-bold text-ok sm:inline">Listo</span>
+                  ) : current && NOT_BUILT.has(s.key) ? (
+                    <span className="hidden shrink-0 rounded-full bg-surface px-2.5 py-1 text-[12px] font-bold text-muted ring-1 ring-line-2 sm:inline">Próximamente</span>
+                  ) : current ? (
+                    <ArrowRight className="size-5 shrink-0 text-brand-text" />
+                  ) : null}
+                </li>
+              )
+            })}
+          </ol>
+          {NOT_BUILT.has(next.key) && (
+            <p className="border-t border-line bg-surface-2 px-5 py-3 text-[13px] text-muted sm:px-6">
+              Estamos terminando las pantallas de clientes y cobros. Te avisamos por email cuando estén listas.
+            </p>
+          )}
+        </section>
+      )}
+
+      <section aria-labelledby="attention-title" className="rounded-[22px] border-2 border-dashed border-line-2 px-6 py-10 text-center">
+        <h2 id="attention-title" className="text-[18px] tracking-[-0.02em]">Acá vas a ver quién necesita tu atención</h2>
+        <p className="mx-auto mt-1.5 max-w-md text-[14.5px] text-muted">
+          Los cobros atrasados, los que vencen esta semana y las promesas de pago, calculados con tus datos reales.
+        </p>
+      </section>
+    </div>
+  )
+}
+
+const kpiTone = {
+  brand: 'bg-brand-soft text-brand-d',
+  ok: 'bg-ok-soft text-ok',
+  danger: 'bg-danger-soft text-danger',
+} as const
+
+function Kpi({ icon: Icon, label, currency, tone }: { icon: typeof Wallet; label: string; currency: string; tone: keyof typeof kpiTone }) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 sm:flex-col sm:items-start sm:gap-3 sm:rounded-[18px] sm:bg-surface sm:p-5 sm:ring-1 sm:ring-line-2">
+      <span className={cn('grid size-9 shrink-0 place-items-center rounded-[11px] sm:size-10 sm:rounded-[12px]', kpiTone[tone])}><Icon className="size-[18px] sm:size-5" /></span>
+      <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3 sm:block">
+        <p className="text-[14px] font-semibold text-muted">{label}</p>
+        <p className="money text-[18px] text-faint sm:mt-0.5 sm:text-[24px]" aria-label="Sin datos todavía">— <span className="text-[12px] font-bold sm:text-[13px]">{currency}</span></p>
+      </div>
+    </div>
+  )
+}

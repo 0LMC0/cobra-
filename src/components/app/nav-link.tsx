@@ -3,10 +3,17 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
-import type { NavItem } from './nav'
+import { NAV } from './nav'
 
-export function NavLink({ item, compact }: { item: NavItem; compact?: boolean }) {
-  const pathname = usePathname()
+/**
+ * Recibe sólo el href: los íconos son componentes y no pueden pasar del
+ * servidor al cliente como props, así que el ítem se busca acá.
+ */
+export function NavLink({ href, compact, pathOverride }: { href: string; compact?: boolean; pathOverride?: string }) {
+  const item = NAV.find((i) => i.href === href)
+  const currentPath = usePathname()
+  const pathname = pathOverride ?? currentPath
+  if (!item) return null
   const active = item.href === '/app' ? pathname === '/app' : pathname.startsWith(item.href)
   const Icon = item.icon
 
