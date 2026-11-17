@@ -64,7 +64,7 @@ export function NewCustomerView({ action, backHref = '/app/clientes' }: { action
 
 /* ───────────── Ficha del cliente ───────────── */
 
-function momentFor(c: ChargeView, today: string): WhatsAppMoment {
+export function momentFor(c: ChargeView, today: string): WhatsAppMoment {
   if (c.promisedFor) return 'promise'
   if (c.status === 'overdue') return 'after'
   if (c.dueDate === today) return 'due'

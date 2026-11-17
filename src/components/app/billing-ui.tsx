@@ -76,11 +76,16 @@ export function ChargeSummary({ charge }: { charge: ChargeView }) {
         {charge.promisedFor && <> · prometió pagar el {formatDate(charge.promisedFor, { day: 'numeric', month: 'long' })}</>}
       </p>
       <p className="mt-1 text-[14px]">
-        <span className="money">{formatMoney(charge.balanceMinor, charge.currency)}</span>
-        {charge.paidMinor > 0 && charge.balanceMinor > 0 && (
-          <span className="text-muted"> de {formatMoney(charge.amountMinor, charge.currency)} · ya pagó {formatMoney(charge.paidMinor, charge.currency)}</span>
+        {charge.balanceMinor === 0 ? (
+          <span className="text-muted">Pagó <span className="money text-ink">{formatMoney(charge.amountMinor, charge.currency)}</span></span>
+        ) : (
+          <>
+            <span className="money">{formatMoney(charge.balanceMinor, charge.currency)}</span>
+            {charge.paidMinor > 0 && (
+              <span className="text-muted"> de {formatMoney(charge.amountMinor, charge.currency)} · ya pagó {formatMoney(charge.paidMinor, charge.currency)}</span>
+            )}
+          </>
         )}
-        {charge.balanceMinor === 0 && <span className="text-muted"> · pagó {formatMoney(charge.amountMinor, charge.currency)}</span>}
       </p>
     </div>
   )

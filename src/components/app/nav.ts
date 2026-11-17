@@ -14,7 +14,7 @@ export type NavItem = {
 export const NAV: NavItem[] = [
   { href: '/app', label: 'Inicio', icon: Home, ready: true, mobile: true },
   { href: '/app/clientes', label: 'Clientes', icon: Users, ready: true, mobile: true },
-  { href: '/app/cobros', label: 'Cobros', icon: FileText, ready: false, mobile: true },
+  { href: '/app/cobros', label: 'Cobros', icon: FileText, ready: true, mobile: true },
   { href: '/app/abonos', label: 'Abonos', icon: Repeat, ready: false },
   { href: '/app/pagos', label: 'Pagos', icon: CreditCard, ready: false },
   { href: '/app/recordatorios', label: 'Recordatorios', icon: Bell, ready: false },

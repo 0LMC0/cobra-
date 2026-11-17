@@ -40,6 +40,7 @@ Estado al **15/11/2026**.
 - 🟡 **Pantallas de clientes y cobros** (`/app/clientes`, `/app/clientes/nuevo`, `/app/clientes/[id]`): lista con lo que debe cada uno, alta con celular de WhatsApp, ficha con cobros, "Pagó" (total o parcial, sin duplicar con doble clic) y botón de WhatsApp. Validaciones en `src/domain/forms.ts` (14 tests). Se ven con datos de ejemplo en `/vista-previa/clientes` (sólo en desarrollo). Probadas contra Supabase el 17/11. El alta de cliente pide sólo nombre, email y celular; lo demás va en "Más datos".
 - ✅ **Migración del núcleo** (`20261117000001_core.sql`, 23 tests en `tests/db/core.test.ts`): clientes (con celular de WhatsApp y permiso), abonos, cobros (con promesa de pago), pagos, imputaciones, vista `charge_balances` y RPC `record_payment` idempotente. Referencias con `org_id` para que nada apunte a otra empresa; pagos inmutables que sólo se anulan con motivo; nunca se mezclan monedas ni se cobra de más.
 - Migración: `customers`, `agreements`, `agreement_price_changes`, `charges`, `charge_adjustments`, `payments`, `payment_allocations`, `attachments`, vista `charge_balances`, triggers de auditoría.
+- ✅ **Pantalla Cobros** (`/app/cobros`): todos los cobros con su cliente, atrasados primero, "Pagó" y WhatsApp en cada uno, y pestaña de pagados. El menú sólo muestra lo que ya funciona.
 - Clientes: CRUD, archivo, búsqueda, filtros, deduplicación, CSV in/out, ficha con línea de tiempo.
 - Abonos y generación idempotente de cobros por período.
 - Cobros únicos, descuentos, recargos, reprogramación y cancelación.

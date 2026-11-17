@@ -175,3 +175,27 @@ export async function getHomeData(orgId: string, currency: CurrencyCode, today: 
     transferAlias: (orgRes.data?.transfer_alias as string | null) ?? null,
   }
 }
+
+/* ───────────── Cobros ───────────── */
+
+export type ChargeListItem = ChargeView & { customerName: string; customerWhatsapp: string | null; customerContact: string | null }
+
+/** Todos los cobros de la empresa con el nombre de su cliente. */
+export async function listCharges(orgId: string, today: IsoDate): Promise<ChargeListItem[]> {
+  const supabase = await createClient()
+  const [charges, { data, error }] = await Promise.all([
+    loadCharges(orgId, today),
+    supabase.from('customers').select('id, name, contact_name, whatsapp_number, whatsapp_ok').eq('org_id', orgId),
+  ])
+  if (error) throw new Error('No pudimos cargar los clientes.')
+  const byId = new Map((data ?? []).map((c) => [c.id as string, c]))
+  return charges.map((c) => {
+    const k = byId.get(c.customerId)
+    return {
+      ...c,
+      customerName: (k?.name as string | undefined) ?? 'Cliente',
+      customerContact: (k?.contact_name as string | null | undefined) ?? null,
+      customerWhatsapp: k?.whatsapp_ok && k.whatsapp_number ? `+${k.whatsapp_number as string}` : null,
+    }
+  })
+}

@@ -43,7 +43,7 @@ export function AppShell({ children, orgName, isDemo, email, role, memberships, 
         </div>
 
         <nav aria-label="Principal" className="mt-5 flex flex-1 flex-col gap-1">
-          {NAV.map((item) => <NavLink key={item.href} href={item.href} pathOverride={previewPath} />)}
+          {NAV.filter((i) => i.ready).map((item) => <NavLink key={item.href} href={item.href} pathOverride={previewPath} />)}
         </nav>
 
         <div className="flex items-center gap-2 border-t border-white/10 pt-3">
