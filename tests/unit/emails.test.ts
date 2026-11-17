@@ -89,6 +89,7 @@ describe('plan del día', () => {
     const r = run({ orgs: [{ ...org, remainingReminders: 0 }] })
     expect(r.reminders).toEqual([])
     expect(r.held).toEqual([{ orgId: 'o1', count: 1 }])
+    expect(r.heldItems.map((x) => x.stepId)).toEqual(['atraso'])
     expect(r.digests).toHaveLength(1)
     expect(run({ orgs: [{ ...org, remainingReminders: 1 }] }).reminders).toHaveLength(1)
   })

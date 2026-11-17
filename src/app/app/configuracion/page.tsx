@@ -59,7 +59,7 @@ export default async function SettingsPage() {
         <h1 className="text-[36px] sm:text-[42px]"><span className="marker">Configuración</span></h1>
       </header>
 
-      <section className="flex flex-col gap-3">
+      <section id="tu-plan" className="flex scroll-mt-24 flex-col gap-3">
         <h2 className="text-[19px]">Tu plan</h2>
         <PlanUsageCard usage={usage} />
       </section>

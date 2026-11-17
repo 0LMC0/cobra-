@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CustomerDetailView } from '@/components/app/customers-views'
 import { requireOrg } from '@/server/auth'
-import { getCustomer, getCustomerTimeline } from '@/server/queries'
+import { getCustomer, getCustomerTimeline, getOrgPlan } from '@/server/queries'
+import { planIncludes } from '@/config/plans'
 import { clearPromise, createCharge, recordPayment, setCustomerArchived, setPromise } from '@/server/actions/billing'
 import { todayIn } from '@/domain/dates'
 import { isCurrency } from '@/domain/money'
@@ -18,7 +19,10 @@ export default async function CustomerPage({ params, searchParams }: { params: P
   const today = todayIn(org.timezone)
   const data = await getCustomer(org.id, id, today)
   if (!data) notFound()
-  const timeline = await getCustomerTimeline(org.id, { id: data.customer.id, createdAt: data.customer.createdAt })
+  const [timeline, plan] = await Promise.all([
+    getCustomerTimeline(org.id, { id: data.customer.id, createdAt: data.customer.createdAt }),
+    getOrgPlan(org.id),
+  ])
   return (
     <CustomerDetailView
       customer={data.customer}
@@ -35,6 +39,7 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       canEdit={hasRole(role, 'operator')}
       timeline={timeline}
       timeZone={org.timezone}
+      whatsappLocked={!planIncludes(plan, 'whatsapp')}
       justCreated={nuevo === '1'}
       justSaved={guardado === '1'}
     />

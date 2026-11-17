@@ -22,12 +22,13 @@ const STEPS = [
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
 
 export function HomeView({
-  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals,
+  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false,
 }: {
   dateLabel: string
   onboardingStep: OnboardingStep
   currency: CurrencyCode
   totals?: HomeTotals
+  whatsappLocked?: boolean
   businessName?: string
   transferAlias?: string | null
   todayReminders?: TodayReminder[]
@@ -52,7 +53,7 @@ export function HomeView({
         </section>
       )}
 
-      <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} />
+      <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} whatsappLocked={whatsappLocked} />
 
       {onboardingStep !== 'done' && next && (
         <section aria-labelledby="setup-title" className="overflow-hidden rounded-[22px] bg-surface ring-1 ring-line-2">

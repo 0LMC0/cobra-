@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getOrgContext } from '@/server/auth'
-import { listCharges, listCustomers, listPayments } from '@/server/queries'
+import { getOrgPlan, listCharges, listCustomers, listPayments } from '@/server/queries'
+import { planIncludes } from '@/config/plans'
 import { chargesCsv, customersCsv, paymentsCsv } from '@/domain/exports'
 import { csvFilename } from '@/domain/csv'
 import { todayIn } from '@/domain/dates'
@@ -28,6 +29,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ tipo: s
   // Exportar saca todos los datos de la empresa: sólo administración (ver PERMISSIONS en src/domain/roles.ts).
   if (!can(ctx.role, 'reports.export')) {
     return NextResponse.json({ error: 'Sólo administración puede descargar reportes.' }, { status: 403 })
+  }
+
+  // Exportar es de los planes Growth y Business (también se controla acá, no sólo en la pantalla).
+  if (!planIncludes(await getOrgPlan(ctx.org.id), 'csvExport')) {
+    return NextResponse.json({ error: 'Exportar está en los planes Growth y Business.' }, { status: 403 })
   }
 
   const { org } = ctx

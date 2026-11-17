@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, Download, Mail, Pencil, Phone, Plus, Search, UserPlus } from 'lucide-react'
+import { ArrowLeft, Download, Lock, Mail, Pencil, Phone, Plus, Search, UserPlus } from 'lucide-react'
 import { ButtonLink, buttonClass } from '@/components/ui/button'
 import { Alert } from '@/components/ui/misc'
 import { isCollectible } from '@/domain/charge-status'
@@ -20,7 +20,7 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 /* ───────────── Lista de clientes ───────────── */
 
 export function CustomersListView({
-  customers, newHref = '/app/clientes/nuevo', hrefBase, q = '', view = 'todos', activeCount, archivedCount = 0, canEdit = true, exportHref,
+  customers, newHref = '/app/clientes/nuevo', hrefBase, q = '', view = 'todos', activeCount, archivedCount = 0, canEdit = true, exportHref, exportLocked = false,
 }: {
   customers: CustomerView[]
   newHref?: string
@@ -35,6 +35,7 @@ export function CustomersListView({
   canEdit?: boolean
   /** Descarga en CSV de todos los clientes (activos y archivados). */
   exportHref?: string
+  exportLocked?: boolean
 }) {
   const base = hrefBase ?? '/app/clientes'
   const total = activeCount ?? customers.length
@@ -63,9 +64,13 @@ export function CustomersListView({
         </div>
         {(total > 0 || archivedCount > 0) && (
           <div className="flex flex-wrap gap-2">
-            {exportHref && (
+            {exportHref && (exportLocked ? (
+              <Link href="/app/configuracion#tu-plan" className={buttonClass('secondary', 'md')} title="Exportar está en los planes Growth y Business">
+                <Lock className="size-3.5" /> Exportar · desde Growth
+              </Link>
+            ) : (
               <a href={exportHref} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Descargar CSV</a>
-            )}
+            ))}
             {total > 0 && canEdit && view !== 'archivados' && (
               <ButtonLink href={newHref}><Plus className="size-4" /> Nuevo cliente</ButtonLink>
             )}
@@ -184,7 +189,7 @@ export function momentFor(c: ChargeView, today: string): WhatsAppMoment {
 
 export function CustomerDetailView({
   customer, charges, today, businessName, transferAlias, defaultCurrency, chargeAction, payAction, promiseAction, clearPromiseAction, justCreated, backHref = '/app/clientes',
-  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires',
+  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false,
 }: {
   customer: CustomerView
   charges: ChargeView[]
@@ -205,6 +210,7 @@ export function CustomerDetailView({
   canEdit?: boolean
   timeline?: TimelineEvent[]
   timeZone?: string
+  whatsappLocked?: boolean
 }) {
   const open = charges.filter((c) => isCollectible(c.status))
   const settled = charges.filter((c) => !isCollectible(c.status))
@@ -280,6 +286,7 @@ export function CustomerDetailView({
                           concept: c.concept, amountMinor: c.balanceMinor, currency: c.currency, dueDate: c.dueDate, promisedFor: c.promisedFor, transferAlias,
                         }}
                         className="w-full sm:w-auto"
+                        locked={whatsappLocked}
                       />
                     )}
                   </div>

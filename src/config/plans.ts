@@ -40,12 +40,26 @@ export const FREE_PLAN = {
   name: 'Gratis',
   tagline: 'Para arrancar con tus primeros clientes.',
   features: [
-    '10 avisos automáticos por mes',
-    'Botón de WhatsApp con el mensaje listo',
-    'Panel de cobranzas y vencimientos',
-    'Historial de cada cliente',
-    '1 usuario',
+    { label: '10 avisos automáticos por mes', available: true },
+    { label: 'Panel de cobranzas y vencimientos', available: true },
+    { label: 'Historial de cada cliente', available: true },
+    { label: '1 usuario', available: true },
+    { label: 'Botón de WhatsApp (desde Starter)', available: false },
   ],
+}
+
+/** Qué incluye cada plan. El servidor lo hace cumplir donde importa (exportar, avisos). */
+export type PlanFeature = 'whatsapp' | 'csvExport'
+const FEATURE_FROM: Record<PlanFeature, PlanTier> = { whatsapp: 'starter', csvExport: 'growth' }
+const TIER_RANK: Record<PlanTier, number> = { free: 0, starter: 1, growth: 2, business: 3 }
+
+export function planIncludes(plan: PlanTier, feature: PlanFeature): boolean {
+  return TIER_RANK[plan] >= TIER_RANK[FEATURE_FROM[feature]]
+}
+
+/** El plan más barato que incluye esa función (para el candado: "Disponible en Starter"). */
+export function planFor(feature: PlanFeature): PlanTier {
+  return FEATURE_FROM[feature]
 }
 
 /** Avisos automáticos por mes según el plan. null = sin tope. */
@@ -74,6 +88,7 @@ export const PLANS: readonly Plan[] = [
       { label: 'Hasta 30 clientes activos', available: true },
       { label: 'Cobros únicos y recurrentes', available: true },
       { label: 'Avisos automáticos por email sin tope', available: true },
+      { label: 'Botón de WhatsApp con el mensaje listo', available: true },
       { label: 'Panel de cobranzas y vencimientos', available: true },
       { label: '1 usuario', available: true },
     ],
@@ -87,6 +102,7 @@ export const PLANS: readonly Plan[] = [
     limits: { activeCustomers: 200, seats: 2 },
     highlighted: true,
     features: [
+      { label: 'Todo lo de Starter', available: true },
       { label: 'Hasta 200 clientes activos', available: true },
       { label: 'Secuencias de recordatorios configurables', available: true },
       { label: 'Importación y exportación CSV', available: true },

@@ -73,8 +73,9 @@ Estado al **15/11/2026**.
 
 ## Fase 4 — Monetización 🟡
 - ✅ **Plan Gratis** (decisión 17/11): para siempre, sin tarjeta, 10 avisos automáticos por mes (`MONTHLY_REMINDERS` en `src/config/plans.ts`). El tope lo aplica el proceso diario en el servidor y, si no alcanza, salen primero los más urgentes (`src/domain/quota.ts`). El botón de WhatsApp no cuenta. Uso del mes en Configuración y aviso en el inicio cuando quedan 2 o menos.
+- ✅ **Qué incluye cada plan** (`planIncludes` en `src/config/plans.ts`, decisión 17/11): WhatsApp desde Starter (en Gratis se ve con candado y lleva a "Tu plan"); exportar CSV desde Growth, controlado también en el servidor. Los avisos que no salen por el tope quedan como `skipped` (`plan_limit`) y se muestran en "Tu plan", en el inicio y en el historial del cliente.
 - ✅ **Tabla `subscriptions`** (migración `20261120000001`, aplicada): plan de cada empresa; sin fila = Gratis. Sólo escribe el servidor (webhooks); nadie puede cambiarse el plan desde el navegador (3 tests de base).
-- ⬜ **Planes pagos con Mercado Pago** (Suscripciones/preapproval): checkout, webhook firmado e idempotente que escribe `subscriptions`, cancelar renovación, panel de facturación. Necesita credenciales de PRUEBA de la cuenta que cobra.
+- ⬜ **Planes pagos con Mercado Pago** (Suscripciones/preapproval): checkout, webhook firmado e idempotente que escribe `subscriptions`, cancelar renovación, panel de facturación. Cuenta: la de PrimerosPrecios (decisión 17/11). Necesita sus credenciales de PRUEBA en `.env.local` (`MP_ACCESS_TOKEN_COBRA`, `MP_WEBHOOK_SECRET_COBRA`).
 - ⬜ Límites de clientes y usuarios por plan en la base (trigger), no sólo en la app.
 - `billing_subscriptions`, `billing_events` y trial de 14 días **con tarjeta** (ver PRD): se pide la tarjeta al empezar la prueba, se informa la fecha y el monto del primer cobro y se avisa por email antes de cobrar. La landing no menciona la tarjeta.
 - Límites en el servidor (clientes activos y usuarios), invitaciones de equipo.

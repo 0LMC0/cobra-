@@ -26,7 +26,7 @@ const MOMENT_LABEL: Record<WhatsAppMoment, { text: string; cls: string }> = {
  * Los avisos de hoy. El email sale solo; el WhatsApp lo manda quien cobra
  * con un toque, desde su propio teléfono.
  */
-export function TodayReminders({ items, businessName, transferAlias }: { items: TodayReminder[]; businessName: string; transferAlias?: string | null }) {
+export function TodayReminders({ items, businessName, transferAlias, whatsappLocked = false }: { items: TodayReminder[]; businessName: string; transferAlias?: string | null; whatsappLocked?: boolean }) {
   if (items.length === 0) return null
   return (
     <section aria-labelledby="today-title" className="overflow-hidden rounded-[22px] bg-surface ring-1 ring-line-2">
@@ -65,6 +65,7 @@ export function TodayReminders({ items, businessName, transferAlias }: { items: 
                   transferAlias,
                 }}
                 className="w-full sm:w-auto"
+                locked={whatsappLocked}
               />
             </li>
           )

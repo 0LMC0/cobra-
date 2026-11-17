@@ -8,7 +8,7 @@ import { formatMoneyClean, type CurrencyCode } from './money'
  */
 export type TimelineKind =
   | 'created' | 'charge' | 'generated' | 'payment' | 'payment_voided'
-  | 'reminder' | 'reminder_failed' | 'promise' | 'promise_cleared'
+  | 'reminder' | 'reminder_failed' | 'reminder_held' | 'promise' | 'promise_cleared'
   | 'charge_cancelled' | 'charge_reopened' | 'charge_updated'
   | 'edited' | 'archived' | 'restored' | 'opted_out' | 'opted_in' | 'paused' | 'resumed'
 
@@ -18,7 +18,7 @@ export type TimelineInput = {
   customer: { id: string; createdAt: string }
   charges: { id: string; concept: string; amountMinor: number; currency: CurrencyCode; dueDate: IsoDate; createdAt: string; generated: boolean }[]
   payments: { id: string; amountMinor: number; currency: CurrencyCode; paidOn: IsoDate; method: string; status: 'confirmed' | 'voided'; voidedReason: string | null; createdAt: string }[]
-  deliveries: { id: string; chargeId: string; stepId: string; status: string; sentAt: string | null; createdAt: string }[]
+  deliveries: { id: string; chargeId: string; stepId: string; status: string; reason?: string | null; sentAt: string | null; createdAt: string }[]
   audits: { id: string | number; action: string; entityType: string; entityId: string; before: Record<string, unknown> | null; after: Record<string, unknown> | null; createdAt: string }[]
 }
 
@@ -72,9 +72,13 @@ export function buildTimeline(input: TimelineInput): TimelineEvent[] {
   }
 
   for (const d of input.deliveries) {
-    if (d.status !== 'sent' && d.status !== 'failed') continue
     const concept = charges.get(d.chargeId)?.concept
     const step = STEP_LABEL[d.stepId] ?? 'de recordatorio'
+    if (d.status === 'skipped' && d.reason === 'plan_limit') {
+      events.push({ id: `delivery-${d.id}`, at: d.createdAt, kind: 'reminder_held', title: `No salió el aviso ${step}: se terminó el cupo del plan Gratis`, detail: concept })
+      continue
+    }
+    if (d.status !== 'sent' && d.status !== 'failed') continue
     events.push(d.status === 'sent'
       ? { id: `delivery-${d.id}`, at: d.sentAt ?? d.createdAt, kind: 'reminder', title: `Se le mandó el aviso ${step}`, detail: concept }
       : { id: `delivery-${d.id}`, at: d.createdAt, kind: 'reminder_failed', title: `No se pudo mandar el aviso ${step}`, detail: concept })

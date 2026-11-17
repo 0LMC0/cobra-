@@ -1,6 +1,6 @@
 import {
   Archive, ArchiveRestore, Ban, Bell, BellOff, CalendarClock, CalendarX, Check, FileText, Mail, MailWarning,
-  PenLine, Repeat, RotateCcw, UserPlus, XCircle, type LucideIcon,
+  Lock, PenLine, Repeat, RotateCcw, UserPlus, XCircle, type LucideIcon,
 } from 'lucide-react'
 import { formatEventTime, type TimelineEvent, type TimelineKind } from '@/domain/timeline'
 import { cn } from '@/lib/cn'
@@ -13,6 +13,7 @@ const LOOK: Record<TimelineKind, { icon: LucideIcon; cls: string }> = {
   payment_voided: { icon: XCircle, cls: 'bg-danger-soft text-danger' },
   reminder: { icon: Mail, cls: 'bg-info-soft text-info' },
   reminder_failed: { icon: MailWarning, cls: 'bg-danger-soft text-danger' },
+  reminder_held: { icon: Lock, cls: 'bg-warn-soft text-warn' },
   promise: { icon: CalendarClock, cls: 'bg-purple-soft text-purple' },
   promise_cleared: { icon: CalendarX, cls: 'bg-surface-3 text-muted' },
   charge_cancelled: { icon: Ban, cls: 'bg-surface-3 text-muted' },

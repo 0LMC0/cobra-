@@ -46,3 +46,29 @@ describe('plan vigente', async () => {
   })
   it('un plan desconocido cae a Gratis', () => expect(effectivePlan({ plan: 'oro', status: 'active', currentPeriodEnd: null }, now)).toBe('free'))
 })
+
+describe('qué incluye cada plan', async () => {
+  const { planIncludes, planFor } = await import('@/config/plans')
+  it('WhatsApp desde Starter; exportar desde Growth', () => {
+    expect(planIncludes('free', 'whatsapp')).toBe(false)
+    expect(planIncludes('starter', 'whatsapp')).toBe(true)
+    expect(planIncludes('starter', 'csvExport')).toBe(false)
+    expect(planIncludes('growth', 'csvExport')).toBe(true)
+    expect(planIncludes('business', 'whatsapp')).toBe(true)
+    expect(planFor('whatsapp')).toBe('starter')
+  })
+})
+
+describe('avisos que no salieron por el tope', async () => {
+  const { buildTimeline } = await import('@/domain/timeline')
+  it('se ven en el historial del cliente', () => {
+    const events = buildTimeline({
+      customer: { id: 'k1', createdAt: '2026-11-01T12:00:00Z' },
+      charges: [{ id: 'c1', concept: 'Cuota', amountMinor: 100, currency: 'ARS', dueDate: '2026-11-10', createdAt: '2026-11-01T12:00:00Z', generated: false }],
+      payments: [],
+      deliveries: [{ id: 'd1', chargeId: 'c1', stepId: 'atraso', status: 'skipped', reason: 'plan_limit', sentAt: null, createdAt: '2026-11-13T12:00:00Z' }],
+      audits: [],
+    })
+    expect(events[0]).toMatchObject({ kind: 'reminder_held', title: 'No salió el aviso de atraso: se terminó el cupo del plan Gratis', detail: 'Cuota' })
+  })
+})

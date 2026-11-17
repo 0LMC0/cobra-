@@ -237,7 +237,7 @@ export async function getCustomerTimeline(orgId: string, customer: { id: string;
   const [paymentsRes, deliveriesRes, auditsRes] = await Promise.all([
     supabase.from('payments').select('id, amount_minor, currency, paid_on, method, status, voided_reason, created_at').eq('org_id', orgId).eq('customer_id', customer.id),
     chargeIds.length
-      ? supabase.from('reminder_deliveries').select('id, charge_id, step_id, status, sent_at, created_at').eq('org_id', orgId).in('charge_id', chargeIds)
+      ? supabase.from('reminder_deliveries').select('id, charge_id, step_id, status, last_error, sent_at, created_at').eq('org_id', orgId).in('charge_id', chargeIds)
       : Promise.resolve({ data: [], error: null }),
     supabase
       .from('audit_logs')
@@ -262,7 +262,7 @@ export async function getCustomerTimeline(orgId: string, customer: { id: string;
       method: p.method as string, status: p.status as 'confirmed' | 'voided', voidedReason: p.voided_reason as string | null, createdAt: p.created_at as string,
     })),
     deliveries: (deliveriesRes.data ?? []).map((d) => ({
-      id: d.id as string, chargeId: d.charge_id as string, stepId: d.step_id as string, status: d.status as string,
+      id: d.id as string, chargeId: d.charge_id as string, stepId: d.step_id as string, status: d.status as string, reason: d.last_error as string | null,
       sentAt: d.sent_at as string | null, createdAt: d.created_at as string,
     })),
     audits: (auditsRes.data ?? []).map((a) => ({
@@ -297,15 +297,24 @@ export async function listPayments(orgId: string): Promise<PaymentListItem[]> {
 
 /* ───────────── Plan y uso del mes ───────────── */
 
-export type PlanUsage = { plan: PlanTier; limit: number | null; used: number; monthLabel: string }
+export type PlanUsage = { plan: PlanTier; limit: number | null; used: number; held: number; monthLabel: string }
+
+/** Sólo el plan vigente (para candados en la interfaz). */
+export async function getOrgPlan(orgId: string): Promise<PlanTier> {
+  const supabase = await createClient()
+  const { data } = await supabase.from('subscriptions').select('plan, status, current_period_end').eq('org_id', orgId).maybeSingle()
+  return effectivePlan(data ? { plan: data.plan as string, status: data.status as string, currentPeriodEnd: data.current_period_end as string | null } : null)
+}
 
 /** Plan vigente y cuántos avisos automáticos salieron este mes. */
 export async function getPlanUsage(orgId: string, today: IsoDate): Promise<PlanUsage> {
   const supabase = await createClient()
-  const [subRes, usageRes] = await Promise.all([
+  const [subRes, usageRes, heldRes] = await Promise.all([
     supabase.from('subscriptions').select('plan, status, current_period_end').eq('org_id', orgId).maybeSingle(),
     supabase.from('reminder_deliveries').select('id', { count: 'exact', head: true })
       .eq('org_id', orgId).eq('channel', 'email').in('status', ['sent', 'queued']).gte('send_on', monthStart(today)),
+    supabase.from('reminder_deliveries').select('id', { count: 'exact', head: true })
+      .eq('org_id', orgId).eq('status', 'skipped').eq('last_error', 'plan_limit').gte('send_on', monthStart(today)),
   ])
   const sub = subRes.data ? { plan: subRes.data.plan as string, status: subRes.data.status as string, currentPeriodEnd: subRes.data.current_period_end as string | null } : null
   const plan = effectivePlan(sub)
@@ -313,6 +322,7 @@ export async function getPlanUsage(orgId: string, today: IsoDate): Promise<PlanU
     plan,
     limit: MONTHLY_REMINDERS[plan],
     used: usageRes.count ?? 0,
+    held: heldRes.count ?? 0,
     monthLabel: new Intl.DateTimeFormat('es-AR', { month: 'long', timeZone: 'UTC' }).format(new Date(`${today}T12:00:00Z`)),
   }
 }

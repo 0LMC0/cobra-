@@ -196,6 +196,18 @@ export async function GET(req: Request) {
     else failed += 1
   }
 
+  // Los que no salieron por el tope del plan quedan registrados como 'skipped':
+  // así se ven en el historial y en el uso del mes, y no se reintentan.
+  if (plan.heldItems.length) {
+    await db.from('reminder_deliveries').upsert(
+      plan.heldItems.map((r) => ({
+        org_id: r.orgId, charge_id: r.chargeId, step_id: r.stepId, channel: 'email', send_on: r.sendOn,
+        recipient: r.to, status: 'skipped', last_error: 'plan_limit',
+      })),
+      { onConflict: 'charge_id,step_id,channel', ignoreDuplicates: true },
+    )
+  }
+
   let digests = 0
   for (const d of plan.digests) {
     // Igual con el resumen: se marca el día antes de mandarlo, así no sale dos veces.

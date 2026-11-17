@@ -1,3 +1,5 @@
+import Link from 'next/link'
+import { Lock } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { buildWhatsAppMessage, toWhatsAppNumber, whatsAppLink, type WhatsAppMessageInput } from '@/domain/whatsapp'
 
@@ -15,13 +17,15 @@ type Props = {
   message: WhatsAppMessageInput
   className?: string
   compact?: boolean
+  /** Plan Gratis: se ve, pero con candado y lleva a los planes. */
+  locked?: boolean
 }
 
 /**
  * "Con un toque": abre el WhatsApp de quien cobra con el chat del cliente y el
  * mensaje ya escrito. El envío lo hace la persona; Cobra+ no manda nada sola.
  */
-export function WhatsAppButton({ phone, message, className, compact }: Props) {
+export function WhatsAppButton({ phone, message, className, compact, locked }: Props) {
   const number = phone ? toWhatsAppNumber(phone) : null
   const label = compact ? 'WhatsApp' : 'Avisar por WhatsApp'
   const base = cn(
@@ -29,6 +33,18 @@ export function WhatsAppButton({ phone, message, className, compact }: Props) {
     compact ? 'h-9 px-3 text-[13px]' : 'h-10 px-3.5 text-[14px]',
     className,
   )
+
+  if (locked) {
+    return (
+      <Link
+        href="/app/configuracion#tu-plan"
+        className={cn(base, 'bg-surface text-[#128c4a] ring-1 ring-inset ring-[#25d366]/60 hover:bg-[#25d366]/10')}
+        title="El botón de WhatsApp está en los planes pagos, desde Starter"
+      >
+        <Lock className="size-3.5" /> <WhatsAppIcon className="size-4" /> {compact ? 'WhatsApp' : 'WhatsApp · desde Starter'}
+      </Link>
+    )
+  }
 
   if (!number) {
     return (

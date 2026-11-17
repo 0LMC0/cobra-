@@ -4,6 +4,7 @@ import { requireOrg } from '@/server/auth'
 import { formatDate, todayIn } from '@/domain/dates'
 import { getHomeData, getPlanUsage } from '@/server/queries'
 import { PlanUsageCard } from '@/components/app/plan-usage'
+import { planIncludes } from '@/config/plans'
 import type { CurrencyCode } from '@/domain/money'
 
 export const metadata: Metadata = { title: 'Inicio' }
@@ -14,7 +15,7 @@ export default async function AppHome() {
   const currency = org.currency as CurrencyCode
   const [home, usage] = await Promise.all([getHomeData(org.id, currency, today), getPlanUsage(org.id, today)])
   // En Gratis, avisar cuando se está por terminar el cupo del mes (o ya se terminó).
-  const nearLimit = usage.limit !== null && usage.used >= usage.limit - 2
+  const nearLimit = usage.limit !== null && (usage.used >= usage.limit - 2 || usage.held > 0)
   return (
     <div className="flex flex-col gap-6">
     {nearLimit && <PlanUsageCard usage={usage} compact />}
@@ -26,6 +27,7 @@ export default async function AppHome() {
       transferAlias={home.transferAlias}
       totals={home.totals}
       todayReminders={home.reminders}
+      whatsappLocked={!planIncludes(usage.plan, 'whatsapp')}
     />
     </div>
   )

@@ -56,11 +56,12 @@ export function planDailyEmails(input: {
   appUrl: string
   /** Arma el link de baja firmado de cada cliente (la firma vive en el servidor). */
   unsubscribeUrlFor?: (customerId: string) => string
-}): { reminders: ReminderSend[]; digests: DigestSend[]; held: { orgId: string; count: number }[] } {
+}): { reminders: ReminderSend[]; digests: DigestSend[]; held: { orgId: string; count: number }[]; heldItems: ReminderSend[] } {
   const customers = new Map(input.customers.map((c) => [c.id, c]))
   const reminders: ReminderSend[] = []
   const digests: DigestSend[] = []
   const held: { orgId: string; count: number }[] = []
+  const heldItems: ReminderSend[] = []
 
   for (const org of input.orgs) {
     const charges = input.charges.filter((c) => c.orgId === org.id && c.balanceMinor > 0)
@@ -95,7 +96,10 @@ export function planDailyEmails(input: {
       // Tope del plan (Gratis: 10 por mes): salen primero los más urgentes.
       const quota = applyReminderQuota(orgReminders, org.remainingReminders ?? null)
       reminders.push(...quota.send)
-      if (quota.held.length) held.push({ orgId: org.id, count: quota.held.length })
+      if (quota.held.length) {
+        held.push({ orgId: org.id, count: quota.held.length })
+        heldItems.push(...quota.held)
+      }
     }
 
     const digestCharges: DigestCharge[] = charges.map((c) => ({
@@ -111,5 +115,5 @@ export function planDailyEmails(input: {
       })
     }
   }
-  return { reminders, digests, held }
+  return { reminders, digests, held, heldItems }
 }

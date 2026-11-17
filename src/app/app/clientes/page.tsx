@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { CustomersListView } from '@/components/app/customers-views'
 import { requireOrg } from '@/server/auth'
-import { countArchivedCustomers, listCustomers } from '@/server/queries'
+import { countArchivedCustomers, getOrgPlan, listCustomers } from '@/server/queries'
+import { planIncludes } from '@/config/plans'
 import { todayIn } from '@/domain/dates'
 import { filterCustomers, parseCustomerView } from '@/domain/customer-filter'
 import { can, hasRole } from '@/domain/roles'
@@ -14,6 +15,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   const view = parseCustomerView(ver)
   const q = (rawQ ?? '').trim().slice(0, 80)
   const today = todayIn(org.timezone)
+  const plan = await getOrgPlan(org.id)
   const active = view === 'archivados' ? null : await listCustomers(org.id, today)
   const pool = active ?? (await listCustomers(org.id, today, { archived: true }))
   const customers = filterCustomers(pool, { q, view: view === 'archivados' ? 'todos' : view })
@@ -28,6 +30,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       archivedCount={archivedCount}
       canEdit={hasRole(role, 'operator')}
       exportHref={can(role, 'reports.export') ? '/app/exportar/clientes' : undefined}
+      exportLocked={!planIncludes(plan, 'csvExport')}
     />
   )
 }

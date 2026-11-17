@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Clock3 } from 'lucide-react'
+import { Check, Clock3, Lock } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button'
 import {
   ANNUAL_DISCOUNT, FREE_PLAN, PLANS, formatPlanAmount, formatPlanPrice, monthlyPriceFor, yearlyTotalFor,
@@ -55,8 +55,11 @@ export function Pricing() {
           <ButtonLink href="/registro" size="lg" variant="secondary" className="mt-6 w-full">Empezá gratis</ButtonLink>
           <ul className="mt-7 flex flex-col gap-3 border-t border-line-2 pt-6 text-[14.5px]">
             {FREE_PLAN.features.map((f) => (
-              <li key={f} className="flex items-start gap-2.5 font-semibold">
-                <Check className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={3} /><span>{f}</span>
+              <li key={f.label} className={cn('flex items-start gap-2.5 font-semibold', !f.available && 'text-faint')}>
+                {f.available
+                  ? <Check className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={3} />
+                  : <Lock className="mt-0.5 size-4 shrink-0" strokeWidth={2.5} />}
+                <span>{f.label}</span>
               </li>
             ))}
           </ul>
