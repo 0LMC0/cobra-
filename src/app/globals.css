@@ -22,12 +22,15 @@
   --line-2: #e3d8c8;
   --line-strong: #16233b;
 
-  --brand: #ff6a1a;
-  --brand-hover: #ff7b33;
-  --brand-d: #ef5e0f;
-  --brand-ink: #16233b;
-  --brand-soft: #fff1e7;
-  --brand-text: #c2410c;
+  /* Azul del logo de Cobra+: acciones, links y acentos. Texto blanco encima. */
+  --brand: #1d4ed8;
+  --brand-hover: #1a45c4;
+  --brand-d: #1e40af;
+  --brand-ink: #ffffff;
+  --brand-soft: #e9effd;
+  --brand-text: #1d4ed8;
+  /* Naranja de PrimerosPrecios: sólo la firma y algún detalle. */
+  --pp: #ff6a1a;
   --marker: #ffde5c;
 
   /* Semánticos: "-bright" para rellenos e íconos, el base para texto (AA). */
@@ -37,7 +40,7 @@
   --info: #2456d6;    --info-bright: #2f6bff;   --info-soft: #eaf1ff;
   --purple: #6a3df0;  --purple-bright: #7c4dff; --purple-soft: #f0eaff;
 
-  --ring: #ff6a1a;
+  --ring: #1d4ed8;
   --shadow: #16233b;
   --shadow-soft: 0 12px 34px rgba(23, 34, 56, 0.07);
   --shadow-lift: 0 28px 70px rgba(23, 34, 56, 0.16);
@@ -64,6 +67,7 @@
   --color-brand-ink: var(--brand-ink);
   --color-brand-soft: var(--brand-soft);
   --color-brand-text: var(--brand-text);
+  --color-pp: var(--pp);
   --color-marker: var(--marker);
   --color-ok: var(--ok);
   --color-ok-bright: var(--ok-bright);
@@ -148,7 +152,7 @@
     width: 18px;
     height: 3px;
     border-radius: 3px;
-    background: var(--brand);
+    background: var(--pp);
     flex: none;
   }
   .eyebrow-light { color: #fff; }

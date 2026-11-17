@@ -33,7 +33,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1180px] px-4 pt-9 pb-16 sm:px-6 lg:pt-12 lg:pb-20">
           <div className="grid items-end gap-7 lg:grid-cols-[1fr_auto] lg:gap-12">
             <h1 className="flex flex-col gap-3 sm:gap-4">
-              <span className="display-xl text-[50px] sm:text-[80px] lg:text-[96px]">¿Qué es Cobra+?</span>
+              <span className="display-xl text-[50px] sm:text-[80px] lg:text-[96px]">¿Qué es <span className="text-brand">Cobra+</span>?</span>
               <span className="max-w-[780px] font-display text-[26px] leading-[1.15] font-extrabold tracking-[-0.03em] sm:text-[36px] lg:text-[40px]">
                 Una app que les recuerda a tus clientes <span className="marker">que te paguen.</span>
               </span>
@@ -55,16 +55,16 @@ export default function LandingPage() {
       </section>
 
       {/* ───────────── 2. Para quién ───────────── */}
-      <section className="bg-navy text-white" aria-label="Para quién es">
+      <section className="bg-brand text-white" aria-label="Para quién es">
         <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-4 py-8 sm:px-6 lg:flex-row lg:items-baseline lg:gap-10">
-          <p className="shrink-0 text-[15px] font-bold text-white/70 lg:max-w-[15rem]">
+          <p className="shrink-0 text-[15px] font-bold text-white/85 lg:max-w-[15rem]">
             Sirve si les cobrás a los mismos clientes todos los meses:
           </p>
           <ul className="flex flex-wrap gap-x-3 gap-y-1 font-display text-[21px] leading-snug font-extrabold tracking-[-0.02em] sm:text-[25px]">
             {WHO.map((w, i) => (
               <li key={w} className="flex items-center gap-3">
                 {w}
-                {i < WHO.length - 1 && <span aria-hidden className="text-brand">/</span>}
+                {i < WHO.length - 1 && <span aria-hidden className="text-white/40">/</span>}
               </li>
             ))}
           </ul>
@@ -171,13 +171,13 @@ export default function LandingPage() {
 
       {/* ───────────── 9. Cierre ───────────── */}
       <section className="px-4 pb-20 sm:px-6 sm:pb-24">
-        <div className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-8 rounded-[28px] bg-brand p-8 text-ink sm:p-12 lg:flex-row lg:items-end">
-          <h2 className="display-xl text-[36px] min-[360px]:text-[42px] sm:text-[64px]">Cobrá más.<br />Perseguí menos.</h2>
+        <div className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-8 rounded-[28px] bg-brand p-8 text-white sm:p-12 lg:flex-row lg:items-end">
+          <h2 className="display-xl text-[36px] text-white min-[360px]:text-[42px] sm:text-[64px]">Cobrá más.<br />Perseguí menos.</h2>
           <div className="flex min-w-0 max-w-full flex-col items-start gap-3 lg:items-end">
-            <ButtonLink href="/registro" size="lg" variant="dark" className="max-w-full">
+            <ButtonLink href="/registro" size="lg" variant="secondary" className="max-w-full !text-brand">
               Probalo gratis {TRIAL_DAYS} días <ArrowRight className="size-4" />
             </ButtonLink>
-            <p className="text-[14px] font-semibold text-ink/80">Cargás tus clientes y Cobra+ hace el resto.</p>
+            <p className="text-[14px] font-semibold text-white/80">Cargás tus clientes y Cobra+ hace el resto.</p>
           </div>
         </div>
       </section>

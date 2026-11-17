@@ -66,7 +66,7 @@ export function HomeView({ dateLabel, onboardingStep, currency }: { dateLabel: s
                   <span
                     className={cn(
                       'grid size-10 shrink-0 place-items-center rounded-full',
-                      done ? 'bg-ok-bright text-white' : current ? 'bg-brand text-ink' : 'bg-surface-3 text-muted',
+                      done ? 'bg-ok-bright text-white' : current ? 'bg-brand text-white' : 'bg-surface-3 text-muted',
                     )}
                   >
                     {done ? <Check className="size-5" strokeWidth={3} /> : <Icon className="size-[18px]" />}

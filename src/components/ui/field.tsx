@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn'
 
 /* Campo de PrimerosPrecios: superficie crema, foco con borde naranja y halo. */
 const control =
-  'w-full h-12 rounded-[14px] border-[1.5px] border-[#ece4d8] bg-surface-2 px-3.5 text-[15px] font-semibold text-ink placeholder:font-medium placeholder:text-[#a99d8a] transition-[border-color,background-color,box-shadow] hover:border-line-2 focus:outline-none focus:border-brand focus:bg-surface focus:shadow-[0_0_0_4px_rgba(255,106,26,.13)] aria-[invalid=true]:border-danger-bright aria-[invalid=true]:bg-surface'
+  'w-full h-12 rounded-[14px] border-[1.5px] border-[#ece4d8] bg-surface-2 px-3.5 text-[15px] font-semibold text-ink placeholder:font-medium placeholder:text-[#a99d8a] transition-[border-color,background-color,box-shadow] hover:border-line-2 focus:outline-none focus:border-brand focus:bg-surface focus:shadow-[0_0_0_4px_rgba(29,78,216,.13)] aria-[invalid=true]:border-danger-bright aria-[invalid=true]:bg-surface'
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input(
   { className, ...props }, ref,

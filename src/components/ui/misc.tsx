@@ -99,7 +99,7 @@ export function ByPP({ className, light }: { className?: string; light?: boolean
     <span className={cn('inline-flex items-center gap-1 text-[10.5px] font-semibold', light ? 'text-white/65' : 'text-muted', className)}>
       by
       <span className={cn('inline-flex items-center gap-1 font-display text-[11px] font-bold tracking-[-0.01em]', light ? 'text-white' : 'text-ink')}>
-        <PPMark className="h-[9px] w-auto text-brand" />PrimerosPrecios
+        <PPMark className="h-[9px] w-auto text-pp" />PrimerosPrecios
       </span>
     </span>
   )

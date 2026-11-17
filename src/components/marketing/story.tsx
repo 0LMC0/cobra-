@@ -75,7 +75,7 @@ export function LibretaVsCobra() {
         </figure>
       </div>
 
-      <span aria-hidden className="hard-sm mx-auto grid size-12 rotate-90 place-items-center rounded-full bg-brand text-ink lg:rotate-0">
+      <span aria-hidden className="hard-sm mx-auto grid size-12 rotate-90 place-items-center rounded-full bg-brand text-white lg:rotate-0">
         <ArrowRight className="size-5" strokeWidth={2.75} />
       </span>
 

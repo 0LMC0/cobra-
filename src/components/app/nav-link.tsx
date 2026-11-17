@@ -36,7 +36,7 @@ export function NavLink({ href, compact, pathOverride }: { href: string; compact
   // Barra lateral azul: el activo va en naranja, como en PrimerosPrecios.
   const cls = cn(
     'flex h-11 items-center gap-3 rounded-[12px] px-3 text-[14px] font-bold transition-colors',
-    active ? 'bg-brand text-ink shadow-[inset_0_1px_0_rgba(255,255,255,.3)]' : 'text-white/75 hover:bg-white/10 hover:text-white',
+    active ? 'bg-brand text-white shadow-[inset_0_1px_0_rgba(255,255,255,.15)]' : 'text-white/75 hover:bg-white/10 hover:text-white',
   )
   if (!item.ready) {
     return (

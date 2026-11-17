@@ -132,7 +132,7 @@ export function MonthStrip() {
                     {isPay ? (
                       <span className="grid size-6 place-items-center rounded-full bg-ok-bright text-ink"><Check className="size-3.5" strokeWidth={3.5} /></span>
                     ) : rem?.kind === 'sent' ? (
-                      <span className="grid size-6 place-items-center rounded-full bg-brand text-ink"><Mail className="size-3.5" /></span>
+                      <span className="grid size-6 place-items-center rounded-full bg-brand text-white"><Mail className="size-3.5" /></span>
                     ) : rem?.kind === 'cancelled' ? (
                       <span className="grid size-6 place-items-center rounded-full border-2 border-dashed border-line-2 text-faint"><BellOff className="size-3" /></span>
                     ) : payDay === null && d === LATE_DAY ? (
@@ -149,7 +149,7 @@ export function MonthStrip() {
         </ol>
 
         <p className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[12.5px] font-semibold text-muted">
-          <Legend className="bg-brand text-ink" icon={<Mail className="size-2.5" />}>Cobra+ mandó un email</Legend>
+          <Legend className="bg-brand text-white" icon={<Mail className="size-2.5" />}>Cobra+ mandó un email</Legend>
           <Legend className="bg-ok-bright text-ink" icon={<Check className="size-2.5" strokeWidth={4} />}>Te pagó</Legend>
           <Legend className="border-[1.5px] border-dashed border-line-2 text-faint" icon={<BellOff className="size-2.5" />}>Email que ya no se manda</Legend>
           <span className="inline-flex items-center gap-1.5"><span className="size-3.5 rounded-full ring-2 ring-danger-bright" />Día que vence</span>

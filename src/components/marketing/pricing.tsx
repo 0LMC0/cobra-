@@ -34,7 +34,7 @@ export function Pricing() {
           <SegmentedOption checked={interval === 'month'} onSelect={() => setBillingInterval('month')}>Pago mensual</SegmentedOption>
           <SegmentedOption checked={interval === 'year'} onSelect={() => setBillingInterval('year')}>
             Pago anual{' '}
-            <span className={cn('ml-1 rounded-[6px] px-1.5 py-0.5 text-[11.5px] font-extrabold', interval === 'year' ? 'bg-brand text-ink' : 'bg-brand-soft text-brand-text')}>
+            <span className={cn('ml-1 rounded-[6px] px-1.5 py-0.5 text-[11.5px] font-extrabold', interval === 'year' ? 'bg-marker text-ink' : 'bg-brand-soft text-brand-text')}>
               −{ANNUAL_DISCOUNT * 100}%
             </span>
           </SegmentedOption>

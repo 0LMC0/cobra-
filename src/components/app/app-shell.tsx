@@ -31,7 +31,7 @@ export function AppShell({ children, orgName, isDemo, email, role, memberships, 
         <div className="flex h-14 items-center px-2"><Link href="/app" aria-label="Inicio"><Logo withBy light /></Link></div>
 
         <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-white/[.07] p-3 ring-1 ring-white/10">
-          <span className="grid size-10 shrink-0 place-items-center rounded-[12px] bg-brand font-display text-[14px] font-black text-ink">{initials(orgName)}</span>
+          <span className="grid size-10 shrink-0 place-items-center rounded-[12px] bg-white font-display text-[14px] font-black text-brand">{initials(orgName)}</span>
           <div className="min-w-0 flex-1">
             {memberships.length > 1 ? (
               <OrgSwitcher memberships={memberships} activeOrgId={activeOrgId} />

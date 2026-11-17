@@ -38,7 +38,7 @@ export function HeroSteps() {
                   className="absolute top-11 -bottom-8 left-[19px] border-l-2 border-dashed border-ink/25 lg:top-[19px] lg:right-[-20px] lg:bottom-auto lg:left-11 lg:border-t-2 lg:border-l-0"
                 />
               )}
-              <span className="relative z-10 grid size-10 place-items-center rounded-full border-2 border-ink bg-brand font-display text-[17px] font-black">
+              <span className="relative z-10 grid size-10 place-items-center rounded-full bg-brand font-display text-[17px] font-black text-white ring-4 ring-bg">
                 {i + 1}
               </span>
               <div className="min-w-0 lg:mt-3.5">
@@ -79,7 +79,7 @@ function ScreenForm() {
         <MiniField label="Vence" value="Día 10" />
       </div>
       {/* dibujo de un botón: no es un control real */}
-      <div aria-hidden className="mt-auto flex h-8 items-center justify-center gap-1.5 rounded-[9px] border-[1.5px] border-ink bg-brand font-display text-[12.5px] font-bold">
+      <div aria-hidden className="mt-auto flex h-8 items-center justify-center gap-1.5 rounded-[9px] bg-brand font-display text-[12.5px] font-bold text-white">
         <Check className="size-3.5" strokeWidth={3} /> Guardar
       </div>
     </div>
@@ -104,7 +104,7 @@ function ScreenReminder() {
   return (
     <div className="flex h-full flex-col">
       <MailHead
-        icon={<span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand"><Mail className="size-4" /></span>}
+        icon={<span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-white"><Mail className="size-4" /></span>}
         from="Tu empresa"
         to="Para: Laura, de Estudio Rivas"
       />

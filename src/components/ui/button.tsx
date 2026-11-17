@@ -12,7 +12,7 @@ const base =
 /* Relieve suave: un brillo arriba y una sombra corta abajo. Sin bordes gruesos. */
 const variants: Record<Variant, string> = {
   primary:
-    'bg-brand text-brand-ink shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_6px_16px_-6px_rgba(239,94,15,.55)] hover:bg-brand-hover hover:shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_10px_22px_-8px_rgba(239,94,15,.65)]',
+    'bg-brand text-brand-ink shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_6px_16px_-6px_rgba(29,78,216,.55)] hover:bg-brand-hover hover:shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_10px_22px_-8px_rgba(29,78,216,.65)]',
   secondary:
     'bg-surface text-ink ring-1 ring-inset ring-line-2 shadow-[0_1px_2px_rgba(22,35,59,.06)] hover:bg-surface-2 hover:ring-ink/25',
   dark:

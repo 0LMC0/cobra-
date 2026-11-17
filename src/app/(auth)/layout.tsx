@@ -14,17 +14,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)]">
       {/* Panel azul: qué es Cobra+, en tres líneas */}
-      <aside className="relative hidden flex-col justify-between gap-10 overflow-y-auto bg-navy p-10 text-white lg:flex xl:p-12">
+      <aside className="relative hidden flex-col justify-between gap-10 overflow-y-auto bg-brand p-10 text-white lg:flex xl:p-12">
         <Link href="/" aria-label="Cobra+, inicio" className="w-fit"><Logo withBy light /></Link>
 
         <div className="flex max-w-lg flex-col gap-9">
           <p className="display-xl text-[38px] text-white xl:text-[48px]">
-            Cobra+ les recuerda a tus clientes <span className="text-brand">que te paguen.</span>
+            Cobra+ les recuerda a tus clientes <span className="text-[#ffde5c]">que te paguen.</span>
           </p>
           <ul className="flex flex-col gap-3">
             {WHAT.map(([Icon, t]) => (
               <li key={t} className="flex items-center gap-3 rounded-[16px] bg-white/[.07] px-4 py-3 text-[15.5px] font-semibold ring-1 ring-white/10">
-                <span className="grid size-9 shrink-0 place-items-center rounded-[11px] bg-brand text-ink"><Icon className="size-[18px]" /></span>
+                <span className="grid size-9 shrink-0 place-items-center rounded-[11px] bg-white/15 text-white"><Icon className="size-[18px]" /></span>
                 {t}
               </li>
             ))}

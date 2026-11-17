@@ -16,6 +16,8 @@ El producto se llama **Cobra+** (se lee "cobra plus"). El logo es la palabra "Co
 
 Siempre con el componente `Logo` (`withBy` suma "by PrimerosPrecios"; `withWord={false}` deja sólo el ícono). En textos se escribe "Cobra+", nunca "COBRA" ni "Cobra Plus".
 
+**Cómo se reparte el color:** el azul del logo manda (acciones y bloques destacados: la franja de "para quién", el cierre y el panel del login, donde el logo blanco queda igual que en el original). El azul tinta queda para el texto, la barra lateral y el bloque de los emails. De PrimerosPrecios siguen el crema cuadriculado, Poppins, el marcador amarillo y el naranja de la firma.
+
 ## Color (tokens en `src/app/globals.css`, tema único claro como PrimerosPrecios)
 
 **Marca**
@@ -25,8 +27,9 @@ Siempre con el componente `Logo` (`withBy` suma "by PrimerosPrecios"; `withWord=
 | `--bg` / `--bg-deep` | `#FBF7F1` / `#F5EEE3` | Crema de PrimerosPrecios. Las secciones alternan entre los dos |
 | `--surface` / `--surface-2` / `--surface-3` | `#FFF` / `#FCFAF7` / `#F4EEE6` | Tarjetas, campos y pastillas neutras |
 | `--ink` / `--navy` | `#16233B` | Texto, bordes duros, barra lateral, bloques azules |
-| `--brand` | `#FF6A1A` | Botón principal (con texto tinta), íconos y acentos. **Nunca como texto sobre claro** |
-| `--brand-text` | `#C2410C` | Naranja legible sobre claro |
+| `--brand` | `#1D4ED8` | El azul del logo de Cobra+: botón principal (texto blanco), links, números de paso, foco y bloques destacados |
+| `--pp` | `#FF6A1A` | Naranja de PrimerosPrecios: sólo la firma (flechas), el guion de los títulos y algún detalle. Nunca como texto sobre claro |
+| `--brand-text` | `#1D4ED8` | Azul legible sobre claro |
 | `--marker` | `#FFDE5C` | Resaltado de titulares y rótulos "Ejemplo" |
 
 **Acentos**

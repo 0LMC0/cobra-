@@ -44,7 +44,7 @@ export function SiteFooter() {
             href="https://primerosprecios.com"
             className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-bold ring-1 ring-inset ring-line-2 bg-surface shadow-[0_1px_2px_rgba(22,35,59,.06)] transition-colors hover:bg-surface-2 hover:ring-ink/25 active:scale-[0.97]"
           >
-            <PPMark className="h-3 w-auto text-brand" /> Una herramienta de PrimerosPrecios
+            <PPMark className="h-3 w-auto text-pp" /> Una herramienta de PrimerosPrecios
           </a>
         </div>
         <FooterCol title="Producto" links={SECTIONS.map(([h, l]) => [h, l])} />
