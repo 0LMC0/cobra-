@@ -19,6 +19,7 @@ export const customerSchema = z
     email: z.union([z.literal(''), z.string().trim().toLowerCase().email('Ese email no parece válido.').max(254)]).optional().transform((v) => (v ? v : null)),
     phone: optionalText(40),
     whatsappOk: checkbox,
+    remindersPaused: checkbox,
     taxId: optionalText(20),
     notes: optionalText(2000),
   })

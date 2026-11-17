@@ -11,7 +11,7 @@ export const PREVIEW_CHARGES: ChargeView[] = [
   { id: 'c5', customerId: 'delta', concept: 'Consultoría', amountMinor: 48_000, currency: 'USD', dueDate: '2026-11-30', state: 'open', paidMinor: 0, balanceMinor: 48_000, status: 'pending', promisedFor: null, promisedOn: null, recurring: false },
 ]
 
-const base = { contactName: null, email: null, phone: null, whatsappNumber: null, whatsappOk: false, notes: null, optedOut: false }
+const base = { contactName: null, email: null, phone: null, whatsappNumber: null, whatsappOk: false, notes: null, optedOut: false, taxId: null, remindersPaused: false, archived: false, createdAt: '2026-11-01T12:00:00Z' }
 
 export const PREVIEW_CUSTOMERS: CustomerView[] = [
   { ...base, id: 'delta', name: 'Grupo Delta', email: 'pagos@grupodelta.example', owed: [{ currency: 'USD', balanceMinor: 48_000 }], overdueCount: 0 },

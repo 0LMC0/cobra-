@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { startTransition, useActionState, useEffect, useRef, useState } from 'react'
 import { CalendarClock, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Field, Input, Select } from '@/components/ui/field'
@@ -11,19 +11,43 @@ import { firstError, initialFormState, type FormState } from '@/server/actions/f
 
 type Action = (state: FormState, formData: FormData) => Promise<FormState>
 
-/* ───────────── Cliente nuevo ───────────── */
+/* ───────────── Cliente: alta y edición ───────────── */
 
-export function CustomerForm({ action }: { action: Action }) {
+export type CustomerInitial = {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  contactName: string | null
+  taxId: string | null
+  notes: string | null
+  whatsappOk: boolean
+  remindersPaused: boolean
+  optedOut: boolean
+}
+
+export function CustomerForm({ action, initial }: { action: Action; initial?: CustomerInitial }) {
   const [state, formAction, pending] = useActionState(action, initialFormState)
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState(initial?.phone ?? '')
+  const editing = Boolean(initial)
+  const hasExtra = Boolean(initial?.contactName || initial?.taxId || initial?.notes)
+
+  // Se envía a mano para que React no vacíe los campos si el servidor devuelve un error.
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const data = new FormData(e.currentTarget)
+    startTransition(() => formAction(data))
+  }
+
   return (
-    <form action={formAction} className="flex flex-col gap-6" noValidate>
+    <form action={formAction} onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
       <FormFeedback state={state} />
+      {initial && <input type="hidden" name="customerId" value={initial.id} />}
       <Field label="Nombre del cliente" hint="La persona o la empresa a la que le cobrás." error={firstError(state, 'name')}>
-        {(p) => <Input {...p} name="name" placeholder="Ej.: Estudio Rivas" required autoFocus />}
+        {(p) => <Input {...p} name="name" placeholder="Ej.: Estudio Rivas" required autoFocus={!editing} defaultValue={initial?.name} />}
       </Field>
       <Field label="Email" hint="Ahí le llegan los avisos automáticos." error={firstError(state, 'email')}>
-        {(p) => <Input {...p} name="email" type="email" inputMode="email" placeholder="marina@estudiorivas.com" autoComplete="off" />}
+        {(p) => <Input {...p} name="email" type="email" inputMode="email" placeholder="marina@estudiorivas.com" autoComplete="off" defaultValue={initial?.email ?? ''} />}
       </Field>
       <div className="flex flex-col gap-2.5">
         <Field label="Celular" optional hint="Con código de área. Ej.: 11 2345-6789." error={firstError(state, 'phone')}>
@@ -31,28 +55,81 @@ export function CustomerForm({ action }: { action: Action }) {
         </Field>
         {phone && (
           <label className="flex items-start gap-3 rounded-[14px] bg-surface p-3 text-[14px] leading-snug ring-1 ring-line-2">
-            <input type="checkbox" name="whatsappOk" defaultChecked className="mt-0.5 size-[18px] shrink-0 accent-[#25d366]" />
+            <input type="checkbox" name="whatsappOk" defaultChecked={initial ? initial.whatsappOk : true} className="mt-0.5 size-[18px] shrink-0 accent-[#25d366]" />
             <span><b className="font-bold">Le puedo escribir por WhatsApp.</b> Te aparece el botón para avisarle con un toque.</span>
           </label>
         )}
       </div>
-      <details className="group rounded-[14px] ring-1 ring-line-2 [&_summary::-webkit-details-marker]:hidden">
+      <details open={hasExtra} className="group rounded-[14px] ring-1 ring-line-2 [&_summary::-webkit-details-marker]:hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[14.5px] font-bold">
           Más datos <span className="text-[13px] font-normal text-muted group-open:hidden">contacto, CUIT, notas · opcional</span>
         </summary>
         <div className="grid grid-cols-1 gap-5 px-4 pb-4">
           <Field label="Persona de contacto" optional hint="Para saludarla por su nombre en los avisos." error={firstError(state, 'contactName')}>
-            {(p) => <Input {...p} name="contactName" placeholder="Ej.: Marina Pérez" autoComplete="off" />}
+            {(p) => <Input {...p} name="contactName" placeholder="Ej.: Marina Pérez" autoComplete="off" defaultValue={initial?.contactName ?? ''} />}
           </Field>
           <Field label="CUIT" optional error={firstError(state, 'taxId')}>
-            {(p) => <Input {...p} name="taxId" inputMode="numeric" placeholder="30-12345678-9" autoComplete="off" />}
+            {(p) => <Input {...p} name="taxId" inputMode="numeric" placeholder="30-12345678-9" autoComplete="off" defaultValue={initial?.taxId ?? ''} />}
           </Field>
           <Field label="Notas" optional error={firstError(state, 'notes')}>
-            {(p) => <Input {...p} name="notes" placeholder="Algo que te sirva recordar" autoComplete="off" />}
+            {(p) => <Input {...p} name="notes" placeholder="Algo que te sirva recordar" autoComplete="off" defaultValue={initial?.notes ?? ''} />}
           </Field>
         </div>
       </details>
-      <Button type="submit" size="lg" loading={pending} className="w-full sm:w-auto sm:self-start">{pending ? 'Guardando…' : 'Guardar cliente'}</Button>
+      {initial && (initial.optedOut ? (
+        <p className="rounded-[14px] bg-warn-soft px-4 py-3 text-[14px] leading-snug text-warn">
+          <b className="font-bold">Pidió no recibir avisos automáticos.</b> Cobra+ no le escribe por email; podés seguir avisándole por WhatsApp.
+        </p>
+      ) : (
+        <label className="flex items-start gap-3 rounded-[14px] bg-surface p-3 text-[14px] leading-snug ring-1 ring-line-2">
+          <input type="checkbox" name="remindersPaused" defaultChecked={initial.remindersPaused} className="mt-0.5 size-[18px] shrink-0 accent-[var(--brand)]" />
+          <span><b className="font-bold">Pausar los avisos automáticos.</b> Útil si estás arreglando algo con este cliente. Lo podés reanudar cuando quieras.</span>
+        </label>
+      ))}
+      <Button type="submit" size="lg" loading={pending} className="w-full sm:w-auto sm:self-start">
+        {pending ? 'Guardando…' : editing ? 'Guardar cambios' : 'Guardar cliente'}
+      </Button>
+    </form>
+  )
+}
+
+/* ───────────── Archivar o reactivar ───────────── */
+
+export function ArchiveCustomer({ action, customerId, customerName, archived }: { action: Action; customerId: string; customerName: string; archived: boolean }) {
+  const [confirming, setConfirming] = useState(false)
+  const [state, formAction, pending] = useActionState(action, initialFormState)
+  if (state.ok) return <p role="status" className="text-[14px] font-semibold text-ok">{state.ok}</p>
+
+  if (archived) {
+    return (
+      <form action={formAction} className="flex flex-col gap-2">
+        <FormFeedback state={state} />
+        <input type="hidden" name="customerId" value={customerId} />
+        <input type="hidden" name="archive" value="0" />
+        <Button type="submit" variant="secondary" size="md" loading={pending} className="self-start">Reactivar cliente</Button>
+      </form>
+    )
+  }
+  if (!confirming) {
+    return (
+      <button type="button" onClick={() => setConfirming(true)} className="w-fit text-[14px] font-semibold text-muted underline-offset-4 hover:text-danger hover:underline">
+        Archivar cliente
+      </button>
+    )
+  }
+  return (
+    <form action={formAction} className="flex flex-col gap-3 rounded-[16px] bg-surface-2 p-4 ring-1 ring-line-2">
+      <FormFeedback state={state} />
+      <p className="text-[14.5px] leading-snug">
+        <b className="font-bold">¿Archivar a {customerName}?</b> Deja de aparecer en tu lista y no le llegan más avisos.
+        Lo que debe y su historial quedan guardados, y lo podés reactivar cuando quieras.
+      </p>
+      <input type="hidden" name="customerId" value={customerId} />
+      <input type="hidden" name="archive" value="1" />
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" variant="dark" size="md" loading={pending}>Sí, archivar</Button>
+        <Button type="button" variant="secondary" size="md" onClick={() => setConfirming(false)}>Cancelar</Button>
+      </div>
     </form>
   )
 }

@@ -9,5 +9,8 @@ export default defineConfig({
     testTimeout: 30_000,
     hookTimeout: 60_000,
     environment: 'node',
+    // Cada archivo de tests/db levanta su propio Postgres embebido: con muchos en paralelo
+    // la máquina se queda sin memoria y un proceso se cae. Dos a la vez es estable.
+    poolOptions: { forks: { maxForks: 2 } },
   },
 })

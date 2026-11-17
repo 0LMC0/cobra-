@@ -153,3 +153,61 @@ export async function clearPromise(_: FormState, formData: FormData): Promise<Fo
   revalidatePath('/app', 'layout')
   return { ok: 'Listo: vuelven los avisos normales.' }
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** Editar los datos de un cliente. El cambio queda en el historial (trigger en la base). */
+export async function updateCustomer(_: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await guard()
+  if (isState(ctx)) return ctx
+  const customerId = String(formData.get('customerId') ?? '')
+  if (!UUID_RE.test(customerId)) return { error: 'No encontramos ese cliente.' }
+  const parsed = customerSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors }
+  const d = parsed.data
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('customers')
+    .update({
+      name: d.name, contact_name: d.contactName, email: d.email, phone: d.phone, whatsapp_number: d.whatsappNumber,
+      whatsapp_ok: d.whatsappOk, tax_id: d.taxId, notes: d.notes, reminders_paused: d.remindersPaused,
+    })
+    .eq('org_id', ctx.org.id)
+    .eq('id', customerId)
+    .select('id')
+  if (error) {
+    if (error.message.includes('customers_active_email_uniq')) return { fieldErrors: { email: ['Ya tenés otro cliente con ese email.'] } }
+    if (error.message.includes('customers_tax_id_uniq')) return { fieldErrors: { taxId: ['Ya tenés otro cliente con ese CUIT.'] } }
+    return { error: 'No pudimos guardar los cambios. Probá de nuevo.' }
+  }
+  if (!data?.length) return { error: 'No encontramos ese cliente.' }
+  revalidatePath('/app', 'layout')
+  redirect(`/app/clientes/${customerId}?guardado=1`)
+}
+
+/** Archivar o reactivar. Archivar frena los avisos; lo que debe queda registrado. */
+export async function setCustomerArchived(_: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await guard()
+  if (isState(ctx)) return ctx
+  const customerId = String(formData.get('customerId') ?? '')
+  const archive = formData.get('archive') === '1'
+  if (!UUID_RE.test(customerId)) return { error: 'No encontramos ese cliente.' }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('customers')
+    .update({ status: archive ? 'archived' : 'active' })
+    .eq('org_id', ctx.org.id)
+    .eq('id', customerId)
+    .select('id')
+  if (error) {
+    if (error.message.includes('customers_active_email_uniq')) {
+      return { error: 'Ya tenés otro cliente activo con el mismo email. Cambiale el email a uno de los dos y probá de nuevo.' }
+    }
+    return { error: archive ? 'No pudimos archivarlo. Probá de nuevo.' : 'No pudimos reactivarlo. Probá de nuevo.' }
+  }
+  if (!data?.length) return { error: 'No encontramos ese cliente.' }
+  revalidatePath('/app', 'layout')
+  return { ok: archive ? 'Cliente archivado. No le llegan más avisos.' : 'Cliente reactivado.' }
+}

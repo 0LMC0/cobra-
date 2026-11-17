@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { chargeStatus, type ChargeStatus, type StoredChargeState } from '@/domain/charge-status'
 import type { IsoDate } from '@/domain/dates'
 import type { CurrencyCode } from '@/domain/money'
+import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
 import { homeTotals, remindersForToday, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
 
 /** Lecturas del producto. Todas pasan por la sesión del usuario: la RLS filtra por empresa. */
@@ -32,8 +33,13 @@ export type CustomerView = {
   whatsappNumber: string | null
   whatsappOk: boolean
   notes: string | null
+  taxId: string | null
   /** Pidió no recibir avisos automáticos (link de baja del email). */
   optedOut: boolean
+  /** Quien cobra pausó los avisos a este cliente. */
+  remindersPaused: boolean
+  archived: boolean
+  createdAt: string
   /** Lo que debe, separado por moneda (nunca se suman monedas). */
   owed: { currency: CurrencyCode; balanceMinor: number }[]
   overdueCount: number
@@ -99,29 +105,39 @@ function summarize(charges: ChargeView[]) {
 type CustomerRow = {
   id: string; name: string; contact_name: string | null; email: string | null; phone: string | null
   whatsapp_number: string | null; whatsapp_ok: boolean; notes: string | null; contact_opt_out: boolean
+  tax_id: string | null; status: 'active' | 'archived'; reminders_paused: boolean; created_at: string
 }
 
 function toCustomer(r: CustomerRow, charges: ChargeView[]): CustomerView {
   return {
     id: r.id, name: r.name, contactName: r.contact_name, email: r.email, phone: r.phone,
     whatsappNumber: r.whatsapp_number, whatsappOk: r.whatsapp_ok, notes: r.notes, optedOut: Boolean(r.contact_opt_out),
+    taxId: r.tax_id, remindersPaused: Boolean(r.reminders_paused), archived: r.status === 'archived', createdAt: r.created_at,
     ...summarize(charges.filter((c) => c.customerId === r.id)),
   }
 }
 
-const CUSTOMER_FIELDS = 'id, name, contact_name, email, phone, whatsapp_number, whatsapp_ok, notes, contact_opt_out'
+const CUSTOMER_FIELDS = 'id, name, contact_name, email, phone, whatsapp_number, whatsapp_ok, notes, contact_opt_out, tax_id, status, reminders_paused, created_at'
 
-export async function listCustomers(orgId: string, today: IsoDate): Promise<CustomerView[]> {
+/** Clientes activos (o los archivados, si se piden). La búsqueda se hace en src/domain/customer-filter.ts. */
+export async function listCustomers(orgId: string, today: IsoDate, opts: { archived?: boolean } = {}): Promise<CustomerView[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('customers')
     .select(CUSTOMER_FIELDS)
     .eq('org_id', orgId)
-    .eq('status', 'active')
+    .eq('status', opts.archived ? 'archived' : 'active')
     .order('name', { ascending: true })
   if (error) throw new Error('No pudimos cargar los clientes.')
   const charges = await loadCharges(orgId, today)
   return ((data ?? []) as CustomerRow[]).map((r) => toCustomer(r, charges))
+}
+
+/** Cuántos clientes archivados tiene la empresa (para ofrecer verlos aunque no haya activos). */
+export async function countArchivedCustomers(orgId: string): Promise<number> {
+  const supabase = await createClient()
+  const { count } = await supabase.from('customers').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'archived')
+  return count ?? 0
 }
 
 export async function getCustomer(orgId: string, customerId: string, today: IsoDate): Promise<{ customer: CustomerView; charges: ChargeView[] } | null> {
@@ -199,5 +215,56 @@ export async function listCharges(orgId: string, today: IsoDate): Promise<Charge
       customerContact: (k?.contact_name as string | null | undefined) ?? null,
       customerWhatsapp: k?.whatsapp_ok && k.whatsapp_number ? `+${k.whatsapp_number as string}` : null,
     }
+  })
+}
+
+/* ───────────── Historial del cliente ───────────── */
+
+/** Todo lo que pasó con un cliente, de lo más nuevo a lo más viejo. */
+export async function getCustomerTimeline(orgId: string, customer: { id: string; createdAt: string }): Promise<TimelineEvent[]> {
+  const supabase = await createClient()
+  const { data: charges, error: chError } = await supabase
+    .from('charges')
+    .select('id, concept, amount_minor, currency, due_date, created_at, created_by, agreement_id')
+    .eq('org_id', orgId)
+    .eq('customer_id', customer.id)
+  if (chError) throw new Error('No pudimos cargar el historial.')
+  const chargeIds = (charges ?? []).map((c) => c.id as string)
+
+  const [paymentsRes, deliveriesRes, auditsRes] = await Promise.all([
+    supabase.from('payments').select('id, amount_minor, currency, paid_on, method, status, voided_reason, created_at').eq('org_id', orgId).eq('customer_id', customer.id),
+    chargeIds.length
+      ? supabase.from('reminder_deliveries').select('id, charge_id, step_id, status, sent_at, created_at').eq('org_id', orgId).in('charge_id', chargeIds)
+      : Promise.resolve({ data: [], error: null }),
+    supabase
+      .from('audit_logs')
+      .select('id, action, entity_type, entity_id, before, after, created_at')
+      .eq('org_id', orgId)
+      .in('entity_id', [customer.id, ...chargeIds])
+      .order('id', { ascending: false })
+      .limit(300),
+  ])
+  if (paymentsRes.error || deliveriesRes.error || auditsRes.error) throw new Error('No pudimos cargar el historial.')
+
+  return buildTimeline({
+    customer,
+    charges: (charges ?? []).map((c) => ({
+      id: c.id as string, concept: c.concept as string, amountMinor: Number(c.amount_minor), currency: c.currency as CurrencyCode,
+      dueDate: c.due_date as IsoDate, createdAt: c.created_at as string,
+      // Lo generó el proceso diario (sin persona) a partir de un abono.
+      generated: Boolean(c.agreement_id) && !c.created_by,
+    })),
+    payments: (paymentsRes.data ?? []).map((p) => ({
+      id: p.id as string, amountMinor: Number(p.amount_minor), currency: p.currency as CurrencyCode, paidOn: p.paid_on as IsoDate,
+      method: p.method as string, status: p.status as 'confirmed' | 'voided', voidedReason: p.voided_reason as string | null, createdAt: p.created_at as string,
+    })),
+    deliveries: (deliveriesRes.data ?? []).map((d) => ({
+      id: d.id as string, chargeId: d.charge_id as string, stepId: d.step_id as string, status: d.status as string,
+      sentAt: d.sent_at as string | null, createdAt: d.created_at as string,
+    })),
+    audits: (auditsRes.data ?? []).map((a) => ({
+      id: a.id as number, action: a.action as string, entityType: a.entity_type as string, entityId: a.entity_id as string,
+      before: a.before as Record<string, unknown> | null, after: a.after as Record<string, unknown> | null, createdAt: a.created_at as string,
+    })),
   })
 }
