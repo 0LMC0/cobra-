@@ -14,7 +14,7 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 
 /** Todos los cobros en un solo lugar: lo que falta cobrar arriba, lo atrasado primero. */
 export function ChargesView({
-  charges, view, today, businessName, transferAlias, payAction, promiseAction, clearPromiseAction, hrefBase = '/app',
+  charges, view, today, businessName, transferAlias, payAction, promiseAction, clearPromiseAction, hrefBase = '/app', canExport = false,
 }: {
   charges: ChargeListItem[]
   view: 'pendientes' | 'pagados'
@@ -25,6 +25,8 @@ export function ChargesView({
   promiseAction?: Action
   clearPromiseAction?: Action
   hrefBase?: string
+  /** Descargar CSV: sólo administración. */
+  canExport?: boolean
 }) {
   const pending = charges
     .filter((c) => isCollectible(c.status))
@@ -46,7 +48,7 @@ export function ChargesView({
               : `${pending.length} para cobrar${overdue ? ` · ${overdue} atrasado${overdue === 1 ? '' : 's'}` : ''}`}
         </p>
         </div>
-        {charges.length > 0 && (
+        {charges.length > 0 && canExport && (
           <div className="flex flex-wrap gap-2">
             <a href={`${hrefBase}/exportar/cobros`} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Cobros en CSV</a>
             <a href={`${hrefBase}/exportar/pagos`} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Pagos en CSV</a>

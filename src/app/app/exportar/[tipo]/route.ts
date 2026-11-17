@@ -5,10 +5,12 @@ import { chargesCsv, customersCsv, paymentsCsv } from '@/domain/exports'
 import { csvFilename } from '@/domain/csv'
 import { todayIn } from '@/domain/dates'
 import { isCurrency } from '@/domain/money'
+import { can } from '@/domain/roles'
 
 /**
  * Descargas en CSV: /app/exportar/clientes, /cobros y /pagos.
  * Siempre de la empresa activa de la sesión; la RLS vuelve a filtrar en la base.
+ * Sólo para administración o dueños.
  */
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -22,6 +24,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ tipo: s
 
   const ctx = await getOrgContext()
   if (!ctx) return NextResponse.json({ error: 'Tu sesión venció. Volvé a ingresar.' }, { status: 401 })
+
+  // Exportar saca todos los datos de la empresa: sólo administración (ver PERMISSIONS en src/domain/roles.ts).
+  if (!can(ctx.role, 'reports.export')) {
+    return NextResponse.json({ error: 'Sólo administración puede descargar reportes.' }, { status: 403 })
+  }
 
   const { org } = ctx
   const today = todayIn(org.timezone)

@@ -4,7 +4,7 @@ import { requireOrg } from '@/server/auth'
 import { countArchivedCustomers, listCustomers } from '@/server/queries'
 import { todayIn } from '@/domain/dates'
 import { filterCustomers, parseCustomerView } from '@/domain/customer-filter'
-import { hasRole } from '@/domain/roles'
+import { can, hasRole } from '@/domain/roles'
 
 export const metadata: Metadata = { title: 'Clientes' }
 
@@ -27,7 +27,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       activeCount={active?.length}
       archivedCount={archivedCount}
       canEdit={hasRole(role, 'operator')}
-      exportHref="/app/exportar/clientes"
+      exportHref={can(role, 'reports.export') ? '/app/exportar/clientes' : undefined}
     />
   )
 }
