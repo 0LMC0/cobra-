@@ -36,7 +36,7 @@ export function ExcuseBubbles() {
   )
 }
 
-/* ─────────────────────── Libreta vs. COBRA ─────────────────────── */
+/* ─────────────────────── Libreta vs. Cobra+ ─────────────────────── */
 
 const LIBRETA: { text: string; style?: string }[] = [
   { text: 'Rivas — 150 mil (nov) ¿pagó??' },
@@ -79,10 +79,10 @@ export function LibretaVsCobra() {
         <ArrowRight className="size-5" strokeWidth={2.75} />
       </span>
 
-      {/* Ahora: COBRA */}
+      {/* Ahora: Cobra+ */}
       <div className="reveal flex flex-col items-center gap-5">
         <span className="inline-flex items-center gap-2 rounded-full bg-ok-soft px-3.5 py-1.5 text-[13px] font-bold text-ok">
-          <Check className="size-3.5" strokeWidth={3} /> Lo mismo, en COBRA
+          <Check className="size-3.5" strokeWidth={3} /> Lo mismo, en Cobra+
         </span>
         <figure className="soft w-full max-w-[460px] overflow-hidden rounded-[24px] bg-surface">
           <div className="flex items-center justify-between border-b border-line bg-surface-2 px-5 py-3">
@@ -101,7 +101,7 @@ export function LibretaVsCobra() {
               </li>
             ))}
           </ul>
-          <figcaption className="sr-only">La misma información en COBRA: estado exacto, avisos enviados y saldos.</figcaption>
+          <figcaption className="sr-only">La misma información en Cobra+: estado exacto, avisos enviados y saldos.</figcaption>
         </figure>
       </div>
     </div>
@@ -123,7 +123,7 @@ export function EmailPreview() {
       </div>
       <dl className="grid grid-cols-[64px_1fr] gap-y-1.5 border-b border-line px-5 py-4 text-[13.5px]">
         <dt className="font-bold text-faint">De</dt>
-        <dd><V>Estudio Martínez</V> <span className="text-muted">vía COBRA</span></dd>
+        <dd><V>Estudio Martínez</V> <span className="text-muted">vía Cobra+</span></dd>
         <dt className="font-bold text-faint">Para</dt>
         <dd><V>Panadería Sol</V></dd>
         <dt className="font-bold text-faint">Asunto</dt>
@@ -144,7 +144,7 @@ export function EmailPreview() {
       </div>
       <figcaption className="flex items-center gap-2 border-t border-dashed border-line-2 bg-surface-2 px-5 py-3 text-[12.5px] font-semibold text-muted">
         <span className="inline-block h-3 w-5 rounded-[3px] bg-[#fff3c4] underline decoration-brand decoration-dotted" aria-hidden />
-        Lo marcado lo completa COBRA con los datos de cada cobro.
+        Lo marcado lo completa Cobra+ con los datos de cada cobro.
       </figcaption>
     </figure>
   )
@@ -167,7 +167,7 @@ export function DigestPreview() {
       </div>
       <dl className="grid grid-cols-[64px_1fr] gap-y-1.5 border-b border-line px-5 py-4 text-[13.5px]">
         <dt className="font-bold text-faint">De</dt>
-        <dd>COBRA</dd>
+        <dd>Cobra+</dd>
         <dt className="font-bold text-faint">Para</dt>
         <dd>Vos y quien lleve tu administración</dd>
         <dt className="font-bold text-faint">Asunto</dt>
@@ -199,9 +199,9 @@ export function DigestPreview() {
 /* ─────────────── Lo que pasa de verdad cuando cobrás ─────────────── */
 
 const CASES = [
-  { who: 'Tu cliente dice', says: 'Mañana te transfiero.', tag: 'Promesa de pago', does: 'Anotás el día que te prometió. COBRA no le escribe hasta entonces y, si no pagó, retoma sola.', mine: false },
+  { who: 'Tu cliente dice', says: 'Mañana te transfiero.', tag: 'Promesa de pago', does: 'Anotás el día que te prometió. Cobra+ no le escribe hasta entonces y, si no pagó, retoma sola.', mine: false },
   { who: 'Tu cliente dice', says: 'Ya te pagué, fijate.', tag: 'Comprobante', does: 'Responde el email con el comprobante y te llega a vos. Lo marcás como pagado y no recibe más avisos.', mine: false },
-  { who: 'Tu cliente dice', says: 'Yo los mails ni los abro.', tag: 'WhatsApp con un toque', does: 'COBRA te deja el mensaje de WhatsApp ya escrito. Lo mandás desde tu teléfono con un toque.', mine: false },
+  { who: 'Tu cliente dice', says: 'Yo los mails ni los abro.', tag: 'WhatsApp con un toque', does: 'Cobra+ te deja el mensaje de WhatsApp ya escrito. Lo mandás desde tu teléfono con un toque.', mine: false },
   { who: 'Vos pensás', says: 'Me da cosa reclamarle.', tag: 'Vos tenés el control', does: 'El aviso sale amable, a tiempo y con tu firma. Podés leerlo antes de que salga y pausar a quien quieras.', mine: true },
 ]
 

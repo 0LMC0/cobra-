@@ -1,5 +1,5 @@
 /**
- * Planes de COBRA. Precios y límites configurables desde acá; el servidor es el
+ * Planes de Cobra+. Precios y límites configurables desde acá; el servidor es el
  * que los hace cumplir (nunca sólo la UI).
  */
 export type PlanId = 'starter' | 'growth' | 'business'

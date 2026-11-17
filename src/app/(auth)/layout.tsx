@@ -5,7 +5,7 @@ import { publicEnv } from '@/config/env'
 
 const WHAT = [
   [UserPlus, 'Anotás a quién le cobrás, cuánto y cuándo vence'],
-  [Bell, 'COBRA les manda el recordatorio por email'],
+  [Bell, 'Cobra+ les manda el recordatorio por email'],
   [Check, 'Cuando te pagan, los avisos se frenan solos'],
 ] as const
 
@@ -13,13 +13,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   const configured = Boolean(publicEnv())
   return (
     <div className="grid min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)]">
-      {/* Panel azul: qué es COBRA, en tres líneas */}
-      <aside className="relative hidden flex-col justify-between overflow-hidden bg-navy p-12 text-white lg:flex">
-        <Link href="/" aria-label="COBRA, inicio" className="w-fit"><Logo withBy light /></Link>
+      {/* Panel azul: qué es Cobra+, en tres líneas */}
+      <aside className="relative hidden flex-col justify-between gap-10 overflow-y-auto bg-navy p-10 text-white lg:flex xl:p-12">
+        <Link href="/" aria-label="Cobra+, inicio" className="w-fit"><Logo withBy light /></Link>
 
         <div className="flex max-w-lg flex-col gap-9">
-          <p className="display-xl text-[52px] text-white">
-            COBRA les recuerda a tus clientes <span className="text-brand">que te paguen.</span>
+          <p className="display-xl text-[38px] text-white xl:text-[48px]">
+            Cobra+ les recuerda a tus clientes <span className="text-brand">que te paguen.</span>
           </p>
           <ul className="flex flex-col gap-3">
             {WHAT.map(([Icon, t]) => (
@@ -53,10 +53,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         )}
         <div className="flex flex-1 flex-col px-5 py-6 sm:px-10">
           <div className="flex items-center justify-between gap-3 lg:hidden">
-            <Link href="/" aria-label="COBRA, inicio"><Logo withBy /></Link>
+            <Link href="/" aria-label="Cobra+, inicio"><Logo withBy /></Link>
           </div>
           <p className="mt-4 max-w-[440px] text-[14.5px] leading-snug text-muted lg:hidden">
-            COBRA les recuerda a tus clientes que te paguen, y deja de escribirles cuando te pagan.
+            Cobra+ les recuerda a tus clientes que te paguen, y deja de escribirles cuando te pagan.
           </p>
 
           <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center py-8 sm:py-12">

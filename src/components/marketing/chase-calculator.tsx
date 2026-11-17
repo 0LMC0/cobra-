@@ -77,8 +77,8 @@ export function ChaseCalculator() {
             <p className="money text-[52px] leading-none sm:text-[60px]">{fmt(hoursYear)} <span className="text-[28px]">horas</span></p>
             <p className="mt-3 text-[14px] text-ink/80">
               {hoursYear >= 8
-                ? <>Son <b className="text-ink">{fmt(hoursYear / 8)} jornadas</b> de 8 horas escribiendo el mismo mensaje. COBRA los manda solo.</>
-                : <>Poco tiempo, pero igual es tiempo tuyo. COBRA los manda solo.</>}
+                ? <>Son <b className="text-ink">{fmt(hoursYear / 8)} jornadas</b> de 8 horas escribiendo el mismo mensaje. Cobra+ los manda solo.</>
+                : <>Poco tiempo, pero igual es tiempo tuyo. Cobra+ los manda solo.</>}
             </p>
           </div>
           <p className="text-[12px] text-muted">Calculado sólo con los números que cargaste. No es una estadística.</p>

@@ -106,29 +106,32 @@ export function ByPP({ className, light }: { className?: string; light?: boolean
 }
 
 /**
- * Marca COBRA: baldosa naranja con la C que vuelve (la plata que vuelve)
- * + wordmark en Poppins Black, como el logo de PrimerosPrecios.
+ * Marca Cobra+: el logo dibujado a mano. Azul sobre fondo claro y blanco
+ * sobre el azul tinta. Sin palabra (withWord=false) queda el ícono: la "C"
+ * con el "+" sobre azul.
  */
+export const BRAND_BLUE = '#1d4ed8'
+
 export function Logo({
   className, withWord = true, withBy = false, light = false,
 }: { className?: string; withWord?: boolean; withBy?: boolean; light?: boolean }) {
+  if (!withWord) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src="/icon.png" alt="Cobra+" width={36} height={36} className={cn('size-9 shrink-0 rounded-[10px]', className)} />
+    )
+  }
   return (
-    <span className={cn('inline-flex items-center gap-2.5', className)}>
-      <span
-        aria-hidden
-        className={cn('grid size-9 shrink-0 place-items-center rounded-[11px] border-2 bg-brand text-ink', light ? 'border-white shadow-[2px_2px_0_#000]' : 'border-ink shadow-[2px_2px_0_var(--shadow)]')}
-      >
-        <svg viewBox="0 0 24 24" className="size-[19px]">
-          <path d="M17.5 7.2A7 7 0 1 0 18 16.6" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
-          <path d="M14.6 16.8h3.6v-3.6" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </span>
-      {withWord && (
-        <span className="flex flex-col leading-none">
-          <span className={cn('font-display text-[21px] font-black tracking-[-0.045em]', light ? 'text-white' : 'text-ink')}>COBRA</span>
-          {withBy && <ByPP className="byline mt-0.5" light={light} />}
-        </span>
-      )}
+    <span className={cn('inline-flex flex-col items-start leading-none', className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={light ? '/brand/cobra-plus-white-sm.png' : '/brand/cobra-plus-blue-sm.png'}
+        alt="Cobra+"
+        width={102}
+        height={32}
+        className="h-8 w-auto"
+      />
+      {withBy && <ByPP className="byline mt-1" light={light} />}
     </span>
   )
 }

@@ -14,7 +14,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line-2 bg-bg">
       <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" aria-label="COBRA by PrimerosPrecios, inicio" className="min-w-0 shrink"><Logo withBy className="max-[359px]:[&_.byline]:hidden" /></Link>
+        <Link href="/" aria-label="Cobra+ by PrimerosPrecios, inicio" className="min-w-0 shrink"><Logo withBy className="max-[359px]:[&_.byline]:hidden" /></Link>
         <nav aria-label="Secciones" className="hidden items-center gap-1 md:flex">
           {SECTIONS.map(([href, label]) => (
             <a key={href} href={href} className="rounded-full px-3.5 py-2 text-[14px] font-bold text-muted transition-colors hover:bg-surface hover:text-ink">
@@ -24,7 +24,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <Link href="/ingresar" className="hidden rounded-full px-3.5 py-2 text-[14px] font-bold text-ink hover:bg-surface sm:block">Ingresar</Link>
-          <ButtonLink href="/registro" size="sm" className="shrink-0 max-[359px]:px-3">Empezá<span className="max-[359px]:hidden">&nbsp;gratis</span> <ArrowRight className="hidden size-3.5 sm:block" /></ButtonLink>
+          <ButtonLink href="/registro" size="sm" className="shrink-0 max-[359px]:px-3"><span>Empezá<span className="max-[359px]:hidden"> gratis</span></span> <ArrowRight className="hidden size-3.5 sm:block" /></ButtonLink>
         </div>
       </div>
     </header>
@@ -53,7 +53,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-line-2">
         <p className="mx-auto max-w-[1180px] px-4 py-5 text-[12.5px] font-semibold text-muted sm:px-6">
-          © {new Date().getFullYear()} PrimerosPrecios · COBRA no recibe ni custodia el dinero de tus clientes.
+          © {new Date().getFullYear()} PrimerosPrecios · Cobra+ no recibe ni custodia el dinero de tus clientes.
         </p>
       </div>
     </footer>

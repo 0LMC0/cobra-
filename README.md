@@ -1,4 +1,4 @@
-# COBRA
+# Cobra+
 
 **Cobrá más. Perseguí menos.** SaaS B2B de cobranzas y abonos recurrentes para pymes. Mercado inicial: Argentina.
 

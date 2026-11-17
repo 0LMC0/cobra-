@@ -11,7 +11,7 @@ const STEPS = [
   { key: 'company', icon: Building2, title: 'Crear tu empresa', desc: 'Moneda, zona horaria y datos de contacto.' },
   { key: 'first_customer', icon: UserPlus, title: 'Cargar tu primer cliente', desc: 'A quién le cobrás y a qué email le llegan los avisos.' },
   { key: 'first_charge', icon: FileText, title: 'Crear tu primer cobro o abono', desc: 'Cuánto te paga y cuándo vence.' },
-  { key: 'reminders', icon: Bell, title: 'Activar los recordatorios', desc: 'COBRA le avisa por email antes y después del vencimiento.' },
+  { key: 'reminders', icon: Bell, title: 'Activar los recordatorios', desc: 'Cobra+ le avisa por email antes y después del vencimiento.' },
 ] as const
 
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
@@ -42,7 +42,7 @@ export function HomeView({ dateLabel, onboardingStep, currency }: { dateLabel: s
         <section aria-labelledby="setup-title" className="overflow-hidden rounded-[22px] bg-surface ring-1 ring-line-2">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
             <div>
-              <h2 id="setup-title" className="text-[19px] tracking-[-0.02em]">Dejá COBRA lista para cobrar</h2>
+              <h2 id="setup-title" className="text-[19px] tracking-[-0.02em]">Dejá Cobra+ lista para cobrar</h2>
               <p className="text-[13.5px] text-muted">{doneCount} de {STEPS.length} pasos</p>
             </div>
             <div className="flex items-center gap-1.5" role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={STEPS.length} aria-label="Progreso de configuración">

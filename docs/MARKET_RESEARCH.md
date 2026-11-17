@@ -11,9 +11,9 @@ Cada afirmación lleva una etiqueta:
 
 No hay encuestas ni entrevistas propias todavía. No existe, hasta donde se buscó, un experimento sobre recordatorios de facturas entre pymes: la evidencia más cercana es de préstamos, tarjetas, matrículas e impuestos.
 
-## 1. Resumen: ocho hallazgos y qué cambia en COBRA
+## 1. Resumen: ocho hallazgos y qué cambia en Cobra+
 
-| # | Hallazgo | Tipo | Qué cambia en COBRA |
+| # | Hallazgo | Tipo | Qué cambia en Cobra+ |
 |---|---|---|---|
 | 1 | En 2026 cobrar tarde es lo normal: 6 de cada 10 pymes industriales esperaron más de lo pactado | Dato | El problema es real y actual. El mensaje central se mantiene |
 | 2 | WhatsApp es el canal: se abre 37 veces por día y 8 de cada 10 lo prefieren para hablar con empresas | Dato | **WhatsApp con un toque** entra en la Fase 3. El email solo no alcanza |
@@ -30,7 +30,7 @@ No hay encuestas ni entrevistas propias todavía. No existe, hasta donde se busc
 - Dato: el 62 % de las pymes industriales sufrió una extensión de los plazos de cobro pactados (Fundación Observatorio PyME, 2.º trimestre de 2026) [1].
 - Dato: el 24 % de esas pymes se atrasó en sus propios compromisos, el doble que un año antes [1].
 - Dato: se atrasa con proveedores el 15,3 %, con impuestos el 17,3 % y con bancos el 8,6 % [2].
-- Hipótesis: cuando la plata no alcanza para todos, cobra primero quien avisa a tiempo y con claridad. El banco cobra antes que el proveedor porque tiene sistema; COBRA le da ese sistema a quien no lo tiene.
+- Hipótesis: cuando la plata no alcanza para todos, cobra primero quien avisa a tiempo y con claridad. El banco cobra antes que el proveedor porque tiene sistema; Cobra+ le da ese sistema a quien no lo tiene.
 
 **Cuántos pueden usarlo.**
 - Dato sin verificar en fuente oficial: unos 2,2 millones de monotributistas y 388 mil autónomos a junio de 2026 [3].
@@ -57,23 +57,23 @@ No hay encuestas ni entrevistas propias todavía. No existe, hasta donde se busc
 | Conducta | Evidencia | Decisión de diseño |
 |---|---|---|
 | **Pierde horas.** | Indicio: en una encuesta a 2.008 pymes británicas, el 20 % dedica de 1 a 4 horas por semana a reclamar facturas [14] | El valor se cuenta en tiempo: "vos no escribís ninguno" |
-| **Le incomoda reclamar.** | Indicio viejo: un 10 % de las empresas británicas directamente no reclamaba, por incomodidad o por miedo a perder al cliente [15]. Hipótesis: en Argentina pesa más, porque el cliente suele ser un conocido | "COBRA le avisa por vos": el aviso sale amable y a tiempo, sin que tengas que escribir "che, ¿me pagás?" |
+| **Le incomoda reclamar.** | Indicio viejo: un 10 % de las empresas británicas directamente no reclamaba, por incomodidad o por miedo a perder al cliente [15]. Hipótesis: en Argentina pesa más, porque el cliente suele ser un conocido | "Cobra+ le avisa por vos": el aviso sale amable y a tiempo, sin que tengas que escribir "che, ¿me pagás?" |
 | **No abre otra app todos los días.** | Hipótesis | El resumen le llega por email. A futuro, marcar "pagó" desde el mismo resumen |
 | **Teme que el sistema mande algo mal.** | Hipótesis | Modo revisión: los primeros avisos se aprueban a mano. Pausa por cliente |
 | **No va a cargar 40 clientes a mano.** | Hipótesis | Importar desde Excel y poder empezar con tres clientes |
 
 ## 4. Competencia
 
-| Producto | Qué es | Para COBRA |
+| Producto | Qué es | Para Cobra+ |
 |---|---|---|
 | YoFacturo | Gestión para pymes con cuenta corriente y recordatorios de cobranza. Prueba de un mes sin tarjeta [16] | El competidor local más directo en recordatorios |
 | Xubio, Colppy, Contabilium | Gestión y contabilidad. Precios en pesos, de decenas de miles a más de cien mil por mes más IVA, según una comparativa no oficial. Xubio ajusta cada tres meses y prueba 14 días sin tarjeta [17] | Fijan lo que una pyme espera pagar y cómo espera probar |
 | Cresium | Identifica y vincula pagos de pymes de forma automática [18] | Posible integración futura para saber quién pagó |
 | CuotaQ | Cobros y recordatorios para clubes, academias y asociaciones [19] | Mismo problema, otro público |
-| Moonflow | Cobranzas con agentes de IA por WhatsApp, voz, email y SMS. Con sede en Lima y dos rondas de inversión [20] | Apunta a carteras más grandes. COBRA compite por simple |
+| Moonflow | Cobranzas con agentes de IA por WhatsApp, voz, email y SMS. Con sede en Lima y dos rondas de inversión [20] | Apunta a carteras más grandes. Cobra+ compite por simple |
 | Holded, Xero, Quipu | Facturación con recordatorios. En Holded, desde el plan de 99 € por mes [21] | Caros y pensados para otro país |
 
-**Dónde se para COBRA:** la herramienta más simple para quien cobra abonos. No hace contabilidad ni facturación. Se entiende en cuatro pasos y habla como habla la gente.
+**Dónde se para Cobra+:** la herramienta más simple para quien cobra abonos. No hace contabilidad ni facturación. Se entiende en cuatro pasos y habla como habla la gente.
 
 **Nombre:** una búsqueda rápida no encontró otro producto de cobranzas llamado "Cobra" en la región. No es un chequeo legal: hay que consultar el registro de marcas del INPI.
 
@@ -90,12 +90,12 @@ No hay encuestas ni entrevistas propias todavía. No existe, hasta donde se busc
 
 **WhatsApp oficial.** La API cobra por mensaje y las tarifas publicadas por proveedores no coinciden entre sí [24]. Por eso el primer paso es "con un toque": el mensaje sale del WhatsApp de quien cobra, sin costo y sin riesgo para su número.
 
-## 6. Qué cambió en COBRA con este estudio
+## 6. Qué cambió en Cobra+ con este estudio
 
 **Hecho hoy**
 - Precios en pesos y en dólares, con selector. Arranca en pesos.
-- El hero suma el cuarto paso, "A vos también te avisa", y el segundo paso pasa a ser "COBRA le avisa por vos".
-- Sección nueva "Cobrar es tratar con personas", con cuatro situaciones reales y la respuesta de COBRA.
+- El hero suma el cuarto paso, "A vos también te avisa", y el segundo paso pasa a ser "Cobra+ le avisa por vos".
+- Sección nueva "Cobrar es tratar con personas", con cuatro situaciones reales y la respuesta de Cobra+.
 - El email de ejemplo lleva los datos para transferir y pide el comprobante por respuesta. Antes mostraba un link de pago que no está en el plan cercano.
 - Reglas de avisos programadas y probadas en `src/domain/reminders.ts`: días hábiles, feriados, promesa de pago, corte al pagar, pausa, baja y pase a una persona.
 

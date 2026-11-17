@@ -1,5 +1,5 @@
 /**
- * Dinero en COBRA: enteros en unidades menores (centavos) + código ISO 4217.
+ * Dinero en Cobra+: enteros en unidades menores (centavos) + código ISO 4217.
  * Nunca floats. Nunca se suman monedas distintas.
  */
 

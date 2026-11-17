@@ -2,7 +2,7 @@
 
 ## Requisitos
 - Node 20 o superior (probado con Node 24) y npm.
-- Una cuenta de Supabase y un **proyecto nuevo, exclusivo de COBRA**.
+- Una cuenta de Supabase y un **proyecto nuevo, exclusivo de Cobra+**.
 
 ## 1. Proyecto local
 ```bash

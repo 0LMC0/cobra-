@@ -1,4 +1,4 @@
-# Arquitectura de COBRA
+# Arquitectura de Cobra+
 
 ## 1. Decisiones fundamentales
 
@@ -96,11 +96,11 @@ El resto **se calcula** en un solo lugar, `src/domain/charge-status.ts`, que tie
 
 ## 7. Dos flujos de dinero que nunca se mezclan
 
-| | A. COBRA cobra su suscripción | B. Los clientes de la empresa le pagan |
+| | A. Cobra+ cobra su suscripción | B. Los clientes de la empresa le pagan |
 |---|---|---|
 | Quién paga | La empresa usuaria | El cliente final de la empresa |
 | Tablas | `billing_subscriptions`, `billing_events` | `charges`, `payments`, `payment_allocations` |
-| Cuenta receptora | La cuenta de COBRA | **La cuenta de la empresa.** COBRA nunca recibe ni custodia esa plata |
+| Cuenta receptora | La cuenta de Cobra+ | **La cuenta de la empresa.** Cobra+ nunca recibe ni custodia esa plata |
 | MVP | Trial + adaptador de proveedor | Registro manual + link de pago externo |
 
 **Proveedor para A (pendiente de verificación):**

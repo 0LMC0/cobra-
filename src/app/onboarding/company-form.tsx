@@ -88,7 +88,7 @@ export function CompanyForm({ defaultEmail }: { defaultEmail: string }) {
         </div>
         <input type="hidden" name="country" value="AR" />
         <div className="flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[12.5px] text-muted">Vas a quedar como dueño/a de la empresa en COBRA.</p>
+          <p className="text-[12.5px] text-muted">Vas a quedar como dueño/a de la empresa en Cobra+.</p>
           <Button type="submit" size="lg" loading={pending}>Crear empresa y seguir</Button>
         </div>
       </Card>

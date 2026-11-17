@@ -1,15 +1,16 @@
 import { BellOff, Check, Mail } from 'lucide-react'
+import { Logo } from '@/components/ui/misc'
 import { cn } from '@/lib/cn'
 
 /**
- * El hero: COBRA contada en 4 pasos, los 4 a la vista y cada uno con su
+ * El hero: Cobra+ contada en 4 pasos, los 4 a la vista y cada uno con su
  * pantalla de EJEMPLO. En escritorio es una tira de izquierda a derecha;
  * en celular, una línea de tiempo de arriba hacia abajo.
  */
 const STEPS = [
   { title: 'Cargás a tu cliente', text: 'Nombre, email, cuánto te paga y cuándo vence. Una sola vez.', Screen: ScreenForm },
-  { title: 'COBRA le avisa por vos', text: 'Por email, sola. Y si querés por WhatsApp, te deja el mensaje escrito.', Screen: ScreenReminder },
-  { title: 'Te paga a vos y lo marcás', text: 'La plata va a tu cuenta. Marcás “Pagó” y COBRA no le escribe más.', Screen: ScreenPaid },
+  { title: 'Cobra+ le avisa por vos', text: 'Por email, sola. Y si querés por WhatsApp, te deja el mensaje escrito.', Screen: ScreenReminder },
+  { title: 'Te paga a vos y lo marcás', text: 'La plata va a tu cuenta. Marcás “Pagó” y Cobra+ no le escribe más.', Screen: ScreenPaid },
   { title: 'A vos también te avisa', text: 'Te llega un resumen: quién pagó, qué vence hoy y quién se atrasó.', Screen: ScreenDigest },
 ] as const
 
@@ -112,7 +113,7 @@ function ScreenReminder() {
         Hola Laura: te recordamos que la cuota de noviembre por <b className="font-bold text-ink">$ 150.000</b> vence el martes 10.
       </p>
       <p className="mt-auto flex items-center gap-1.5 pt-2 text-[11.5px] font-extrabold text-ok">
-        <Check className="size-3.5" strokeWidth={3.5} /> Lo mandó COBRA, no vos
+        <Check className="size-3.5" strokeWidth={3.5} /> Lo mandó Cobra+, no vos
       </p>
     </div>
   )
@@ -159,8 +160,8 @@ function ScreenDigest() {
   return (
     <div className="flex h-full flex-col">
       <MailHead
-        icon={<span className="grid size-8 shrink-0 place-items-center rounded-full bg-navy font-display text-[13px] font-black text-white">C</span>}
-        from="COBRA"
+        icon={<Logo withWord={false} className="size-8 rounded-full" />}
+        from="Cobra+"
         to="Para: vos"
       />
       <p className="mt-2.5 text-[14px] leading-snug font-extrabold">Tu resumen de hoy</p>

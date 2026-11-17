@@ -1,4 +1,4 @@
-# COBRA — Documento de producto (PRD)
+# Cobra+ — Documento de producto (PRD)
 
 > **Cobrá más. Perseguí menos.**
 > SaaS B2B de cobranzas y gestión de ingresos recurrentes. Mercado inicial: Argentina.
@@ -18,9 +18,9 @@ Las pymes y profesionales que cobran abonos o servicios recurrentes llevan la co
 
 **Persona principal:** la dueña o dueño, o la persona de administración. Usa el celular y la compu, no es técnica y hoy dedica entre 3 y 10 horas por semana a perseguir pagos. *Estimación de hipótesis: hay que validarla con entrevistas, no es un dato.*
 
-**No es para:** quien necesita un ERP, contabilidad completa, facturación electrónica AFIP/ARCA o custodia de fondos. COBRA no toca el dinero.
+**No es para:** quien necesita un ERP, contabilidad completa, facturación electrónica AFIP/ARCA o custodia de fondos. Cobra+ no toca el dinero.
 
-## 3. Las 10 preguntas que COBRA responde al instante
+## 3. Las 10 preguntas que Cobra+ responde al instante
 
 1. ¿Cuánto tengo para cobrar?
 2. ¿Cuánto cobré este mes?
@@ -49,11 +49,11 @@ Las pymes y profesionales que cobran abonos o servicios recurrentes llevan la co
 | Recordatorios | Secuencia por email configurable con plantillas editables y variables. Se detiene sola al pagar. |
 | Resumen para quien cobra | Email a dueño/a y administración con los pagos de ayer, lo que vence hoy y los atrasados. Sólo se envía los días con novedades. Hora configurable y baja por usuario. |
 | Promesa de pago | Se anota la fecha que prometió el cliente. No recibe avisos hasta ese día y después hay un solo seguimiento. |
-| WhatsApp con un toque | COBRA arma el mensaje y quien cobra lo envía desde su propio WhatsApp. No usa la API ni envía sola. |
+| WhatsApp con un toque | Cobra+ arma el mensaje y quien cobra lo envía desde su propio WhatsApp. No usa la API ni envía sola. |
 | Datos para transferir | Alias y titular por empresa, incluidos en cada aviso. El cliente responde con el comprobante. |
 | Control de los avisos | Modo revisión (aprobar antes de enviar), pausa por cliente, baja a pedido del cliente, sólo días hábiles y sin feriados. Después del último aviso, el caso pasa a quien cobra. |
 | Reportes | Exportación CSV de cobros y pagos. |
-| Plan de COBRA | Planes, trial de 14 días, límites en el servidor y panel de facturación. |
+| Plan de Cobra+ | Planes, trial de 14 días, límites en el servidor y panel de facturación. |
 
 ### Fuera del MVP (identificado como "Próximamente" u oculto)
 - Cobro online con Mercado Pago para los clientes de la empresa, con conciliación automática.

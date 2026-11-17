@@ -149,7 +149,7 @@ export function MonthStrip() {
         </ol>
 
         <p className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[12.5px] font-semibold text-muted">
-          <Legend className="bg-brand text-ink" icon={<Mail className="size-2.5" />}>COBRA mandó un email</Legend>
+          <Legend className="bg-brand text-ink" icon={<Mail className="size-2.5" />}>Cobra+ mandó un email</Legend>
           <Legend className="bg-ok-bright text-ink" icon={<Check className="size-2.5" strokeWidth={4} />}>Te pagó</Legend>
           <Legend className="border-[1.5px] border-dashed border-line-2 text-faint" icon={<BellOff className="size-2.5" />}>Email que ya no se manda</Legend>
           <span className="inline-flex items-center gap-1.5"><span className="size-3.5 rounded-full ring-2 ring-danger-bright" />Día que vence</span>
@@ -161,14 +161,14 @@ export function MonthStrip() {
         <p className="min-h-[3rem] text-[16px] leading-snug font-bold sm:min-h-0 sm:text-[17px]" aria-live="polite">
           {done ? (
             payDay === null
-              ? `No pagó. COBRA le mandó los ${sent} avisos y lo ves en rojo en tu panel.`
+              ? `No pagó. Cobra+ le mandó los ${sent} avisos y lo ves en rojo en tu panel.`
               : sent === 0
-                ? `Pagó el día ${payDay}, antes del primer aviso. COBRA no le mandó nada.`
-                : `Pagó el día ${payDay}. COBRA mandó ${sent} ${sent === 1 ? 'email' : 'emails'}${cancelled ? ` y canceló ${cancelled === 1 ? 'el que faltaba' : `los ${cancelled} que faltaban`}` : ''}. Vos no escribiste ninguno.`
+                ? `Pagó el día ${payDay}, antes del primer aviso. Cobra+ no le mandó nada.`
+                : `Pagó el día ${payDay}. Cobra+ mandó ${sent} ${sent === 1 ? 'email' : 'emails'}${cancelled ? ` y canceló ${cancelled === 1 ? 'el que faltaba' : `los ${cancelled} que faltaban`}` : ''}. Vos no escribiste ninguno.`
           ) : !current ? (
             'Empieza el mes…'
           ) : current.kind === 'sent' ? (
-            <>Día {current.day}: COBRA le manda un email. <span className="font-semibold text-muted">{current.text}</span></>
+            <>Día {current.day}: Cobra+ le manda un email. <span className="font-semibold text-muted">{current.text}</span></>
           ) : current.kind === 'paid' ? (
             <>Día {current.day}: te pagó {AMOUNT}.</>
           ) : current.kind === 'cancelled' ? (

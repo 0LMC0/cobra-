@@ -1,6 +1,6 @@
-# Seguridad de COBRA
+# Seguridad de Cobra+
 
-COBRA guarda información comercial y financiera de terceros. Este documento dice qué hacemos y qué **todavía no** hacemos. No declaramos certificaciones ni cumplimientos que no hayan sido verificados.
+Cobra+ guarda información comercial y financiera de terceros. Este documento dice qué hacemos y qué **todavía no** hacemos. No declaramos certificaciones ni cumplimientos que no hayan sido verificados.
 
 ## Aislamiento entre empresas
 - Hay doble barrera: autorización en el servidor (`requireOrg(minRole)`) y RLS en Postgres.
@@ -31,7 +31,7 @@ COBRA guarda información comercial y financiera de terceros. Este documento dic
 - CSP restrictiva, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` y `Permissions-Policy` mínima. Se configuran en `next.config.ts`.
 
 ## Datos personales (Argentina)
-- Rige la Ley 25.326 de Protección de Datos Personales. COBRA actúa como **encargado de tratamiento** de los datos de los clientes finales que carga cada empresa.
+- Rige la Ley 25.326 de Protección de Datos Personales. Cobra+ actúa como **encargado de tratamiento** de los datos de los clientes finales que carga cada empresa.
 - Se aplica minimización: el CUIT y la dirección son opcionales.
 - Los recordatorios por email respetan `contact_opt_out` e incluyen un pie que identifica a la empresa remitente.
 - Exportación y borrado: el owner puede exportar todo y pedir la baja de la empresa. Hay que definir la retención de backups.

@@ -1,4 +1,4 @@
-# Base de datos de COBRA
+# Base de datos de Cobra+
 
 Postgres en Supabase. Las migraciones versionadas viven en `supabase/migrations/` y se aplican en orden.
 
@@ -6,7 +6,7 @@ Postgres en Supabase. Las migraciones versionadas viven en `supabase/migrations/
 
 | Término de negocio | Tabla | Qué es |
 |---|---|---|
-| Suscripción **de COBRA** | `billing_subscriptions` | Lo que la empresa le paga a COBRA. |
+| Suscripción **de Cobra+** | `billing_subscriptions` | Lo que la empresa le paga a Cobra+. |
 | **Abono** | `agreements` | Contrato recurrente entre la empresa y su cliente. |
 | **Cobro** (obligación) | `charges` | Un importe que alguien debe en una fecha. No implica que se haya pagado. |
 | **Pago** (transacción) | `payments` | Dinero que efectivamente entró, según quien lo registró o verificó. |

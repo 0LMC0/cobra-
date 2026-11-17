@@ -1,9 +1,20 @@
-# Sistema de diseño de COBRA (by PrimerosPrecios)
+# Sistema de diseño de Cobra+ (by PrimerosPrecios)
 
 ## Principio: familia PrimerosPrecios, y que se entienda al toque
-COBRA usa el mismo lenguaje visual que primerosprecios.com (toolkit y Academia). Lo que la distingue es el contenido: el mes de un cliente contado día por día.
+Cobra+ usa el mismo lenguaje visual que primerosprecios.com (toolkit y Academia). Lo que la distingue es el contenido: el mes de un cliente contado día por día.
 
-Regla número uno: **en cinco segundos se tiene que entender qué es y qué hace.** Primero viene la explicación literal ("Anotás a quién le cobrás… COBRA les manda el recordatorio por email… deja de escribirles cuando te pagan"). La personalidad viene después y nunca reemplaza la explicación.
+Regla número uno: **en cinco segundos se tiene que entender qué es y qué hace.** Primero viene la explicación literal ("Anotás a quién le cobrás… Cobra+ les manda el recordatorio por email… deja de escribirles cuando te pagan"). La personalidad viene después y nunca reemplaza la explicación.
+
+## Logo y nombre
+El producto se llama **Cobra+** (se lee "cobra plus"). El logo es la palabra "Cobra" dibujada a mano con un "+" arriba a la derecha (original en `public/brand/cobra-plus-original.png`, azul `#1D4ED8`).
+
+| Uso | Archivo |
+|---|---|
+| Sobre fondo claro | `public/brand/cobra-plus-blue-sm.png` (azul) |
+| Sobre azul tinta (barra lateral, login) | `public/brand/cobra-plus-white-sm.png` (blanco) |
+| Ícono del sitio y de la app | `src/app/icon.png` y `src/app/apple-icon.png`: la "C" con el "+" sobre azul |
+
+Siempre con el componente `Logo` (`withBy` suma "by PrimerosPrecios"; `withWord={false}` deja sólo el ícono). En textos se escribe "Cobra+", nunca "COBRA" ni "Cobra Plus".
 
 ## Color (tokens en `src/app/globals.css`, tema único claro como PrimerosPrecios)
 
@@ -55,10 +66,10 @@ En CSS propio, las fuentes se referencian con las variables de `next/font` (`--f
 | Sello | `.stamp` | **PAGADO**, sólo para pagos |
 
 ## La landing: 9 bloques, una idea cada uno
-1. **¿Qué es COBRA?** La pregunta enorme y la respuesta con marcador, a la izquierda; el botón a la derecha. Debajo, `HeroSteps`: los 4 pasos a la vista, cada uno con su pantalla de ejemplo.
+1. **¿Qué es Cobra+?** La pregunta enorme y la respuesta con marcador, a la izquierda; el botón a la derecha. Debajo, `HeroSteps`: los 4 pasos a la vista, cada uno con su pantalla de ejemplo.
 2. **Para quién:** franja azul con los rubros.
 3. **Un ejemplo completo:** `MonthStrip`, el mes de un cliente.
-4. **Personas:** `HumanCases`, cuatro situaciones reales ("Mañana te transfiero") y lo que hace COBRA en cada una. Sale de `MARKET_RESEARCH.md`.
+4. **Personas:** `HumanCases`, cuatro situaciones reales ("Mañana te transfiero") y lo que hace Cobra+ en cada una. Sale de `MARKET_RESEARCH.md`.
 5. **Tu panel:** `PanelDemo`.
 6. **Los emails:** bloque azul con `EmailPreview` (el que recibe el cliente) y `DigestPreview` (el resumen que recibe quien cobra).
 7. **Precios:** con selector de moneda (pesos o dólares) y de frecuencia.
@@ -70,8 +81,8 @@ Antes de agregar una sección, preguntarse cuál sale. Cada bloque tiene un solo
 ## Lo que no se usa
 Nada de esto explica el producto, así que no va: manchas de color difuminadas, degradados, brillos, vidrio esmerilado, elementos flotando, apariciones al hacer scroll, tarjetas que se elevan al pasar el mouse, semáforos de ventana en las capturas, pastillas arriba del titular y todo centrado. Los titulares van a la izquierda, las secciones se separan con una línea fina y el fondo es el cuadriculado de PrimerosPrecios en toda la página.
 
-## Piezas propias de COBRA
-- **`HeroSteps`**: los 4 pasos (cargás a tu cliente, COBRA le avisa, te paga y lo marcás, a vos también te avisa). En escritorio es una tira de izquierda a derecha unida por una línea punteada; en celular, una línea de tiempo vertical. No tiene JavaScript.
+## Piezas propias de Cobra+
+- **`HeroSteps`**: los 4 pasos (cargás a tu cliente, Cobra+ le avisa, te paga y lo marcás, a vos también te avisa). En escritorio es una tira de izquierda a derecha unida por una línea punteada; en celular, una línea de tiempo vertical. No tiene JavaScript.
 - **`MonthStrip`**: el mes de un cliente de ejemplo, del 1 al 21 de noviembre. Se reproduce sola cuando entra en pantalla y cuenta en una frase lo que pasa cada día. Se puede tocar otro día de pago o "¿Y si no paga?". En escritorio es una tira de una fila; en celular, un calendario de 7 columnas.
 - **`PanelDemo`**: tres totales y cuatro clientes. "Pagó" hace caer el sello y recalcula los totales.
 - **`EmailPreview`** y **`DigestPreview`**: los dos emails, con lo variable resaltado en el del cliente.
@@ -88,6 +99,6 @@ Nada de esto explica el producto, así que no va: manchas de color difuminadas, 
 - `prefers-reduced-motion` apaga la reproducción automática, las etiquetas flotantes, las apariciones al scrollear y los sellos animados.
 
 ## Voz
-- Voseo rioplatense y frases literales: "Cargás tus clientes", "COBRA les avisa", "Marcás quién pagó".
+- Voseo rioplatense y frases literales: "Cargás tus clientes", "Cobra+ les avisa", "Marcás quién pagó".
 - Antes de ser ingeniosa, que se entienda.
 - Los botones dicen lo que pasa: "Probalo gratis 14 días", "Crear mi cuenta gratis", "Pagó".

@@ -10,23 +10,23 @@ const figtree = Figtree({ variable: '--font-body', subsets: ['latin'], display: 
 const caveat = Caveat({ variable: '--font-caveat', subsets: ['latin'], weight: ['600', '700'], display: 'swap', preload: false })
 
 const description =
-  'COBRA les recuerda a tus clientes que te paguen: les manda un email antes y después del vencimiento, deja de escribirles cuando te pagan y a vos te manda un resumen. De PrimerosPrecios.'
+  'Cobra+ les recuerda a tus clientes que te paguen: les manda un email antes y después del vencimiento, deja de escribirles cuando te pagan y a vos te manda un resumen. De PrimerosPrecios.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
-  title: { default: 'COBRA: recordatorios de pago para tus clientes | PrimerosPrecios', template: '%s · COBRA' },
+  title: { default: 'Cobra+: recordatorios de pago para tus clientes | PrimerosPrecios', template: '%s · Cobra+' },
   description,
-  applicationName: 'COBRA',
+  applicationName: 'Cobra+',
   authors: [{ name: 'PrimerosPrecios', url: 'https://primerosprecios.com' }],
   publisher: 'PrimerosPrecios',
   openGraph: {
     type: 'website',
     locale: 'es_AR',
-    siteName: 'COBRA by PrimerosPrecios',
-    title: 'COBRA: recordatorios de pago para tus clientes',
+    siteName: 'Cobra+ by PrimerosPrecios',
+    title: 'Cobra+: recordatorios de pago para tus clientes',
     description,
   },
-  twitter: { card: 'summary_large_image', title: 'COBRA: recordatorios de pago para tus clientes', description },
+  twitter: { card: 'summary_large_image', title: 'Cobra+: recordatorios de pago para tus clientes', description },
   robots: { index: true, follow: true },
 }
 

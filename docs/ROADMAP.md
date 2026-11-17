@@ -1,4 +1,4 @@
-# Roadmap de COBRA
+# Roadmap de Cobra+
 
 Estado al **15/11/2026**.
 
@@ -49,7 +49,7 @@ Estado al **15/11/2026**.
 ## Fase 3 — Automatización ⬜
 - 🟡 **Reglas de avisos** (`src/domain/reminders.ts`, 14 tests): secuencia por defecto −5, −1, 0, +3 y +7, sólo días hábiles y sin feriados, promesa de pago, corte al pagar, pausa, baja y pase a quien cobra. Falta conectarlas a la base y al envío.
 - **Promesa de pago:** anotar la fecha prometida, silencio hasta ese día y un solo seguimiento.
-- **WhatsApp con un toque:** mensaje armado por COBRA y enviado por quien cobra desde su WhatsApp (link `wa.me`). Sin API.
+- **WhatsApp con un toque:** mensaje armado por Cobra+ y enviado por quien cobra desde su WhatsApp (link `wa.me`). Sin API.
 - **Datos para transferir** por empresa en cada aviso. **Modo revisión** y **pausa por cliente**.
 - Plantillas editables con variables, reglas y pasos de recordatorio, `reminder_deliveries` idempotente.
 - Adaptador Resend, cron por hora, ventana horaria, reintentos con backoff, opt-out.

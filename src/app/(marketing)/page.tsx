@@ -13,27 +13,27 @@ const WHO = ['Agencias', 'Estudios contables', 'Estudios de diseño', 'Mantenimi
 
 const FAQ = [
   ['¿Para quién es?', 'Para quien les cobra a los mismos clientes todos los meses: agencias, estudios contables y de diseño, servicios de mantenimiento, consultoras y profesionales independientes.'],
-  ['¿COBRA cobra la plata por mí?', 'No. El dinero va directo de tu cliente a tu cuenta, como siempre. COBRA sólo ordena tus cobros y avisa. Nunca recibimos ni guardamos tu plata.'],
-  ['¿COBRA me avisa a mí también?', 'Sí. Te manda un resumen por email con quién te pagó, qué vence hoy y quién está atrasado. Sólo te escribe los días que hay novedades.'],
+  ['¿Cobra+ cobra la plata por mí?', 'No. El dinero va directo de tu cliente a tu cuenta, como siempre. Cobra+ sólo ordena tus cobros y avisa. Nunca recibimos ni guardamos tu plata.'],
+  ['¿Cobra+ me avisa a mí también?', 'Sí. Te manda un resumen por email con quién te pagó, qué vence hoy y quién está atrasado. Sólo te escribe los días que hay novedades.'],
   ['¿Cómo es la prueba gratis?', `Durante ${TRIAL_DAYS} días usás todo lo del plan Growth sin pagar nada. Cuando termina, seguís con el plan que elijas o cancelás.`],
   ['¿Puedo pasar mis clientes desde Excel?', 'Sí, desde un archivo CSV. Antes de importar te mostramos los repetidos y los datos con errores.'],
   ['¿Qué pasa si un cliente paga una parte?', 'Anotás el pago parcial. Lo que falta queda pendiente y los avisos siguen sólo por ese saldo.'],
   ['¿Puedo cobrar en pesos y en dólares?', 'Sí. Cada cobro tiene su moneda y los totales se muestran por separado. Nunca se suman monedas distintas.'],
-  ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Para WhatsApp, COBRA te deja el mensaje escrito y lo mandás vos desde tu teléfono con un toque. El envío automático por la API oficial de WhatsApp Business viene después.'],
+  ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Para WhatsApp, Cobra+ te deja el mensaje escrito y lo mandás vos desde tu teléfono con un toque. El envío automático por la API oficial de WhatsApp Business viene después.'],
   ['¿Y si a mi cliente le molesta que le escriban?', 'Vos decidís el tono, los días y a quién. Podés leer cada mensaje antes de que salga y pausar los avisos de un cliente cuando quieras.'],
-  ['¿Qué pasa si me dice que paga otro día?', 'Anotás la fecha que te prometió. COBRA no le escribe hasta ese día y, si no pagó, vuelve a avisarle.'],
-  ['¿Quién está detrás de COBRA?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. COBRA es la nuestra para quienes cobran todos los meses.'],
+  ['¿Qué pasa si me dice que paga otro día?', 'Anotás la fecha que te prometió. Cobra+ no le escribe hasta ese día y, si no pagó, vuelve a avisarle.'],
+  ['¿Quién está detrás de Cobra+?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. Cobra+ es la nuestra para quienes cobran todos los meses.'],
 ]
 
 export default function LandingPage() {
   return (
     <main className="grid-paper">
-      {/* ───────────── 1. ¿Qué es COBRA? + los 4 pasos ───────────── */}
+      {/* ───────────── 1. ¿Qué es Cobra+? + los 4 pasos ───────────── */}
       <section id="que-es" className="scroll-mt-16">
         <div className="mx-auto max-w-[1180px] px-4 pt-9 pb-16 sm:px-6 lg:pt-12 lg:pb-20">
           <div className="grid items-end gap-7 lg:grid-cols-[1fr_auto] lg:gap-12">
             <h1 className="flex flex-col gap-3 sm:gap-4">
-              <span className="display-xl text-[50px] sm:text-[80px] lg:text-[96px]">¿Qué es COBRA?</span>
+              <span className="display-xl text-[50px] sm:text-[80px] lg:text-[96px]">¿Qué es Cobra+?</span>
               <span className="max-w-[780px] font-display text-[26px] leading-[1.15] font-extrabold tracking-[-0.03em] sm:text-[36px] lg:text-[40px]">
                 Una app que les recuerda a tus clientes <span className="marker">que te paguen.</span>
               </span>
@@ -43,7 +43,7 @@ export default function LandingPage() {
                 Probalo gratis {TRIAL_DAYS} días <ArrowRight className="size-4" />
               </ButtonLink>
               <p className="max-w-[19rem] text-[13.5px] font-semibold text-muted lg:text-right">
-                COBRA no toca tu plata: tus clientes te pagan a vos, como siempre.
+                Cobra+ no toca tu plata: tus clientes te pagan a vos, como siempre.
               </p>
             </div>
           </div>
@@ -75,8 +75,8 @@ export default function LandingPage() {
       <Section
         noRule
         label="Un ejemplo completo"
-        title="Un mes con COBRA, día por día."
-        intro="Estudio Rivas te paga todos los meses y vence el día 10. Mirá qué hace COBRA sola, sin que vos escribas nada."
+        title="Un mes con Cobra+, día por día."
+        intro="Estudio Rivas te paga todos los meses y vence el día 10. Mirá qué hace Cobra+ sola, sin que vos escribas nada."
       >
         <MonthStrip />
       </Section>
@@ -84,8 +84,8 @@ export default function LandingPage() {
       {/* ───────────── 4. Personas ───────────── */}
       <Section
         label="Pensado para personas"
-        title={<>Cobrar es tratar con personas. <span className="marker">COBRA está pensada para eso.</span></>}
-        intro="A veces se olvidan, a veces lo patean, a veces andan justos. Así responde COBRA a lo que pasa de verdad."
+        title={<>Cobrar es tratar con personas. <span className="marker">Cobra+ está pensada para eso.</span></>}
+        intro="A veces se olvidan, a veces lo patean, a veces andan justos. Así responde Cobra+ a lo que pasa de verdad."
       >
         <HumanCases />
       </Section>
@@ -111,13 +111,13 @@ export default function LandingPage() {
       <section className="px-4 sm:px-6">
         <div className="mx-auto max-w-[1180px] rounded-[28px] bg-navy px-5 py-12 text-white sm:px-10 sm:py-14">
           <p className="eyebrow eyebrow-light">Los emails</p>
-          <h2 className="mt-4 max-w-3xl text-[32px] text-white sm:text-[44px]">COBRA manda dos emails: uno a tu cliente y otro a vos.</h2>
+          <h2 className="mt-4 max-w-3xl text-[32px] text-white sm:text-[44px]">Cobra+ manda dos emails: uno a tu cliente y otro a vos.</h2>
           <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-8">
             <div className="flex min-w-0 flex-col gap-5">
               <div>
                 <h3 className="text-[21px] text-white">A tu cliente: el recordatorio</h3>
                 <p className="mt-1.5 text-[15.5px] leading-relaxed text-white/75">
-                  Claro y amable, con el nombre de tu empresa. Lo marcado en amarillo lo completa COBRA; el texto lo podés cambiar.
+                  Claro y amable, con el nombre de tu empresa. Lo marcado en amarillo lo completa Cobra+; el texto lo podés cambiar.
                 </p>
               </div>
               <EmailPreview />
@@ -177,7 +177,7 @@ export default function LandingPage() {
             <ButtonLink href="/registro" size="lg" variant="dark" className="max-w-full">
               Probalo gratis {TRIAL_DAYS} días <ArrowRight className="size-4" />
             </ButtonLink>
-            <p className="text-[14px] font-semibold text-ink/80">Cargás tus clientes y COBRA hace el resto.</p>
+            <p className="text-[14px] font-semibold text-ink/80">Cargás tus clientes y Cobra+ hace el resto.</p>
           </div>
         </div>
       </section>
