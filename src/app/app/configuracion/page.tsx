@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Card, Badge, Alert } from '@/components/ui/misc'
 import { requireOrg } from '@/server/auth'
 import { createClient } from '@/lib/supabase/server'
-import { FREQUENCY_LABEL, type Frequency } from '@/domain/dates'
+import { FREQUENCY_LABEL, formatDate, type Frequency } from '@/domain/dates'
 import { ROLE_LABEL, isOrgRole, can } from '@/domain/roles'
 import { DEFAULT_DIGEST_FREQUENCY, type DigestFrequency } from '@/domain/digest'
 import { DigestPreferenceForm } from '@/components/app/digest-preference'
@@ -10,12 +10,15 @@ import { setDigestFrequency } from '@/server/actions/preferences'
 import { ReminderSettingsForm } from '@/components/app/reminder-settings-form'
 import { updateReminderSettings } from '@/server/actions/reminder-settings'
 import { PlanUsageCard } from '@/components/app/plan-usage'
+import { CancelSubscription, PlanPicker } from '@/components/app/plan-picker'
+import { cancelSubscription, startSubscription } from '@/server/actions/subscription'
+import { PLAN_NAME } from '@/config/plans'
 import { getPlanUsage } from '@/server/queries'
 import { todayIn } from '@/domain/dates'
 
 export const metadata: Metadata = { title: 'Configuración' }
 
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
   const ctx = await requireOrg('viewer')
   const { org } = ctx
   const supabase = await createClient()
@@ -41,6 +44,11 @@ export default async function SettingsPage() {
     .maybeSingle()
 
   const usage = await getPlanUsage(org.id, todayIn(org.timezone))
+  const { plan: planResult } = await searchParams
+  const { data: sub } = await supabase.from('subscriptions').select('status, current_period_end').eq('org_id', org.id).maybeSingle()
+  const renewing = usage.plan !== 'free' && sub?.status !== 'cancelled'
+  const until = sub?.current_period_end ? formatDate((sub.current_period_end as string).slice(0, 10), { day: 'numeric', month: 'long' }) : null
+  const canManageBilling = can(ctx.role, 'billing.manage')
 
   const rows: [string, string][] = [
     ['Nombre', org.name],
@@ -61,7 +69,17 @@ export default async function SettingsPage() {
 
       <section id="tu-plan" className="flex scroll-mt-24 flex-col gap-3">
         <h2 className="text-[19px]">Tu plan</h2>
+        {planResult === 'activo' && <Alert tone="ok" title="¡Listo! Tu plan ya está activo">Gracias por sumarte. Los avisos ya no tienen tope.</Alert>}
+        {planResult === 'pendiente' && <Alert tone="info" title="Mercado Pago está procesando el pago">Apenas se confirme, tu plan se activa solo. Puede tardar unos minutos.</Alert>}
+        {(planResult === 'error' || planResult === 'no-corresponde' || planResult === 'sin-datos') && (
+          <Alert tone="warn" title="No pudimos confirmar el pago todavía">Si pagaste, se va a activar solo en unos minutos. Si no, probá de nuevo.</Alert>
+        )}
         <PlanUsageCard usage={usage} />
+        {usage.plan === 'free' || !renewing ? (
+          <Card className="p-5"><PlanPicker current={usage.plan} action={startSubscription} canManage={canManageBilling} /></Card>
+        ) : (
+          canManageBilling && <CancelSubscription action={cancelSubscription} planName={PLAN_NAME[usage.plan]} until={until} />
+        )}
       </section>
 
       <section className="flex flex-col gap-3">

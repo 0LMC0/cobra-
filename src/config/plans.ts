@@ -85,10 +85,10 @@ export const PLANS: readonly Plan[] = [
     priceArsMonthly: 18_900,
     limits: { activeCustomers: 30, seats: 1 },
     features: [
-      { label: 'Hasta 30 clientes activos', available: true },
-      { label: 'Cobros únicos y recurrentes', available: true },
       { label: 'Avisos automáticos por email sin tope', available: true },
       { label: 'Botón de WhatsApp con el mensaje listo', available: true },
+      { label: 'Hasta 30 clientes activos', available: true },
+      { label: 'Cobros únicos y recurrentes', available: true },
       { label: 'Panel de cobranzas y vencimientos', available: true },
       { label: '1 usuario', available: true },
     ],

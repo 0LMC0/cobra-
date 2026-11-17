@@ -34,7 +34,7 @@ export function PlanUsageCard({ usage, compact = false }: { usage: PlanUsage; co
           {exhausted
             ? <>Llegaste al tope de este mes: los avisos por email vuelven el 1° del mes que viene. El botón de WhatsApp sigue funcionando sin límite.</>
             : <>Te quedan <b className="text-ink">{left}</b> este mes. El botón de WhatsApp no cuenta: lo mandás vos.</>}
-          {!compact && <> Los planes pagos mandan avisos sin tope; vas a poder pasarte desde acá con Mercado Pago muy pronto. <Link href="/#precios" className="font-bold text-brand-text hover:underline">Ver planes</Link></>}
+          {compact && <> <Link href="/app/configuracion#tu-plan" className="font-bold text-brand-text hover:underline">Pasate a un plan sin tope</Link></>}
         </p>
       )}
     </div>
