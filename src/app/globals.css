@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+/* ── COBRA by PrimerosPrecios ──────────────────────────────────────────
+   Mismo lenguaje visual que primerosprecios.com: crema cuadriculado,
+   azul tinta, naranja, Poppins pesada, marcador amarillo, líneas finas
+   y el botón naranja con sombra dura. Sin degradados, sin brillos y sin
+   adornos que no expliquen algo.
+   Tema único claro, igual que el resto de PrimerosPrecios.
+   Ver docs/DESIGN_SYSTEM.md. */
+:root {
+  --bg: #fbf7f1;
+  --bg-deep: #f5eee3;
+  --surface: #ffffff;
+  --surface-2: #fcfaf7;
+  --surface-3: #f4eee6;
+  --ink: #16233b;
+  --navy: #16233b;
+  --navy-2: #22314f;
+  --muted: #5f6b82;
+  --faint: #78839a;
+  --line: #efe7dc;
+  --line-2: #e3d8c8;
+  --line-strong: #16233b;
+
+  --brand: #ff6a1a;
+  --brand-hover: #ff7b33;
+  --brand-d: #ef5e0f;
+  --brand-ink: #16233b;
+  --brand-soft: #fff1e7;
+  --brand-text: #c2410c;
+  --marker: #ffde5c;
+
+  /* Semánticos: "-bright" para rellenos e íconos, el base para texto (AA). */
+  --ok: #0b7f62;      --ok-bright: #13b58c;     --ok-soft: #e4f6f0;
+  --warn: #9a5b00;    --warn-bright: #f5a623;   --warn-soft: #fdf1dd;
+  --danger: #c7353a;  --danger-bright: #ef4d52; --danger-soft: #fde9ea;
+  --info: #2456d6;    --info-bright: #2f6bff;   --info-soft: #eaf1ff;
+  --purple: #6a3df0;  --purple-bright: #7c4dff; --purple-soft: #f0eaff;
+
+  --ring: #ff6a1a;
+  --shadow: #16233b;
+  --shadow-soft: 0 12px 34px rgba(23, 34, 56, 0.07);
+  --shadow-lift: 0 28px 70px rgba(23, 34, 56, 0.16);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-d: var(--brand-d);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-text: var(--brand-text);
+  --color-marker: var(--marker);
+  --color-ok: var(--ok);
+  --color-ok-bright: var(--ok-bright);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-bright: var(--warn-bright);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-bright: var(--danger-bright);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-bright: var(--info-bright);
+  --color-info-soft: var(--info-soft);
+  --color-purple: var(--purple);
+  --color-purple-bright: var(--purple-bright);
+  --color-purple-soft: var(--purple-soft);
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), var(--font-body), sans-serif;
+  --font-hand: var(--font-caveat), cursive;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  p { text-wrap: pretty; }
+
+  /* Titulares: Poppins pesada y apretada, como primerosprecios.com. */
+  h1, h2, h3, .display {
+    font-family: var(--font-poppins), var(--font-body), sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  :focus-visible { outline: 2.5px solid var(--ring); outline-offset: 2px; }
+  @media (max-width: 768px) {
+    input, select, textarea { font-size: 16px; }
+  }
+}
+
+@layer components {
+  .display-xl { font-weight: 900; letter-spacing: -0.045em; line-height: 0.98; }
+
+  /* Números: siempre tabulares. `.money` = importe protagonista. */
+  .num { font-variant-numeric: tabular-nums lining-nums; }
+  .money {
+    font-family: var(--font-poppins), var(--font-body), sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Rótulo chico en mayúsculas (los "eyebrows" de PrimerosPrecios). */
+  .label {
+    font-family: var(--font-body), sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* Eyebrow con el guion naranja del toolkit. */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--brand);
+    flex: none;
+  }
+  .eyebrow-light { color: #fff; }
+
+  /* Sombra dura PrimerosPrecios: sólo en lo protagonista. */
+  .hard { border: 2px solid var(--line-strong); box-shadow: 5px 5px 0 var(--shadow); }
+  .hard-sm { border: 1.5px solid var(--line-strong); box-shadow: 3px 3px 0 var(--shadow); }
+
+  /* Tarjeta secundaria: borde fino, sin sombra dura. */
+  .soft { border: 1px solid var(--line-2); box-shadow: var(--shadow-soft); }
+
+  /* Marcador amarillo debajo de la palabra. */
+  .marker {
+    background: linear-gradient(transparent 56%, var(--marker) 56%, var(--marker) 94%, transparent 94%);
+    padding: 0 0.06em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* Cuadriculado tenue de primerosprecios.com. */
+  .grid-paper {
+    background-image:
+      linear-gradient(rgba(22, 35, 59, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 35, 59, 0.045) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Separador punteado interno. */
+  .tear { border-top: 2px dashed var(--line-2); }
+
+  /* Puntos guía entre concepto e importe. */
+  .leaders { flex: 1; border-bottom: 2px dotted var(--line-2); transform: translateY(-4px); min-width: 12px; }
+
+  /* Sello PAGADO: sólo para pagos confirmados. */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-family: var(--font-poppins), sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ok);
+    border: 2.5px solid currentColor;
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 8px;
+    padding: 0.18em 0.6em;
+    transform: rotate(-8deg);
+    background: rgba(255, 255, 255, 0.82);
+  }
+  @keyframes stamp-in {
+    0% { transform: rotate(-8deg) scale(1.7); opacity: 0; }
+    60% { transform: rotate(-8deg) scale(0.94); opacity: 1; }
+    100% { transform: rotate(-8deg) scale(1); opacity: 1; }
+  }
+  .stamp-in { animation: stamp-in 420ms cubic-bezier(.2,.8,.3,1.2) 900ms both; }
+  .stamp-now { animation: stamp-in 380ms cubic-bezier(.2,.8,.3,1.2) both; }
+
+  /* Hoja de libreta: renglones celestes y margen rojo. */
+  .ruled {
+    background-color: #fffef6;
+    background-image:
+      linear-gradient(90deg, transparent 50px, #e58a80 50px, #e58a80 52px, transparent 52px),
+      repeating-linear-gradient(to bottom, transparent 0, transparent 35px, #c6d6ec 35px, #c6d6ec 36px);
+  }
+  .birome { font-family: var(--font-caveat), cursive; color: #2440a8; }
+
+  /* Puntitos de ventana (mockups). */
+  .dots { display: inline-flex; gap: 6px; }
+  .dots > i { width: 10px; height: 10px; border-radius: 9999px; display: block; }
+  .dots > i:nth-child(1) { background: #ff7d6b; }
+  .dots > i:nth-child(2) { background: #ffd23f; }
+  .dots > i:nth-child(3) { background: #4fd07b; }
+
+  /* Los 4 pasos del hero entran de a uno, en orden. Nunca arrancan invisibles. */
+  @keyframes intro-up { from { transform: translateY(14px); } to { transform: none; } }
+  .intro { animation: intro-up 0.5s cubic-bezier(.2,.7,.2,1) both; }
+
+  /* Slider con el naranja de la marca. */
+  input[type="range"].range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--brand) var(--fill, 50%), var(--surface-3) var(--fill, 50%));
+    cursor: pointer;
+  }
+  input[type="range"].range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px; height: 24px; border-radius: 9999px;
+    background: #fff; border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink);
+  }
+  input[type="range"].range::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 9999px;
+    background: #fff; border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
