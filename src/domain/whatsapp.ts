@@ -1,5 +1,5 @@
 import { formatDate, type IsoDate } from './dates'
-import { formatMoney, type CurrencyCode } from './money'
+import { formatMoneyClean, type CurrencyCode } from './money'
 
 /**
  * WhatsApp "con un toque": Cobra+ arma el mensaje y quien cobra lo manda
@@ -70,15 +70,10 @@ function greetingName(m: WhatsAppMessageInput): string {
   return m.customerName.trim()
 }
 
-/** Importe sin ",00" cuando es redondo: así se escribe en un chat. */
-function chatAmount(amountMinor: number, currency: CurrencyCode): string {
-  const text = formatMoney(amountMinor, currency)
-  return amountMinor % 100 === 0 ? text.replace(/,00(?!\d)/, '') : text
-}
 
 export function buildWhatsAppMessage(m: WhatsAppMessageInput): string {
   const who = greetingName(m)
-  const amount = chatAmount(m.amountMinor, m.currency)
+  const amount = formatMoneyClean(m.amountMinor, m.currency)
   const due = formatDate(m.dueDate, { weekday: 'long', day: 'numeric', month: 'long' })
   const promised = m.promisedFor ? formatDate(m.promisedFor, { weekday: 'long', day: 'numeric', month: 'long' }) : null
 

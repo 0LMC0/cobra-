@@ -64,3 +64,14 @@ describe('sumas', () => {
     expect(percent(5, 3)).toBe(100)
   })
 })
+
+describe('formatMoneyClean', () => {
+  const clean = (t: string) => t.replace(/ | /g, ' ')
+  it('saca los ,00 de los importes redondos', async () => {
+    const { formatMoneyClean } = await import('@/domain/money')
+    expect(clean(formatMoneyClean(15_000_000, 'ARS'))).toBe('$ 150.000')
+    expect(clean(formatMoneyClean(15_000_050, 'ARS'))).toBe('$ 150.000,50')
+    expect(clean(formatMoneyClean(48_000, 'USD'))).toBe('US$ 480')
+    expect(clean(formatMoneyClean(150_000, 'CLP'))).toBe('CLP 150.000')
+  })
+})

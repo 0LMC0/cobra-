@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { AppShell } from '@/components/app/app-shell'
+import { PreviewShell } from '../shell'
 import { HomeView } from '@/components/app/home-view'
 import type { TodayReminder } from '@/components/app/today-reminders'
 
@@ -18,17 +17,8 @@ const EXAMPLE_REMINDERS: TodayReminder[] = [
 ]
 
 export default function PanelPreview() {
-  if (process.env.NODE_ENV !== 'development') notFound()
   return (
-    <AppShell
-      orgName="Estudio Martínez"
-      isDemo
-      email="ejemplo@estudiomartinez.example"
-      role="owner"
-      memberships={[{ orgId: 'ejemplo', name: 'Estudio Martínez', role: 'owner' }]}
-      activeOrgId="ejemplo"
-      previewPath="/app"
-    >
+    <PreviewShell path="/app">
       <HomeView
         dateLabel="martes, 17 de noviembre"
         onboardingStep="first_customer"
@@ -37,6 +27,6 @@ export default function PanelPreview() {
         transferAlias="estudio.martinez"
         todayReminders={EXAMPLE_REMINDERS}
       />
-    </AppShell>
+    </PreviewShell>
   )
 }

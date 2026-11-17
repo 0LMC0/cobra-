@@ -4,6 +4,9 @@ import { requireOrg } from '@/server/auth'
 import { createClient } from '@/lib/supabase/server'
 import { FREQUENCY_LABEL, type Frequency } from '@/domain/dates'
 import { ROLE_LABEL, isOrgRole, can } from '@/domain/roles'
+import { DEFAULT_DIGEST_FREQUENCY, type DigestFrequency } from '@/domain/digest'
+import { DigestPreferenceForm } from '@/components/app/digest-preference'
+import { setDigestFrequency } from '@/server/actions/preferences'
 
 export const metadata: Metadata = { title: 'Configuración' }
 
@@ -17,6 +20,14 @@ export default async function SettingsPage() {
     .select('user_id, role, created_at, profiles(full_name)')
     .eq('org_id', org.id)
     .order('created_at')
+
+  const { data: me } = await supabase
+    .from('organization_members')
+    .select('digest_frequency')
+    .eq('org_id', org.id)
+    .eq('user_id', ctx.userId)
+    .maybeSingle()
+  const digestFrequency = (me?.digest_frequency as DigestFrequency | undefined) ?? DEFAULT_DIGEST_FREQUENCY
 
   const rows: [string, string][] = [
     ['Nombre', org.name],
@@ -34,6 +45,16 @@ export default async function SettingsPage() {
         <p className="eyebrow">Tu cuenta</p>
         <h1 className="text-[36px] sm:text-[42px]"><span className="marker">Configuración</span></h1>
       </header>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[19px]">Resumen por email</h2>
+        <p className="max-w-2xl text-[14px] text-muted">
+          Te avisamos a quién hay que cobrarle, así no te olvidás de entrar. Sólo llega cuando hay algo para mirar, nunca los fines de semana.
+        </p>
+        <Card className="p-5">
+          <DigestPreferenceForm action={setDigestFrequency} current={digestFrequency} />
+        </Card>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-[19px]">Empresa</h2>

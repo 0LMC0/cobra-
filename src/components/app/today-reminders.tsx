@@ -1,5 +1,5 @@
 import { Mail } from 'lucide-react'
-import { formatMoney, type CurrencyCode } from '@/domain/money'
+import { formatMoneyClean as formatMoney, type CurrencyCode } from '@/domain/money'
 import type { IsoDate } from '@/domain/dates'
 import type { WhatsAppMoment } from '@/domain/whatsapp'
 import { WhatsAppButton } from './whatsapp-button'

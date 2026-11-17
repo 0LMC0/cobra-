@@ -71,6 +71,13 @@ export function formatMoney(amountMinor: number, currency: CurrencyCode, opts: {
 }
 
 /** Para precargar un input de edición: 15000050 → "150000,50". */
+/** Como formatMoney, pero sin ",00" cuando el importe es redondo (listas, chats, emails). */
+export function formatMoneyClean(amountMinor: number, currency: CurrencyCode): string {
+  const text = formatMoney(amountMinor, currency)
+  const digits = minorDigits(currency)
+  return digits > 0 && amountMinor % 10 ** digits === 0 ? text.replace(/,0+(?!\d)/, '') : text
+}
+
 export function toInputString(amountMinor: number, currency: CurrencyCode): string {
   assertMinor(amountMinor)
   const digits = minorDigits(currency)

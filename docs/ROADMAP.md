@@ -37,6 +37,7 @@ Estado al **15/11/2026**.
 4. Escribir los tests de aislamiento entre organizaciones.
 
 ## Fase 2 — Producto principal 🟡
+- 🟡 **Pantallas de clientes y cobros** (`/app/clientes`, `/app/clientes/nuevo`, `/app/clientes/[id]`): lista con lo que debe cada uno, alta con celular de WhatsApp, ficha con cobros, "Pagó" (total o parcial, sin duplicar con doble clic) y botón de WhatsApp. Validaciones en `src/domain/forms.ts` (14 tests). Se ven con datos de ejemplo en `/vista-previa/clientes` (sólo en desarrollo). Falta probarlas contra Supabase.
 - ✅ **Migración del núcleo** (`20261117000001_core.sql`, 23 tests en `tests/db/core.test.ts`): clientes (con celular de WhatsApp y permiso), abonos, cobros (con promesa de pago), pagos, imputaciones, vista `charge_balances` y RPC `record_payment` idempotente. Referencias con `org_id` para que nada apunte a otra empresa; pagos inmutables que sólo se anulan con motivo; nunca se mezclan monedas ni se cobra de más.
 - Migración: `customers`, `agreements`, `agreement_price_changes`, `charges`, `charge_adjustments`, `payments`, `payment_allocations`, `attachments`, vista `charge_balances`, triggers de auditoría.
 - Clientes: CRUD, archivo, búsqueda, filtros, deduplicación, CSV in/out, ficha con línea de tiempo.
@@ -56,7 +57,7 @@ Estado al **15/11/2026**.
 - Plantillas editables con variables, reglas y pasos de recordatorio, `reminder_deliveries` idempotente.
 - Adaptador Resend, cron por hora, ventana horaria, reintentos con backoff, opt-out.
 - Corte automático de la secuencia al pagar. Historial de envíos por cliente.
-- **Resumen por email para quien cobra** (decidido el 16/11/2026): pagos de ayer, cobros que vencen hoy y atrasados. Sólo se envía los días con novedades, a dueño/a y administración, con hora configurable y baja por usuario. Idempotente por empresa y día. La landing ya lo muestra (paso 4 del hero y sección "Los emails").
+- 🟡 **Resumen por email para quien cobra** (decidido el 16/11/2026; frecuencia elegible el 17/11): reglas en `src/domain/digest.ts` (10 tests), preferencia por persona en `organization_members.digest_frequency` (por defecto cada 3 días; también diario, semanal o apagado) y selector en Configuración. Sólo sale si hay algo para mirar y nunca los fines de semana. Falta el envío (cron + Resend).
 - Onboarding paso 4.
 
 ## Fase 4 — Monetización ⬜
