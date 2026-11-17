@@ -7,24 +7,24 @@ type Variant = 'primary' | 'secondary' | 'dark' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
 const base =
-  'inline-flex items-center justify-center gap-2 font-display font-bold tracking-[-0.01em] whitespace-nowrap transition-[transform,box-shadow,background-color,color] duration-150 disabled:opacity-55 disabled:pointer-events-none select-none'
+  'group/btn inline-flex items-center justify-center gap-2 font-display font-semibold tracking-[-0.01em] whitespace-nowrap transition-[background-color,box-shadow,color,transform] duration-150 active:scale-[0.98] disabled:opacity-55 disabled:pointer-events-none select-none [&>svg]:transition-transform [&>svg]:duration-150 hover:[&>svg:last-child]:translate-x-0.5'
 
-/* El botón de PrimerosPrecios: borde tinta + sombra dura que se hunde al apretar. */
-const pressable =
-  'border-2 border-[var(--line-strong)] shadow-[3px_3px_0_var(--shadow)] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--shadow)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--shadow)]'
-
+/* Relieve suave: un brillo arriba y una sombra corta abajo. Sin bordes gruesos. */
 const variants: Record<Variant, string> = {
-  primary: `bg-brand text-brand-ink hover:bg-brand-hover ${pressable}`,
-  secondary: `bg-surface text-ink ${pressable}`,
-  dark: 'bg-navy text-white border-2 border-navy shadow-[3px_3px_0_var(--brand)] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--brand)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--brand)]',
+  primary:
+    'bg-brand text-brand-ink shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_6px_16px_-6px_rgba(239,94,15,.55)] hover:bg-brand-hover hover:shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_10px_22px_-8px_rgba(239,94,15,.65)]',
+  secondary:
+    'bg-surface text-ink ring-1 ring-inset ring-line-2 shadow-[0_1px_2px_rgba(22,35,59,.06)] hover:bg-surface-2 hover:ring-ink/25',
+  dark:
+    'bg-navy text-white shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_1px_2px_rgba(22,35,59,.25)] hover:bg-navy-2',
   ghost: 'text-ink hover:bg-surface-3',
-  danger: `bg-danger text-white ${pressable}`,
+  danger: 'bg-danger text-white shadow-[0_1px_2px_rgba(22,35,59,.18)] hover:bg-[#b02e33]',
 }
 
 const sizes: Record<Size, string> = {
-  sm: 'h-9 rounded-[10px] px-3.5 text-[13px]',
-  md: 'h-11 rounded-[12px] px-5 text-[14px]',
-  lg: 'h-[54px] rounded-[14px] px-7 text-[15.5px]',
+  sm: 'h-9 rounded-[10px] px-3.5 text-[13.5px]',
+  md: 'h-11 rounded-[12px] px-5 text-[14.5px]',
+  lg: 'h-[52px] rounded-[14px] px-6 text-[16px]',
 }
 
 export function buttonClass(variant: Variant = 'primary', size: Size = 'md', className?: string) {

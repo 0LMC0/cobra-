@@ -126,7 +126,7 @@ export function Logo({
       {withWord && (
         <span className="flex flex-col leading-none">
           <span className={cn('font-display text-[21px] font-black tracking-[-0.045em]', light ? 'text-white' : 'text-ink')}>COBRA</span>
-          {withBy && <ByPP className="mt-0.5" light={light} />}
+          {withBy && <ByPP className="byline mt-0.5" light={light} />}
         </span>
       )}
     </span>

@@ -24,11 +24,11 @@ export function StickyCta() {
       )}
       inert={!show}
     >
-      <p className="text-[13.5px] leading-tight font-extrabold">
+      <p className="text-[13.5px] leading-tight font-extrabold max-[359px]:hidden">
         {TRIAL_DAYS} días gratis
         <span className="block text-[12px] font-semibold text-muted">Cancelás cuando quieras</span>
       </p>
-      <ButtonLink href="/registro" size="md">
+      <ButtonLink href="/registro" size="md" className="max-[359px]:w-full">
         Empezá gratis <ArrowRight className="size-4" />
       </ButtonLink>
     </div>

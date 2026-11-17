@@ -181,7 +181,7 @@ export function MonthStrip() {
           <button
             type="button"
             onClick={() => choose(payDay === null ? 12 : null)}
-            className="rounded-[10px] border-[1.5px] border-ink bg-surface px-3 py-1.5 text-[13px] font-extrabold shadow-[2px_2px_0_var(--shadow)] transition-transform hover:-translate-y-px active:translate-y-px active:shadow-none"
+            className="rounded-[10px] px-3 py-1.5 text-[13px] font-bold ring-1 ring-inset ring-line-2 bg-surface shadow-[0_1px_2px_rgba(22,35,59,.06)] transition-colors hover:bg-surface-2 hover:ring-ink/25 active:scale-[0.97]"
           >
             {payDay === null ? 'Que pague el 12' : '¿Y si no paga?'}
           </button>

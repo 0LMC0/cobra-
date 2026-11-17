@@ -171,10 +171,10 @@ export default function LandingPage() {
 
       {/* ───────────── 9. Cierre ───────────── */}
       <section className="px-4 pb-20 sm:px-6 sm:pb-24">
-        <div className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-8 rounded-[28px] border-2 border-ink bg-brand p-8 text-ink shadow-[6px_6px_0_var(--shadow)] sm:p-12 lg:flex-row lg:items-end">
-          <h2 className="display-xl text-[42px] sm:text-[64px]">Cobrá más.<br />Perseguí menos.</h2>
-          <div className="flex flex-col items-start gap-3 lg:items-end">
-            <ButtonLink href="/registro" size="lg" variant="secondary">
+        <div className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-8 rounded-[28px] bg-brand p-8 text-ink sm:p-12 lg:flex-row lg:items-end">
+          <h2 className="display-xl text-[36px] min-[360px]:text-[42px] sm:text-[64px]">Cobrá más.<br />Perseguí menos.</h2>
+          <div className="flex min-w-0 max-w-full flex-col items-start gap-3 lg:items-end">
+            <ButtonLink href="/registro" size="lg" variant="dark" className="max-w-full">
               Probalo gratis {TRIAL_DAYS} días <ArrowRight className="size-4" />
             </ButtonLink>
             <p className="text-[14px] font-semibold text-ink/80">Cargás tus clientes y COBRA hace el resto.</p>

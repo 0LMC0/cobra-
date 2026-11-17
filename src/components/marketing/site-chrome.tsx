@@ -14,7 +14,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line-2 bg-bg">
       <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" aria-label="COBRA by PrimerosPrecios, inicio"><Logo withBy /></Link>
+        <Link href="/" aria-label="COBRA by PrimerosPrecios, inicio" className="min-w-0 shrink"><Logo withBy className="max-[359px]:[&_.byline]:hidden" /></Link>
         <nav aria-label="Secciones" className="hidden items-center gap-1 md:flex">
           {SECTIONS.map(([href, label]) => (
             <a key={href} href={href} className="rounded-full px-3.5 py-2 text-[14px] font-bold text-muted transition-colors hover:bg-surface hover:text-ink">
@@ -24,7 +24,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <Link href="/ingresar" className="hidden rounded-full px-3.5 py-2 text-[14px] font-bold text-ink hover:bg-surface sm:block">Ingresar</Link>
-          <ButtonLink href="/registro" size="sm" className="max-[359px]:px-2.5">Empezá gratis <ArrowRight className="hidden size-3.5 sm:block" /></ButtonLink>
+          <ButtonLink href="/registro" size="sm" className="shrink-0 max-[359px]:px-3">Empezá<span className="max-[359px]:hidden">&nbsp;gratis</span> <ArrowRight className="hidden size-3.5 sm:block" /></ButtonLink>
         </div>
       </div>
     </header>
@@ -42,7 +42,7 @@ export function SiteFooter() {
           </p>
           <a
             href="https://primerosprecios.com"
-            className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-ink bg-surface px-3.5 py-2 text-[13px] font-bold shadow-[2px_2px_0_var(--shadow)] transition-transform hover:-translate-y-px"
+            className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-bold ring-1 ring-inset ring-line-2 bg-surface shadow-[0_1px_2px_rgba(22,35,59,.06)] transition-colors hover:bg-surface-2 hover:ring-ink/25 active:scale-[0.97]"
           >
             <PPMark className="h-3 w-auto text-brand" /> Una herramienta de PrimerosPrecios
           </a>

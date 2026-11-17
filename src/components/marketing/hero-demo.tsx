@@ -93,7 +93,7 @@ export function PanelDemo() {
                 <button
                   type="button"
                   onClick={() => markPaid(r.id)}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-[9px] border-[1.5px] border-ink bg-surface px-2.5 py-1 text-[12.5px] font-extrabold shadow-[2px_2px_0_var(--shadow)] transition-transform hover:-translate-y-px active:translate-y-[1px] active:shadow-none"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-[9px] px-2.5 py-1 text-[12.5px] font-bold ring-1 ring-inset ring-line-2 bg-surface shadow-[0_1px_2px_rgba(22,35,59,.06)] transition-colors hover:bg-surface-2 hover:ring-ink/25 active:scale-[0.97]"
                   aria-label={`Marcar como pagado: ${r.name}`}
                 >
                   <Check className="size-3 text-ok" strokeWidth={3.5} /> Pagó
