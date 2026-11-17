@@ -81,12 +81,15 @@ export function formatMoneyClean(amountMinor: number, currency: CurrencyCode): s
 export function toInputString(amountMinor: number, currency: CurrencyCode): string {
   assertMinor(amountMinor)
   const digits = minorDigits(currency)
-  if (digits === 0) return String(amountMinor)
   const sign = amountMinor < 0 ? '-' : ''
   const abs = Math.abs(amountMinor)
   const whole = Math.floor(abs / 10 ** digits)
-  const frac = String(abs % 10 ** digits).padStart(digits, '0')
-  return `${sign}${whole},${frac}`
+  // Como lo escribe una persona: 150.000 (sin ",00" si es redondo).
+  const wholeStr = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  if (digits === 0) return `${sign}${wholeStr}`
+  const fracNum = abs % 10 ** digits
+  if (fracNum === 0) return `${sign}${wholeStr}`
+  return `${sign}${wholeStr},${String(fracNum).padStart(digits, '0')}`
 }
 
 /** Suma segura dentro de una misma moneda. */

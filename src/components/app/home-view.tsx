@@ -2,6 +2,8 @@ import { ArrowRight, Bell, Building2, Check, CircleAlert, FileText, HandCoins, U
 import Link from 'next/link'
 import { ButtonLink } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
+import type { HomeTotals } from '@/domain/home'
+import { formatMoneyClean, type CurrencyCode } from '@/domain/money'
 import { TodayReminders, type TodayReminder } from './today-reminders'
 
 /**
@@ -11,20 +13,21 @@ import { TodayReminders, type TodayReminder } from './today-reminders'
 export type OnboardingStep = 'company' | 'first_customer' | 'first_charge' | 'reminders' | 'done'
 
 const STEPS = [
-  { key: 'company', icon: Building2, title: 'Crear tu empresa', desc: 'Moneda, zona horaria y datos de contacto.', href: '/app/configuracion', cta: 'Ver' },
-  { key: 'first_customer', icon: UserPlus, title: 'Cargar tu primer cliente', desc: 'A quién le cobrás y a qué email le llegan los avisos.', href: '/app/clientes/nuevo', cta: 'Cargar cliente' },
-  { key: 'first_charge', icon: FileText, title: 'Crear tu primer cobro o abono', desc: 'Cuánto te paga y cuándo vence. Se crea desde la ficha del cliente.', href: '/app/clientes', cta: 'Ir a clientes' },
-  { key: 'reminders', icon: Bell, title: 'Activar los recordatorios', desc: 'Cobra+ le avisa por email antes y después del vencimiento.', href: '/app/configuracion', cta: 'Activar' },
+  { key: 'company', icon: Building2, title: 'Crear tu empresa', desc: 'Nombre y moneda. Listo.', href: '/app/configuracion', cta: 'Ver' },
+  { key: 'first_customer', icon: UserPlus, title: 'Cargar tu primer cliente', desc: 'Nombre y email, nada más.', href: '/app/clientes/nuevo', cta: 'Cargar cliente' },
+  { key: 'first_charge', icon: FileText, title: 'Crear su primer cobro', desc: 'Cuánto te paga y cuándo vence.', href: '/app/clientes', cta: 'Ir a clientes' },
+  { key: 'reminders', icon: Bell, title: 'Prender los avisos', desc: 'Cobra+ le escribe por vos antes y después del vencimiento.', href: '/app/configuracion', cta: 'Activar' },
 ] as const
 
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
 
 export function HomeView({
-  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [],
+  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals,
 }: {
   dateLabel: string
   onboardingStep: OnboardingStep
-  currency: string
+  currency: CurrencyCode
+  totals?: HomeTotals
   businessName?: string
   transferAlias?: string | null
   todayReminders?: TodayReminder[]
@@ -40,12 +43,14 @@ export function HomeView({
         <h1 className="text-[34px] sm:text-[40px]">Inicio</h1>
       </header>
 
-      {/* Totales: muestran la forma del panel aunque todavía no haya datos */}
-      <section aria-label="Totales del mes" className="divide-y divide-line overflow-hidden rounded-[18px] bg-surface ring-1 ring-line-2 sm:grid sm:grid-cols-3 sm:gap-3 sm:divide-y-0 sm:overflow-visible sm:bg-transparent sm:ring-0">
-        <Kpi icon={Wallet} label="Falta cobrar" currency={currency} tone="brand" />
-        <Kpi icon={HandCoins} label="Cobrado en el mes" currency={currency} tone="ok" />
-        <Kpi icon={CircleAlert} label="Atrasado" currency={currency} tone="danger" />
-      </section>
+      {/* Totales: aparecen recién cuando hay cobros cargados; antes sólo meten ruido. */}
+      {totals?.hasData && (
+        <section aria-label="Totales del mes" className="divide-y divide-line overflow-hidden rounded-[18px] bg-surface ring-1 ring-line-2 sm:grid sm:grid-cols-3 sm:gap-3 sm:divide-y-0 sm:overflow-visible sm:bg-transparent sm:ring-0">
+          <Kpi icon={Wallet} label="Falta cobrar" value={formatMoneyClean(totals.pendingMinor, currency)} tone="brand" />
+          <Kpi icon={HandCoins} label="Cobrado este mes" value={formatMoneyClean(totals.collectedMinor, currency)} tone="ok" />
+          <Kpi icon={CircleAlert} label="Atrasado" value={formatMoneyClean(totals.overdueMinor, currency)} tone="danger" muted={totals.overdueMinor === 0} />
+        </section>
+      )}
 
       <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} />
 
@@ -103,12 +108,11 @@ export function HomeView({
         </section>
       )}
 
-      <section aria-labelledby="attention-title" className="rounded-[22px] border-2 border-dashed border-line-2 px-6 py-10 text-center">
-        <h2 id="attention-title" className="text-[18px] tracking-[-0.02em]">Acá vas a ver quién necesita tu atención</h2>
-        <p className="mx-auto mt-1.5 max-w-md text-[14.5px] text-muted">
-          Los cobros atrasados, los que vencen esta semana y las promesas de pago, calculados con tus datos reales.
+      {totals?.hasData && todayReminders.length === 0 && (
+        <p className="flex items-center gap-2 rounded-[16px] bg-ok-soft px-4 py-3 text-[14.5px] font-semibold text-ok">
+          <Check className="size-4" strokeWidth={3} /> Hoy no hay que avisarle a nadie. Cobra+ te escribe cuando haga falta.
         </p>
-      </section>
+      )}
     </div>
   )
 }
@@ -119,13 +123,13 @@ const kpiTone = {
   danger: 'bg-danger-soft text-danger',
 } as const
 
-function Kpi({ icon: Icon, label, currency, tone }: { icon: typeof Wallet; label: string; currency: string; tone: keyof typeof kpiTone }) {
+function Kpi({ icon: Icon, label, value, tone, muted = false }: { icon: typeof Wallet; label: string; value: string; tone: keyof typeof kpiTone; muted?: boolean }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3 sm:flex-col sm:items-start sm:gap-3 sm:rounded-[18px] sm:bg-surface sm:p-5 sm:ring-1 sm:ring-line-2">
       <span className={cn('grid size-9 shrink-0 place-items-center rounded-[11px] sm:size-10 sm:rounded-[12px]', kpiTone[tone])}><Icon className="size-[18px] sm:size-5" /></span>
       <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3 sm:block">
         <p className="text-[14px] font-semibold text-muted">{label}</p>
-        <p className="money text-[18px] text-faint sm:mt-0.5 sm:text-[24px]" aria-label="Sin datos todavía">— <span className="text-[12px] font-bold sm:text-[13px]">{currency}</span></p>
+        <p className={cn('money text-[18px] sm:mt-0.5 sm:text-[24px]', muted && 'text-faint')}>{value}</p>
       </div>
     </div>
   )

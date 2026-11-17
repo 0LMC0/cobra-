@@ -47,7 +47,7 @@ describe('núcleo: clientes, cobros y pagos', () => {
     orgA = await createOrg(db, ana, 'Estudio A')
     orgB = await createOrg(db, beto, 'Estudio B')
     await db.admin(`insert into public.organization_members (org_id, user_id, role) values ($1, $2, 'viewer')`, [orgA, vera])
-    clienteA = await newCustomer(ana, orgA, 'Estudio Rivas', 'laura@rivas.example')
+    clienteA = await newCustomer(ana, orgA, 'Estudio Rivas', 'marina@rivas.example')
     clienteB = await newCustomer(beto, orgB, 'Clínica Norte')
   })
   afterAll(() => db.close())
@@ -69,7 +69,7 @@ describe('núcleo: clientes, cobros y pagos', () => {
     })
 
     it('no permite dos clientes activos con el mismo email en la empresa', async () => {
-      await expect(newCustomer(ana, orgA, 'Duplicado', 'LAURA@rivas.example')).rejects.toThrow(/customers_active_email_uniq|duplicate key/)
+      await expect(newCustomer(ana, orgA, 'Duplicado', 'MARINA@rivas.example')).rejects.toThrow(/customers_active_email_uniq|duplicate key/)
     })
 
     it('valida el email y el número de WhatsApp', async () => {

@@ -19,35 +19,40 @@ export function CustomerForm({ action }: { action: Action }) {
   return (
     <form action={formAction} className="flex flex-col gap-6" noValidate>
       <FormFeedback state={state} />
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <Field label="Nombre del cliente" hint="La persona o la empresa a la que le cobrás." error={firstError(state, 'name')}>
-            {(p) => <Input {...p} name="name" placeholder="Ej.: Estudio Rivas" required autoFocus />}
-          </Field>
-        </div>
-        <Field label="Persona de contacto" optional hint="Para saludarla por su nombre." error={firstError(state, 'contactName')}>
-          {(p) => <Input {...p} name="contactName" placeholder="Ej.: Laura Gómez" autoComplete="off" />}
-        </Field>
-        <Field label="Email" hint="Ahí le llegan los recordatorios automáticos." error={firstError(state, 'email')}>
-          {(p) => <Input {...p} name="email" type="email" inputMode="email" placeholder="laura@estudiorivas.com" autoComplete="off" />}
-        </Field>
+      <Field label="Nombre del cliente" hint="La persona o la empresa a la que le cobrás." error={firstError(state, 'name')}>
+        {(p) => <Input {...p} name="name" placeholder="Ej.: Estudio Rivas" required autoFocus />}
+      </Field>
+      <Field label="Email" hint="Ahí le llegan los avisos automáticos." error={firstError(state, 'email')}>
+        {(p) => <Input {...p} name="email" type="email" inputMode="email" placeholder="marina@estudiorivas.com" autoComplete="off" />}
+      </Field>
+      <div className="flex flex-col gap-2.5">
         <Field label="Celular" optional hint="Con código de área. Ej.: 11 2345-6789." error={firstError(state, 'phone')}>
           {(p) => <Input {...p} name="phone" type="tel" inputMode="tel" placeholder="11 2345-6789" autoComplete="off" value={phone} onChange={(e) => setPhone(e.target.value)} />}
         </Field>
-        <label className={`flex items-start gap-3 self-end rounded-[14px] p-3 text-[14px] leading-snug ring-1 ring-line-2 ${phone ? 'bg-surface' : 'bg-surface-2 text-faint'}`}>
-          <input type="checkbox" name="whatsappOk" defaultChecked disabled={!phone} className="mt-0.5 size-[18px] shrink-0 accent-[#25d366]" />
-          <span><b className="font-bold">Acepta que le escriban por WhatsApp.</b> Así te aparece el botón para avisarle con un toque.</span>
-        </label>
-        <Field label="CUIT" optional error={firstError(state, 'taxId')}>
-          {(p) => <Input {...p} name="taxId" inputMode="numeric" placeholder="30-12345678-9" autoComplete="off" />}
-        </Field>
-        <Field label="Notas" optional error={firstError(state, 'notes')}>
-          {(p) => <Input {...p} name="notes" placeholder="Algo que te sirva recordar" autoComplete="off" />}
-        </Field>
+        {phone && (
+          <label className="flex items-start gap-3 rounded-[14px] bg-surface p-3 text-[14px] leading-snug ring-1 ring-line-2">
+            <input type="checkbox" name="whatsappOk" defaultChecked className="mt-0.5 size-[18px] shrink-0 accent-[#25d366]" />
+            <span><b className="font-bold">Le puedo escribir por WhatsApp.</b> Te aparece el botón para avisarle con un toque.</span>
+          </label>
+        )}
       </div>
-      <div className="flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:justify-end">
-        <Button type="submit" size="lg" loading={pending}>{pending ? 'Guardando…' : 'Guardar cliente'}</Button>
-      </div>
+      <details className="group rounded-[14px] ring-1 ring-line-2 [&_summary::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[14.5px] font-bold">
+          Más datos <span className="text-[13px] font-normal text-muted group-open:hidden">contacto, CUIT, notas · opcional</span>
+        </summary>
+        <div className="grid grid-cols-1 gap-5 px-4 pb-4">
+          <Field label="Persona de contacto" optional hint="Para saludarla por su nombre en los avisos." error={firstError(state, 'contactName')}>
+            {(p) => <Input {...p} name="contactName" placeholder="Ej.: Marina Pérez" autoComplete="off" />}
+          </Field>
+          <Field label="CUIT" optional error={firstError(state, 'taxId')}>
+            {(p) => <Input {...p} name="taxId" inputMode="numeric" placeholder="30-12345678-9" autoComplete="off" />}
+          </Field>
+          <Field label="Notas" optional error={firstError(state, 'notes')}>
+            {(p) => <Input {...p} name="notes" placeholder="Algo que te sirva recordar" autoComplete="off" />}
+          </Field>
+        </div>
+      </details>
+      <Button type="submit" size="lg" loading={pending} className="w-full sm:w-auto sm:self-start">{pending ? 'Guardando…' : 'Guardar cliente'}</Button>
     </form>
   )
 }
@@ -133,9 +138,14 @@ export function PayButton({ action, chargeId, balanceMinor, currency, today }: {
           )}
         </Field>
       </div>
-      <Field label="Referencia" optional hint="Número de operación o lo que te sirva para encontrarlo." error={firstError(state, 'reference')}>
-        {(p) => <Input {...p} name="reference" autoComplete="off" />}
-      </Field>
+      <details className="text-[14px]">
+        <summary className="cursor-pointer font-bold text-muted">Agregar referencia (opcional)</summary>
+        <div className="mt-3">
+          <Field label="Referencia" optional hint="Número de operación o lo que te sirva para encontrarlo." error={firstError(state, 'reference')}>
+            {(p) => <Input {...p} name="reference" autoComplete="off" />}
+          </Field>
+        </div>
+      </details>
       <Button type="submit" size="md" loading={pending} className="self-start">{pending ? 'Guardando…' : 'Registrar pago'}</Button>
     </form>
   )

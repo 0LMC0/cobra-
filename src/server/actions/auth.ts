@@ -61,7 +61,7 @@ export async function signIn(_: FormState, formData: FormData): Promise<FormStat
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors }
 
   const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword(parsed.data)
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data)
   if (error) {
     if (error.code === 'email_not_confirmed') {
       return { error: 'Todavía no confirmaste tu email. Revisá tu bandeja (y spam).' }
@@ -69,6 +69,12 @@ export async function signIn(_: FormState, formData: FormData): Promise<FormStat
     if (error.status === 429) return { error: 'Demasiados intentos. Esperá unos minutos.' }
     return { error: 'Email o contraseña incorrectos.' }
   }
+  // Sin empresa todavía: directo a crearla (evita el salto /app → /onboarding).
+  const { count } = await supabase
+    .from('organization_members')
+    .select('org_id', { count: 'exact', head: true })
+    .eq('user_id', data.user.id)
+  if (!count) redirect('/onboarding')
   redirect(safeNext(formData.get('siguiente')))
 }
 

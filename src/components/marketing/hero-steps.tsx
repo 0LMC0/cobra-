@@ -73,7 +73,7 @@ function ScreenForm() {
     <div className="flex h-full flex-col gap-1.5">
       <p className="text-[12.5px] font-extrabold">Nuevo cliente</p>
       <MiniField label="Cliente" value="Estudio Rivas" />
-      <MiniField label="Email" value="laura@estudiorivas.example" />
+      <MiniField label="Email" value="marina@estudiorivas.example" />
       <div className="grid grid-cols-2 gap-1.5">
         <MiniField label="Te paga" value="$ 150.000" />
         <MiniField label="Vence" value="Día 10" />
@@ -106,11 +106,11 @@ function ScreenReminder() {
       <MailHead
         icon={<span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-white"><Mail className="size-4" /></span>}
         from="Tu empresa"
-        to="Para: Laura, de Estudio Rivas"
+        to="Para: Marina, de Estudio Rivas"
       />
       <p className="mt-2.5 text-[14px] leading-snug font-extrabold">Tu cuota vence el martes 10</p>
       <p className="mt-1 text-[13px] leading-snug text-muted">
-        Hola Laura: te recordamos que la cuota de noviembre por <b className="font-bold text-ink">$ 150.000</b> vence el martes 10.
+        Hola Marina: te recordamos que la cuota de noviembre por <b className="font-bold text-ink">$ 150.000</b> vence el martes 10.
       </p>
       <p className="mt-auto flex items-center gap-1.5 pt-2 text-[11.5px] font-extrabold text-ok">
         <Check className="size-3.5" strokeWidth={3.5} /> Lo mandó Cobra+, no vos

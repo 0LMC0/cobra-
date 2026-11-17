@@ -30,10 +30,10 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
             ))}
           </div>
           <h1 className="mt-5 text-[34px] sm:text-[40px]">
-            {firstName ? `${firstName}, contanos de tu empresa` : 'Contanos de tu empresa'}
+            {firstName ? `Hola, ${firstName}. ¿Cómo se llama tu empresa?` : '¿Cómo se llama tu empresa?'}
           </h1>
           <p className="text-[15.5px] text-muted">
-            Con esto configuramos tus montos, tus vencimientos y la firma de los recordatorios. Podés cambiarlo después.
+            Dos datos y arrancás. Lo demás lo cambiás cuando quieras.
           </p>
         </div>
         <CompanyForm defaultEmail={user.email ?? ''} />

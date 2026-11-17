@@ -20,10 +20,10 @@ Estado al **15/11/2026**.
 | Proyecto base (Next 15, TS estricto, Tailwind 4) | ✅ | `npm run check` pasa |
 | Sistema de diseño (tokens claro/oscuro, botón, campos, badge, alert, empty state) | ✅ | |
 | Dominio: dinero, fechas, estados de cobro, roles, planes | ✅ | 40 tests unitarios |
-| Migración `foundations`: perfiles, orgs, miembros, roles, invitaciones, auditoría, eventos y RLS | 🟡 | Falta aplicarla en el proyecto Supabase |
-| Auth: registro, verificación de email, login, recupero, nueva clave, logout | 🟡 | Compila y muestra los estados sin configuración. Falta el recorrido real |
+| Migración `foundations`: perfiles, orgs, miembros, roles, invitaciones, auditoría, eventos y RLS | ✅ | Aplicada en el proyecto Supabase `cobra-plus` (12 tablas con RLS) |
+| Auth: registro, verificación de email, login, recupero, nueva clave, logout | 🟡 | Login probado contra Supabase real (17/11) con un usuario de prueba (`scripts/crear-usuario-prueba.mjs`). Falta probar registro con email real (necesita Resend) |
 | Middleware y protección de `/app` y `/onboarding` | ✅ | Sin sesión redirige a `/ingresar` (verificado en el navegador) |
-| Onboarding paso 1 (empresa) con RPC atómica | 🟡 | |
+| Onboarding paso 1 (empresa) con RPC atómica | ✅ | Simplificado a nombre y moneda; lo demás se completa solo. Probado contra Supabase |
 | Shell de la app (sidebar, barra mobile, cambio de empresa, modo demo identificado) | ✅ | Las secciones no construidas dicen "Pronto" y no tienen link |
 | Configuración: datos de la empresa y equipo (lectura real) | 🟡 | |
 | Landing completa, legales en borrador, SEO, robots y sitemap | ✅ | Sin indexar hasta el lanzamiento |
@@ -31,20 +31,20 @@ Estado al **15/11/2026**.
 | Tests de autorización RLS contra la base (`tests/authz`) | ⬜ | Requiere el proyecto Supabase |
 
 **Para cerrar la Fase 1:**
-1. Crear el proyecto Supabase.
-2. Aplicar la migración.
-3. Recorrer registro → email → onboarding → `/app` → logout → login.
-4. Escribir los tests de aislamiento entre organizaciones.
+1. ✅ Crear el proyecto Supabase y aplicar las migraciones.
+2. ✅ Recorrido login → onboarding → cliente → cobro → "Pagó" → inicio con totales reales (17/11, Supabase real).
+3. Probar registro con verificación de email (cuando esté Resend).
+4. ✅ Aislamiento entre organizaciones: cubierto por los tests de base con PGlite (`tests/db`).
 
 ## Fase 2 — Producto principal 🟡
-- 🟡 **Pantallas de clientes y cobros** (`/app/clientes`, `/app/clientes/nuevo`, `/app/clientes/[id]`): lista con lo que debe cada uno, alta con celular de WhatsApp, ficha con cobros, "Pagó" (total o parcial, sin duplicar con doble clic) y botón de WhatsApp. Validaciones en `src/domain/forms.ts` (14 tests). Se ven con datos de ejemplo en `/vista-previa/clientes` (sólo en desarrollo). Falta probarlas contra Supabase.
+- 🟡 **Pantallas de clientes y cobros** (`/app/clientes`, `/app/clientes/nuevo`, `/app/clientes/[id]`): lista con lo que debe cada uno, alta con celular de WhatsApp, ficha con cobros, "Pagó" (total o parcial, sin duplicar con doble clic) y botón de WhatsApp. Validaciones en `src/domain/forms.ts` (14 tests). Se ven con datos de ejemplo en `/vista-previa/clientes` (sólo en desarrollo). Probadas contra Supabase el 17/11. El alta de cliente pide sólo nombre, email y celular; lo demás va en "Más datos".
 - ✅ **Migración del núcleo** (`20261117000001_core.sql`, 23 tests en `tests/db/core.test.ts`): clientes (con celular de WhatsApp y permiso), abonos, cobros (con promesa de pago), pagos, imputaciones, vista `charge_balances` y RPC `record_payment` idempotente. Referencias con `org_id` para que nada apunte a otra empresa; pagos inmutables que sólo se anulan con motivo; nunca se mezclan monedas ni se cobra de más.
 - Migración: `customers`, `agreements`, `agreement_price_changes`, `charges`, `charge_adjustments`, `payments`, `payment_allocations`, `attachments`, vista `charge_balances`, triggers de auditoría.
 - Clientes: CRUD, archivo, búsqueda, filtros, deduplicación, CSV in/out, ficha con línea de tiempo.
 - Abonos y generación idempotente de cobros por período.
 - Cobros únicos, descuentos, recargos, reprogramación y cancelación.
 - Registro manual de pagos parciales y totales con imputación y comprobante.
-- Dashboard real: KPIs por moneda, gráficos y "Necesitan tu atención".
+- 🟡 Dashboard real: totales del mes en la moneda principal (`src/domain/home.ts`, 5 tests) y "Para avisar hoy" con los datos reales. Faltan gráficos y totales de otras monedas.
 - Onboarding pasos 2 y 3.
 - Playwright: recorrido del MVP hasta el paso 7.
 

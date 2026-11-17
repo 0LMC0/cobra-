@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { chargeStatus, type ChargeStatus, type StoredChargeState } from '@/domain/charge-status'
 import type { IsoDate } from '@/domain/dates'
 import type { CurrencyCode } from '@/domain/money'
+import { homeTotals, remindersForToday, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
 
 /** Lecturas del producto. Todas pasan por la sesión del usuario: la RLS filtra por empresa. */
 
@@ -18,6 +19,7 @@ export type ChargeView = {
   balanceMinor: number
   status: ChargeStatus
   promisedFor: IsoDate | null
+  promisedOn: IsoDate | null
   recurring: boolean
 }
 
@@ -37,14 +39,14 @@ export type CustomerView = {
 
 type ChargeRow = {
   id: string; customer_id: string; concept: string; amount_minor: number | string; currency: string
-  due_date: string; state: StoredChargeState; promised_for: string | null; agreement_id: string | null
+  due_date: string; state: StoredChargeState; promised_for: string | null; promised_on: string | null; agreement_id: string | null
 }
 
 async function loadCharges(orgId: string, today: IsoDate, customerId?: string): Promise<ChargeView[]> {
   const supabase = await createClient()
   let query = supabase
     .from('charges')
-    .select('id, customer_id, concept, amount_minor, currency, due_date, state, promised_for, agreement_id')
+    .select('id, customer_id, concept, amount_minor, currency, due_date, state, promised_for, promised_on, agreement_id')
     .eq('org_id', orgId)
     .neq('state', 'cancelled')
     .order('due_date', { ascending: true })
@@ -76,6 +78,7 @@ async function loadCharges(orgId: string, today: IsoDate, customerId?: string): 
       balanceMinor: Math.max(0, amountMinor - paidMinor),
       status: chargeStatus({ state: c.state, totalMinor: amountMinor, paidMinor, dueDate: c.due_date }, today),
       promisedFor: c.promised_for,
+      promisedOn: c.promised_on,
       recurring: Boolean(c.agreement_id),
     }
   })
@@ -126,4 +129,49 @@ export async function getCustomer(orgId: string, customerId: string, today: IsoD
   if (!data) return null
   const charges = await loadCharges(orgId, today, customerId)
   return { customer: toCustomer(data as CustomerRow, charges), charges }
+}
+
+/* ───────────── Inicio ───────────── */
+
+export type HomeData = {
+  totals: HomeTotals
+  reminders: HomeReminder[]
+  transferAlias: string | null
+}
+
+/** Totales del mes y avisos de hoy, con los datos reales de la empresa. */
+export async function getHomeData(orgId: string, currency: CurrencyCode, today: IsoDate): Promise<HomeData> {
+  const supabase = await createClient()
+  const monthStart = `${today.slice(0, 7)}-01`
+  const [charges, customersRes, paymentsRes, orgRes, sentRes] = await Promise.all([
+    loadCharges(orgId, today),
+    supabase.from('customers').select('id, name, contact_name, email, phone, whatsapp_ok, contact_opt_out, reminders_paused').eq('org_id', orgId).eq('status', 'active'),
+    supabase.from('payments').select('amount_minor, currency, paid_on').eq('org_id', orgId).eq('status', 'confirmed').gte('paid_on', monthStart),
+    supabase.from('organizations').select('reminders_enabled, transfer_alias').eq('id', orgId).single(),
+    supabase.from('reminder_deliveries').select('charge_id, step_id').eq('org_id', orgId).eq('send_on', today).eq('status', 'sent'),
+  ])
+  if (customersRes.error || paymentsRes.error || orgRes.error || sentRes.error) throw new Error('No pudimos cargar el inicio.')
+
+  const open = charges.filter((c) => c.state === 'open')
+  const homeCharges: HomeCharge[] = open.map((c) => ({
+    id: c.id, customerId: c.customerId, concept: c.concept, amountMinor: c.amountMinor, balanceMinor: c.balanceMinor,
+    currency: c.currency, dueDate: c.dueDate, promisedFor: c.promisedFor, promisedOn: c.promisedOn,
+  }))
+  const customers: HomeCustomer[] = (customersRes.data ?? []).map((r) => ({
+    id: r.id as string, name: r.name as string, contactName: r.contact_name as string | null, email: r.email as string | null,
+    phone: r.phone as string | null, whatsappOk: Boolean(r.whatsapp_ok), optOut: Boolean(r.contact_opt_out), paused: Boolean(r.reminders_paused),
+  }))
+  const payments: HomePayment[] = (paymentsRes.data ?? []).map((p) => ({
+    amountMinor: Number(p.amount_minor), currency: p.currency as CurrencyCode, paidOn: p.paid_on as IsoDate,
+  }))
+
+  return {
+    totals: homeTotals({ charges: homeCharges, payments, currency, today, hasAnyCharge: charges.length > 0 }),
+    reminders: remindersForToday({
+      charges: homeCharges, customers, today,
+      remindersEnabled: Boolean(orgRes.data?.reminders_enabled),
+      sent: new Set((sentRes.data ?? []).map((d) => `${d.charge_id}:${d.step_id}`)),
+    }),
+    transferAlias: (orgRes.data?.transfer_alias as string | null) ?? null,
+  }
 }

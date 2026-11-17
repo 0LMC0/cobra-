@@ -130,7 +130,7 @@ export function EmailPreview() {
         <dd className="font-bold">Tu cuota de <V>noviembre</V> vence el <V>27/11</V></dd>
       </dl>
       <div className="flex flex-col gap-3 px-5 py-5 text-[15px] leading-relaxed">
-        <p>Hola <V>Laura</V>, ¿cómo estás?</p>
+        <p>Hola <V>Marina</V>, ¿cómo estás?</p>
         <p>
           Te escribimos de <V>Estudio Martínez</V> para recordarte que la cuota de <V>Gestión de redes – noviembre</V> por{' '}
           <V><span className="num font-bold">$ 95.000</span></V> vence el <V>viernes 27 de noviembre</V>.

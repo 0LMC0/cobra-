@@ -7,7 +7,7 @@ const clean = (s: string) => s.replace(/ | /g, ' ')
 
 describe('email de recordatorio', () => {
   const base = {
-    customerName: 'Estudio Rivas', contactName: 'Laura Gómez', businessName: 'Estudio Martínez',
+    customerName: 'Estudio Rivas', contactName: 'Marina Pérez', businessName: 'Estudio Martínez',
     concept: 'la cuota de noviembre', amountMinor: 15_000_000, currency: 'ARS' as const, dueDate: '2026-11-10',
   }
 
@@ -15,7 +15,7 @@ describe('email de recordatorio', () => {
     const e = renderReminderEmail({ ...base, moment: 'before', transferAlias: 'estudio.martinez' })
     expect(e.subject).toBe('La cuota de noviembre: vence el 10 de noviembre · Estudio Martínez')
     const text = clean(e.text)
-    expect(text).toContain('Hola Laura:')
+    expect(text).toContain('Hola Marina:')
     expect(text).toContain('la cuota de noviembre por $ 150.000 vence el martes, 10 de noviembre')
     expect(text).toContain('Podés transferir al alias estudio.martinez.')
     expect(text).toContain('respondé este email con el comprobante')
@@ -64,7 +64,7 @@ describe('email de resumen', () => {
 
 describe('plan del día', () => {
   const org: PlanOrg = { id: 'o1', name: 'Estudio Martínez', today: '2026-11-13', remindersEnabled: true, transferAlias: null, replyTo: 'hola@martinez.example' }
-  const customer: PlanCustomer = { id: 'k1', orgId: 'o1', name: 'Estudio Rivas', contactName: 'Laura', email: 'laura@rivas.example', optOut: false, paused: false }
+  const customer: PlanCustomer = { id: 'k1', orgId: 'o1', name: 'Estudio Rivas', contactName: 'Marina', email: 'marina@rivas.example', optOut: false, paused: false }
   const charge: PlanCharge = { id: 'c1', orgId: 'o1', customerId: 'k1', concept: 'la cuota de noviembre', amountMinor: 15_000_000, balanceMinor: 15_000_000, currency: 'ARS', dueDate: '2026-11-10', promisedFor: null, promisedOn: null }
   const member: PlanMember = { orgId: 'o1', userId: 'u1', email: 'ana@martinez.example', firstName: 'Ana', frequency: 'daily', lastSentOn: null }
   const run = (over: Partial<Parameters<typeof planDailyEmails>[0]> = {}) =>
@@ -72,7 +72,7 @@ describe('plan del día', () => {
 
   it('el día del aviso de atraso, sale el recordatorio y el resumen', () => {
     const { reminders, digests } = run()
-    expect(reminders.map((r) => [r.chargeId, r.stepId, r.to, r.replyTo])).toEqual([['c1', 'atraso', 'laura@rivas.example', 'hola@martinez.example']])
+    expect(reminders.map((r) => [r.chargeId, r.stepId, r.to, r.replyTo])).toEqual([['c1', 'atraso', 'marina@rivas.example', 'hola@martinez.example']])
     expect(reminders[0]!.email.subject).toMatch(/quedó pendiente/)
     expect(digests.map((d) => d.to)).toEqual(['ana@martinez.example'])
   })

@@ -35,7 +35,7 @@ describe('teléfono para WhatsApp', () => {
 describe('mensaje de WhatsApp', () => {
   const base = {
     customerName: 'Estudio Rivas',
-    contactName: 'Laura Gómez',
+    contactName: 'Marina Pérez',
     businessName: 'Estudio Martínez',
     concept: 'la cuota de noviembre',
     amountMinor: 15_000_000,
@@ -47,7 +47,7 @@ describe('mensaje de WhatsApp', () => {
 
   it('antes del vencimiento: saludo, importe y fecha', () => {
     const text = clean(buildWhatsAppMessage({ ...base, moment: 'before' }))
-    expect(text).toContain('Hola Laura, ¿cómo estás? Te escribo de Estudio Martínez.')
+    expect(text).toContain('Hola Marina, ¿cómo estás? Te escribo de Estudio Martínez.')
     expect(text).toContain('la cuota de noviembre por $ 150.000 vence el martes, 10 de noviembre')
     expect(text).toContain('Si ya lo pagaste, mandame el comprobante y listo.')
   })
@@ -84,8 +84,8 @@ describe('mensaje de WhatsApp', () => {
   })
 
   it('arma el link de wa.me con el texto codificado', () => {
-    expect(whatsAppLink('5491123456789', 'Hola Laura, ¿todo bien?')).toBe(
-      'https://wa.me/5491123456789?text=Hola%20Laura%2C%20%C2%BFtodo%20bien%3F',
+    expect(whatsAppLink('5491123456789', 'Hola Marina, ¿todo bien?')).toBe(
+      'https://wa.me/5491123456789?text=Hola%20Marina%2C%20%C2%BFtodo%20bien%3F',
     )
   })
 })

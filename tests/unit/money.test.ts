@@ -36,7 +36,11 @@ describe('formatMoney / toInputString', () => {
     expect(s).toContain('150.000,50')
   })
   it('ida y vuelta con el input', () => {
-    expect(toInputString(15_000_050, 'ARS')).toBe('150000,50')
+    expect(toInputString(15_000_050, 'ARS')).toBe('150.000,50')
+    expect(toInputString(15_000_000, 'ARS')).toBe('150.000')
+    expect(parseAmount(toInputString(15_000_000, 'ARS'), 'ARS')).toBe(15_000_000)
+    expect(toInputString(150_000, 'CLP')).toBe('150.000')
+    expect(parseAmount(toInputString(150_000, 'CLP'), 'CLP')).toBe(150_000)
     expect(parseAmount(toInputString(15_000_050, 'ARS'), 'ARS')).toBe(15_000_050)
     expect(toInputString(7, 'ARS')).toBe('0,07')
   })
