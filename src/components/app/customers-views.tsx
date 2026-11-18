@@ -227,11 +227,13 @@ export function momentFor(c: ChargeView, today: string): WhatsAppMoment {
 
 export function CustomerDetailView({
   customer, charges, today, businessName, transferAlias, defaultCurrency, chargeAction, payAction, promiseAction, clearPromiseAction, justCreated, backHref = '/app/clientes',
-  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false, turnOnRemindersAction, remindersJustOn = false,
+  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false, turnOnRemindersAction, remindersJustOn = false, emailPreview = null,
 }: {
   /** Si viene, los avisos están apagados: se ofrece prenderlos con un toque. */
   turnOnRemindersAction?: Action
   remindersJustOn?: boolean
+  /** El aviso tal cual le llega (asunto y cuerpo), para revisarlo antes. */
+  emailPreview?: { subject: string; html: string; from: string } | null
   customer: CustomerView
   charges: ChargeView[]
   today: string
@@ -361,6 +363,7 @@ export function CustomerDetailView({
         )}
       </div>
 
+      {emailPreview && <EmailPreviewCard {...emailPreview} />}
       {timeline && <CustomerTimeline events={timeline} timeZone={timeZone} />}
 
       {canEdit && archiveAction && !customer.archived && (
@@ -369,5 +372,38 @@ export function CustomerDetailView({
         </div>
       )}
     </div>
+  )
+}
+
+/* ───────────── Vista previa del aviso ───────────── */
+
+/** El email tal cual le llega al cliente. Se muestra en un iframe aislado (sin scripts ni links que funcionen). */
+function EmailPreviewCard({ subject, html, from }: { subject: string; html: string; from: string }) {
+  return (
+    <details className="group rounded-[22px] bg-surface ring-1 ring-line-2 [&_summary::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 sm:px-6">
+        <span className="flex items-center gap-3">
+          <Mail className="size-5 text-brand" />
+          <span>
+            <span className="block text-[16px] font-bold">Ver el email que le llega</span>
+            <span className="block text-[13px] text-muted">Así le escribe Cobra+ por el cobro más próximo. Sale con el nombre de tu empresa.</span>
+          </span>
+        </span>
+        <span className="text-[13px] font-bold text-brand-text group-open:hidden">Ver</span>
+      </summary>
+      <div className="flex flex-col gap-3 border-t border-line px-5 py-4 sm:px-6">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[13.5px]">
+          <dt className="font-semibold text-muted">De:</dt><dd className="font-semibold">{from}</dd>
+          <dt className="font-semibold text-muted">Asunto:</dt><dd className="font-semibold">{subject}</dd>
+        </dl>
+        <iframe
+          title="Vista previa del email"
+          srcDoc={html}
+          sandbox=""
+          className="h-[460px] w-full rounded-[14px] bg-white ring-1 ring-line"
+        />
+        <p className="text-[12.5px] text-muted">Si te responde, la respuesta te llega a tu email. Los avisos se cortan apenas anotás el pago.</p>
+      </div>
+    </details>
   )
 }

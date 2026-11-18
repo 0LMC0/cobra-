@@ -128,6 +128,24 @@ Diez personas del segmento, veinte minutos cada una. Se pregunta por lo que hici
 - Si la mayoría tiene menos de diez clientes, hace falta un plan más barato o gratuito.
 - Si nadie deja que el sistema escriba solo, el modo revisión pasa a ser el modo por defecto.
 
+## 9. Actualización del 18 de noviembre de 2026 (con la app ya lanzada)
+
+**Lo nuevo que se encontró**
+- Dato: YoFacturo, el competidor local más directo, incluye las alertas de deudas vencidas recién desde su plan Básico, a **$ 50.000 por mes**. Su plan de entrada ($ 20.000) no las trae [25]. Cobra+ Starter ($ 18.900) tiene avisos sin tope. La diferencia se explica porque YoFacturo también factura y lleva la gestión; Cobra+ hace sólo cobranza.
+- Dato: en una encuesta de Getnet y Somos PyMEs a 517 pymes, las transferencias son el medio de cobro más usado (82 %), y el costo y las comisiones son el primer criterio para elegir cómo cobrar [26].
+- Dato: el BCRA aprobó en marzo de 2026 el **Cobro con Transferencia** (Comunicación "A" 8406), la única modalidad de transferencias inmediatas habilitada para cobros recurrentes. Rige para préstamos desde el 31/8/2026; para otros cobros recurrentes el BCRA todavía no fijó fecha, y sólo lo pueden contratar personas jurídicas [27].
+- Indicio: la morosidad empresaria siguió subiendo en 2026 y los cheques rechazados marcaron un récord en diciembre de 2025 [28]. El problema que resuelve Cobra+ no se achicó.
+
+**Qué cambió en Cobra+ por esto (hecho hoy)**
+- **"Ver el email que le llega"** en la ficha de cada cliente: el aviso tal cual lo recibe, con remitente y asunto. Responde al miedo de que el sistema mande algo mal (sección 3) sin agregar un paso de aprobación.
+- Los textos que viajan en los emails (concepto, nombre de la empresa y del contacto) ya no aceptan links: Cobra+ no puede usarse para mandar phishing con el nombre de PrimerosPrecios.
+- El alias para transferir se valida como alias o CBU/CVU real, porque la transferencia es como paga la gente.
+
+**Para decidir (no se cambió nada)**
+- **WhatsApp en el plan Gratis.** 8 de cada 10 prefieren WhatsApp para hablar con empresas [12]. Hoy el botón está bloqueado en Gratis. Probar a cambio de pocos avisos por WhatsApp por mes (por ejemplo, 3) puede convertir más, porque deja ver el valor antes de pagar.
+- **Plan anual con precio fijo.** El cobro anual ya queda fijo 12 meses (es un único pago). Decirlo en la landing ("pagando anual, el precio no se mueve por un año") convierte, pero con inflación es un costo para el negocio. Alternativa: anual sólo en dólares.
+- **Cobro con Transferencia.** Cuando el BCRA lo habilite para cobros recurrentes, Cobra+ podría pasar de avisar a cobrar. Exige un aceptador habilitado (banco o PSP) y que quien cobra sea persona jurídica: es una fase aparte.
+
 ## Fuentes
 1. Forbes Argentina, 20/8/2026, sobre la Encuesta Coyuntural de la Fundación Observatorio PyME: <https://www.forbesargentina.com/negocios/tension-pymes-industriales-duplican-atrasos-pagos-6-cada-10-sufren-demoras-cobro-n95916>
 2. iProfesional, 10/9/2026, con datos del Observatorio PyME: <https://www.iprofesional.com/economia/464205-morosidad-empresarial-quintuplico-puso-alerta-pymes-argentinas>
@@ -153,3 +171,7 @@ Diez personas del segmento, veinte minutos cada una. Se pregunta por lo que hici
 22. El Cronista, cotización del dólar oficial: <https://www.cronista.com/finanzas-mercados/dolar-blue-hoy-a-cuanto-cotiza-el-sabado-7-de-noviembre-con-el-mep-y-el-ccl/>
 23. Userpilot, conversión de pruebas gratis: <https://userpilot.com/blog/saas-conversion-rate/>. Chargebee, pruebas con y sin tarjeta: <https://www.chargebee.com/blog/credit-card-trials-credit-card-trials-go/>
 24. Mercately, precios de la API de WhatsApp: <https://blog.mercately.com/nuevos-precios-whatsapp-api-octubre-2026/>
+25. YoFacturo, precios (consultado el 18/11/2026): <https://yo-facturo.com/pricing/>
+26. Getnet y Somos PyMEs, informe 2026 sobre medios de cobro: <https://www.getnet.com.ar/content/dam/getnet-argentina/documents/gacetillas/Gacetilla%20-%20Informe%20en%20PyMEs.pdf>
+27. BCRA, Comunicación "A" 8406: <https://www.bcra.gob.ar/Pdfs/comytexord/A8406.pdf>. Análisis de Marval: <https://www.marval.com/Publicacion/el-banco-central-aprueba-el-cobro-con-transferencia-17544?lang=es>
+28. El Cronista, pymes y cheques rechazados: <https://www.cronista.com/finanzas-mercados/pymes-en-alerta-como-frenar-los-pagos-atrasados-en-medio-de-tasas-en-alza-y-record-de-cheques-rechazados>
