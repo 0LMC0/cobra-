@@ -41,6 +41,7 @@ export const FREE_PLAN = {
   tagline: 'Para arrancar con tus primeros clientes.',
   features: [
     { label: '10 avisos automáticos por mes', available: true },
+    { label: 'Hasta 10 clientes activos', available: true },
     { label: 'Panel de cobranzas y vencimientos', available: true },
     { label: 'Historial de cada cliente', available: true },
     { label: '1 usuario', available: true },
@@ -68,6 +69,23 @@ export const MONTHLY_REMINDERS: Record<PlanTier, number | null> = {
   starter: null,
   growth: null,
   business: null,
+}
+
+/** Clientes activos (no archivados) según el plan. Archivar libera lugar. */
+export const ACTIVE_CUSTOMERS: Record<PlanTier, number> = {
+  free: 10,
+  starter: 30,
+  growth: 200,
+  business: 1000,
+}
+
+/** null si entra uno más; si no, el mensaje para la persona. */
+export function customerLimitError(plan: PlanTier, activeNow: number): string | null {
+  const max = ACTIVE_CUSTOMERS[plan]
+  if (activeNow < max) return null
+  const next = plan === 'free' ? 'Starter' : plan === 'starter' ? 'Growth' : plan === 'growth' ? 'Business' : null
+  return `Tu plan ${PLAN_NAME[plan]} llega hasta ${max.toLocaleString('es-AR')} clientes activos.`
+    + (next ? ` Archivá los que ya no te deben o pasate a ${next}.` : ' Archivá los que ya no te deben o escribinos.')
 }
 
 export const PLAN_NAME: Record<PlanTier, string> = { free: 'Gratis', starter: 'Starter', growth: 'Growth', business: 'Business' }

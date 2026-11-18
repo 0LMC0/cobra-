@@ -7,6 +7,8 @@ import { AuthorizationError, authorize, type OrgContext } from '@/server/auth'
 import { chargeSchema, customerSchema, paymentSchema, promiseSchema } from '@/domain/forms'
 import { addMonths, formatDate, todayIn } from '@/domain/dates'
 import { hasRole } from '@/domain/roles'
+import { customerLimitError } from '@/config/plans'
+import { getOrgPlan } from '@/server/queries'
 import type { FormState } from './form-state'
 
 /** Acciones del producto: clientes, cobros y pagos. La RLS vuelve a verificar todo. */
@@ -19,6 +21,16 @@ async function guard(): Promise<OrgContext | FormState> {
   }
 }
 const isState = (v: OrgContext | FormState): v is FormState => !('org' in v)
+
+/** Revisa el tope de clientes activos del plan antes de sumar uno. */
+async function customerLimit(orgId: string): Promise<string | null> {
+  const supabase = await createClient()
+  const [plan, { count }] = await Promise.all([
+    getOrgPlan(orgId),
+    supabase.from('customers').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'active'),
+  ])
+  return customerLimitError(plan, count ?? 0)
+}
 
 /** Avanza el checklist del inicio. Sólo administración puede editar la empresa. */
 async function advanceOnboarding(ctx: OrgContext, from: string, to: string) {
@@ -33,6 +45,9 @@ export async function createCustomer(_: FormState, formData: FormData): Promise<
   const parsed = customerSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors }
   const d = parsed.data
+
+  const limitError = await customerLimit(ctx.org.id)
+  if (limitError) return { error: limitError }
 
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -193,6 +208,10 @@ export async function setCustomerArchived(_: FormState, formData: FormData): Pro
   const customerId = String(formData.get('customerId') ?? '')
   const archive = formData.get('archive') === '1'
   if (!UUID_RE.test(customerId)) return { error: 'No encontramos ese cliente.' }
+  if (!archive) {
+    const limitError = await customerLimit(ctx.org.id)
+    if (limitError) return { error: limitError }
+  }
 
   const supabase = await createClient()
   const { data, error } = await supabase

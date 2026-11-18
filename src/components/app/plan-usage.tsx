@@ -5,7 +5,8 @@ import { cn } from '@/lib/cn'
 
 /** Plan vigente y avisos usados en el mes. En Gratis muestra la barra y cómo pasar a más. */
 export function PlanUsageCard({ usage, compact = false }: { usage: PlanUsage; compact?: boolean }) {
-  const { plan, limit, used, held, monthLabel } = usage
+  const { plan, limit, used, held, monthLabel, customers, customerLimit } = usage
+  const customersFull = customers >= customerLimit
   const capped = limit !== null
   const pct = capped ? Math.min(100, Math.round((used / Math.max(limit, 1)) * 100)) : 0
   const exhausted = capped && used >= limit
@@ -24,6 +25,10 @@ export function PlanUsageCard({ usage, compact = false }: { usage: PlanUsage; co
           <div className={cn('h-full rounded-full', exhausted ? 'bg-warn' : 'bg-brand')} style={{ width: `${pct}%` }} />
         </div>
       )}
+      <p className={cn('text-[13.5px] font-semibold', customersFull ? 'text-warn' : 'text-muted')}>
+        {customers.toLocaleString('es-AR')} de {customerLimit.toLocaleString('es-AR')} clientes activos
+        {customersFull && ' · llegaste al tope: archivá los que ya no te deben o pasate a un plan más grande'}
+      </p>
       {held > 0 && (
         <p className="rounded-[12px] bg-warn-soft px-3.5 py-2.5 text-[14px] leading-snug font-semibold text-warn">
           {held === 1 ? '1 aviso no salió' : `${held} avisos no salieron`} este mes porque se terminó el cupo. Esos clientes no recibieron su recordatorio.

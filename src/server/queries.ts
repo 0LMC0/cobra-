@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { chargeStatus, type ChargeStatus, type StoredChargeState } from '@/domain/charge-status'
 import type { IsoDate } from '@/domain/dates'
 import type { CurrencyCode } from '@/domain/money'
-import { MONTHLY_REMINDERS, type PlanTier } from '@/config/plans'
+import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, type PlanTier } from '@/config/plans'
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart } from '@/domain/quota'
 import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
@@ -297,7 +297,7 @@ export async function listPayments(orgId: string): Promise<PaymentListItem[]> {
 
 /* ───────────── Plan y uso del mes ───────────── */
 
-export type PlanUsage = { plan: PlanTier; limit: number | null; used: number; held: number; monthLabel: string }
+export type PlanUsage = { plan: PlanTier; limit: number | null; used: number; held: number; monthLabel: string; customers: number; customerLimit: number }
 
 /** Sólo el plan vigente (para candados en la interfaz). */
 export async function getOrgPlan(orgId: string): Promise<PlanTier> {
@@ -309,12 +309,13 @@ export async function getOrgPlan(orgId: string): Promise<PlanTier> {
 /** Plan vigente y cuántos avisos automáticos salieron este mes. */
 export async function getPlanUsage(orgId: string, today: IsoDate): Promise<PlanUsage> {
   const supabase = await createClient()
-  const [subRes, usageRes, heldRes] = await Promise.all([
+  const [subRes, usageRes, heldRes, customersRes] = await Promise.all([
     supabase.from('subscriptions').select('plan, status, current_period_end').eq('org_id', orgId).maybeSingle(),
     supabase.from('reminder_deliveries').select('id', { count: 'exact', head: true })
       .eq('org_id', orgId).eq('channel', 'email').in('status', ['sent', 'queued']).gte('send_on', monthStart(today)),
     supabase.from('reminder_deliveries').select('id', { count: 'exact', head: true })
       .eq('org_id', orgId).eq('status', 'skipped').eq('last_error', 'plan_limit').gte('send_on', monthStart(today)),
+    supabase.from('customers').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'active'),
   ])
   const sub = subRes.data ? { plan: subRes.data.plan as string, status: subRes.data.status as string, currentPeriodEnd: subRes.data.current_period_end as string | null } : null
   const plan = effectivePlan(sub)
@@ -323,6 +324,8 @@ export async function getPlanUsage(orgId: string, today: IsoDate): Promise<PlanU
     limit: MONTHLY_REMINDERS[plan],
     used: usageRes.count ?? 0,
     held: heldRes.count ?? 0,
+    customers: customersRes.count ?? 0,
+    customerLimit: ACTIVE_CUSTOMERS[plan],
     monthLabel: new Intl.DateTimeFormat('es-AR', { month: 'long', timeZone: 'UTC' }).format(new Date(`${today}T12:00:00Z`)),
   }
 }
