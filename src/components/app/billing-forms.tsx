@@ -169,7 +169,7 @@ export function ChargeForm({ action, customerId, defaultCurrency, defaultDueDate
           )}
         </Field>
       </div>
-      <Field label="Vence el" error={firstError(state, 'dueDate')}>
+      <Field label="Vence el" hint="Cobra+ le avisa 5 días antes, el día anterior y ese día." error={firstError(state, 'dueDate')}>
         {(p) => <Input {...p} name="dueDate" type="date" defaultValue={defaultDueDate} required />}
       </Field>
       <label className="flex items-start gap-3 rounded-[14px] bg-surface-2 p-3 text-[14px] leading-snug ring-1 ring-line-2">

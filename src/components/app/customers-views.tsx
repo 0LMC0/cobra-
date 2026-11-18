@@ -5,6 +5,10 @@ import { Alert } from '@/components/ui/misc'
 import { isCollectible } from '@/domain/charge-status'
 import { CUSTOMER_VIEWS, type CustomerView as CustomerListView } from '@/domain/customer-filter'
 import { cn } from '@/lib/cn'
+import { addDays, type IsoDate } from '@/domain/dates'
+
+/** El vencimiento sugerido deja lugar para toda la secuencia: el primer aviso sale 5 días antes. */
+const DEFAULT_DUE_IN_DAYS = 10
 import type { CurrencyCode } from '@/domain/money'
 import type { WhatsAppMoment } from '@/domain/whatsapp'
 import type { ChargeView, CustomerView } from '@/server/queries'
@@ -352,7 +356,7 @@ export function CustomerDetailView({
         {canEdit && !customer.archived && (
           <aside aria-labelledby="new-charge-title" className="rounded-[22px] bg-surface p-5 ring-1 ring-line-2 sm:p-6">
             <h2 id="new-charge-title" className="mb-4 text-[19px] tracking-[-0.02em]">Nuevo cobro</h2>
-            <ChargeForm action={chargeAction} customerId={customer.id} defaultCurrency={defaultCurrency} defaultDueDate={today} />
+            <ChargeForm action={chargeAction} customerId={customer.id} defaultCurrency={defaultCurrency} defaultDueDate={addDays(today as IsoDate, DEFAULT_DUE_IN_DAYS)} />
           </aside>
         )}
       </div>
