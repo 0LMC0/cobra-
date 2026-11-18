@@ -69,7 +69,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
       <section id="tu-plan" className="flex scroll-mt-24 flex-col gap-3">
         <h2 className="text-[19px]">Tu plan</h2>
-        {planResult === 'activo' && <Alert tone="ok" title="¡Listo! Tu plan ya está activo">Gracias por sumarte. Los avisos ya no tienen tope.</Alert>}
+        {usage.plan !== 'free' && !renewing && (
+          <Alert tone="info" title="Cancelaste la renovación">
+            No se te cobra más. Seguís con {PLAN_NAME[usage.plan]}{until ? ` hasta el ${until}` : ''} y después pasás a Gratis. Si te arrepentís, elegí un plan de nuevo.
+          </Alert>
+        )}
+        {planResult === 'activo' && renewing && <Alert tone="ok" title="¡Listo! Tu plan ya está activo">Gracias por sumarte. Los avisos ya no tienen tope.</Alert>}
         {planResult === 'pendiente' && <Alert tone="info" title="Mercado Pago está procesando el pago">Apenas se confirme, tu plan se activa solo. Puede tardar unos minutos.</Alert>}
         {(planResult === 'error' || planResult === 'no-corresponde' || planResult === 'sin-datos') && (
           <Alert tone="warn" title="No pudimos confirmar el pago todavía">Si pagaste, se va a activar solo en unos minutos. Si no, probá de nuevo.</Alert>
