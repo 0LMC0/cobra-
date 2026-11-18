@@ -11,14 +11,14 @@ import { cn } from '@/lib/cn'
 type Action = (state: FormState, formData: FormData) => Promise<FormState>
 
 /** Elegir un plan pago: se paga en Mercado Pago, en pesos. */
-export function PlanPicker({ current, action, canManage }: { current: PlanTier; action: Action; canManage: boolean }) {
+export function PlanPicker({ current, renewing = false, action, canManage }: { current: PlanTier; renewing?: boolean; action: Action; canManage: boolean }) {
   const [interval, setInterval] = useState<BillingInterval>('month')
   const [state, formAction, pending] = useActionState(action, initialFormState)
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[15px] font-bold">Pasate a un plan pago</p>
+        <p className="text-[15px] font-bold">{current === 'free' ? 'Pasate a un plan pago' : 'Cambiar de plan'}</p>
         <div role="radiogroup" aria-label="Frecuencia de pago" className="inline-flex rounded-[12px] bg-surface p-1 text-[13.5px] font-bold ring-1 ring-line-2">
           {(['month', 'year'] as const).map((i) => (
             <button
@@ -33,7 +33,8 @@ export function PlanPicker({ current, action, canManage }: { current: PlanTier; 
       <FormFeedback state={state} />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {PLANS.map((p) => {
-          const isCurrent = p.id === current
+          // Con la renovación cancelada se puede volver a contratar el mismo plan.
+          const isCurrent = p.id === current && renewing
           const price = monthlyPriceFor(p, interval, 'ARS')
           return (
             <form key={p.id} action={formAction} className={cn('flex flex-col gap-3 rounded-[16px] bg-surface p-4 ring-1', p.highlighted ? 'ring-brand' : 'ring-line-2')}>
@@ -64,6 +65,7 @@ export function PlanPicker({ current, action, canManage }: { current: PlanTier; 
       </div>
       <p className="text-[12.5px] text-muted">
         Pagás en Mercado Pago con tarjeta, en pesos. Se renueva solo y lo cancelás cuando quieras desde acá.
+        {renewing && ' Si cambiás de plan, apenas pagás el nuevo se cancela el anterior: no se cobra doble.'}
         {!canManage && ' Sólo el dueño o la dueña de la cuenta puede cambiar el plan.'}
       </p>
     </div>

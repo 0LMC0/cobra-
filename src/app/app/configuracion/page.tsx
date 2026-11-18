@@ -80,11 +80,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <Alert tone="warn" title="No pudimos confirmar el pago todavía">Si pagaste, se va a activar solo en unos minutos. Si no, probá de nuevo.</Alert>
         )}
         <PlanUsageCard usage={usage} />
-        {usage.plan === 'free' || !renewing ? (
-          <Card className="p-5"><PlanPicker current={usage.plan} action={startSubscription} canManage={canManageBilling} /></Card>
-        ) : (
-          canManageBilling && <CancelSubscription action={cancelSubscription} planName={PLAN_NAME[usage.plan]} until={until} />
-        )}
+        {/* El selector siempre está: quien paga Starter tiene que poder pasarse a Growth. */}
+        <Card className="p-5"><PlanPicker current={usage.plan} renewing={renewing} action={startSubscription} canManage={canManageBilling} /></Card>
+        {renewing && canManageBilling && <CancelSubscription action={cancelSubscription} planName={PLAN_NAME[usage.plan]} until={until} />}
       </section>
 
       <section className="flex flex-col gap-3">

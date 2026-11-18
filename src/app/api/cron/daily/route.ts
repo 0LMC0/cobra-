@@ -12,6 +12,7 @@ import { MONTHLY_REMINDERS } from '@/config/plans'
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart, remainingReminders } from '@/domain/quota'
 import { unsubscribeToken } from '@/server/unsubscribe'
+import { isTestAddress } from '@/domain/email-address'
 
 /** Intentos por aviso: si una corrida falla, otra corrida del mismo día lo reintenta. */
 const MAX_ATTEMPTS = 3
@@ -23,6 +24,8 @@ const MAX_ATTEMPTS = 3
  */
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
+// Manda los emails de a uno (con reintentos): con muchas empresas tarda. 60 s es el máximo del plan Hobby de Vercel.
+export const maxDuration = 60
 
 /** Crea los cobros de los abonos activos que vencen dentro de la semana. Devuelve cuántos creó. */
 async function generateAgreementCharges(db: ReturnType<typeof createAdminClient>): Promise<number> {
@@ -161,6 +164,14 @@ export async function GET(req: Request) {
   let failed = 0
   const failedByKey = new Map(sentRows.filter((s) => s.status === 'failed').map((s) => [`${s.charge_id}:${s.step_id}`, s]))
   for (const r of plan.reminders) {
+    // Direcciones de prueba (@algo.example, .test): no existen. Se registran como salteadas, sin intentar.
+    if (isTestAddress(r.to)) {
+      await db.from('reminder_deliveries').upsert(
+        { org_id: r.orgId, charge_id: r.chargeId, step_id: r.stepId, channel: 'email', send_on: r.sendOn, recipient: r.to, status: 'skipped', last_error: 'test_address' },
+        { onConflict: 'charge_id,step_id,channel', ignoreDuplicates: true },
+      )
+      continue
+    }
     // Primero se reserva el aviso: si otra ejecución ya lo tomó, no se manda.
     let id: string | undefined
     const prev = failedByKey.get(`${r.chargeId}:${r.stepId}`)

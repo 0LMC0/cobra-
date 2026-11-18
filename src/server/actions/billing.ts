@@ -97,7 +97,12 @@ export async function createCharge(_: FormState, formData: FormData): Promise<Fo
     amount_minor: d.amountMinor, currency: d.currency, due_date: d.dueDate,
     period_start: agreementId ? d.dueDate : null, created_by: ctx.userId,
   })
-  if (error) return { error: 'No pudimos crear el cobro. Probá de nuevo.' }
+  if (error) {
+    // Sin el primer cobro, el abono no tiene que quedar suelto generando cobros solo.
+    // (Se da por terminado: borrar necesita rol de administración y quien carga cobros puede ser operador.)
+    if (agreementId) await supabase.from('agreements').update({ status: 'ended', next_charge_date: null }).eq('org_id', ctx.org.id).eq('id', agreementId)
+    return { error: 'No pudimos crear el cobro. Probá de nuevo.' }
+  }
 
   const firstCharge = ctx.org.onboarding_step === 'first_charge'
   const { data: sending } = await supabase.from('organizations').select('reminders_enabled').eq('id', ctx.org.id).maybeSingle()
