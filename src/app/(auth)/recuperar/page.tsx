@@ -5,6 +5,7 @@ import { useActionState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Field, Input } from '@/components/ui/field'
 import { FormFeedback } from '@/components/forms/form-feedback'
+import { Turnstile } from '@/components/forms/turnstile'
 import { requestPasswordReset } from '@/server/actions/auth'
 import { firstError, initialFormState } from '@/server/actions/form-state'
 
@@ -21,6 +22,7 @@ export default function RecoverPage() {
         <Field label="Email" error={firstError(state, 'email')}>
           {(p) => <Input {...p} name="email" type="email" autoComplete="email" required autoFocus />}
         </Field>
+        <Turnstile resetKey={state} />
         <Button type="submit" size="lg" loading={pending}>Enviar link</Button>
       </form>
       <Link href="/ingresar" className="text-center text-[13px] text-muted hover:text-ink hover:underline">Volver a ingresar</Link>

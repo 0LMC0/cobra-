@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Field, Input } from '@/components/ui/field'
 import { PasswordInput } from '@/components/ui/password-input'
 import { FormFeedback } from '@/components/forms/form-feedback'
+import { Turnstile } from '@/components/forms/turnstile'
 import { signIn } from '@/server/actions/auth'
 import { firstError, initialFormState } from '@/server/actions/form-state'
 
@@ -26,6 +27,7 @@ export function SignInForm({ next }: { next?: string }) {
       >
         {(p) => <PasswordInput {...p} name="password" autoComplete="current-password" required />}
       </Field>
+      <Turnstile resetKey={state} />
       <Button type="submit" size="lg" loading={pending} className="mt-1 w-full">
         {pending ? 'Ingresando…' : <>Ingresar <ArrowRight className="size-4" /></>}
       </Button>

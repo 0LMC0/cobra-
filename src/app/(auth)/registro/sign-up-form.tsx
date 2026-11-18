@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Field, Input } from '@/components/ui/field'
 import { PasswordInput } from '@/components/ui/password-input'
 import { FormFeedback } from '@/components/forms/form-feedback'
+import { Turnstile } from '@/components/forms/turnstile'
 import { signUp } from '@/server/actions/auth'
 import { firstError, initialFormState } from '@/server/actions/form-state'
 
@@ -24,6 +25,7 @@ export function SignUpForm() {
       <Field label="Contraseña" error={firstError(state, 'password')}>
         {(p) => <PasswordInput {...p} name="password" autoComplete="new-password" required minLength={8} showRules />}
       </Field>
+      <Turnstile resetKey={state} />
       <Button type="submit" size="lg" loading={pending} className="w-full">
         {pending ? 'Creando tu cuenta…' : <>Crear cuenta gratis <ArrowRight className="size-4" /></>}
       </Button>

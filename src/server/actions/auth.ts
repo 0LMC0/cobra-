@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { publicEnv, siteUrl } from '@/config/env'
 import type { FormState } from './form-state'
 import { safeNextPath } from '@/domain/safe-redirect'
+import { captchaFrom } from '@/domain/captcha'
 
 const email = z.string().trim().toLowerCase().email('Ingresá un email válido.').max(254)
 const password = z
@@ -39,9 +40,11 @@ export async function signUp(_: FormState, formData: FormData): Promise<FormStat
     options: {
       data: { full_name: parsed.data.fullName },
       emailRedirectTo: `${siteUrl()}/auth/confirm?next=/onboarding`,
+      captchaToken: captchaFrom(formData),
     },
   })
   if (error) {
+    if (error.code === 'captcha_failed') return { error: 'No pudimos verificar que no sos un robot. Probá de nuevo.' }
     if (error.code === 'weak_password') return { fieldErrors: { password: ['Esa contraseña es demasiado fácil de adivinar.'] } }
     if (error.status === 429) return { error: 'Demasiados intentos. Esperá unos minutos y probá de nuevo.' }
     return { error: 'No pudimos crear la cuenta. Revisá los datos y probá de nuevo.' }
@@ -58,8 +61,9 @@ export async function signIn(_: FormState, formData: FormData): Promise<FormStat
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors }
 
   const supabase = await createClient()
-  const { data, error } = await supabase.auth.signInWithPassword(parsed.data)
+  const { data, error } = await supabase.auth.signInWithPassword({ ...parsed.data, options: { captchaToken: captchaFrom(formData) } })
   if (error) {
+    if (error.code === 'captcha_failed') return { error: 'No pudimos verificar que no sos un robot. Probá de nuevo.' }
     if (error.code === 'email_not_confirmed') {
       return { error: 'Todavía no confirmaste tu email. Revisá tu bandeja (y spam).' }
     }
@@ -91,7 +95,9 @@ export async function requestPasswordReset(_: FormState, formData: FormData): Pr
   const supabase = await createClient()
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${siteUrl()}/auth/confirm?next=/nueva-clave`,
+    captchaToken: captchaFrom(formData),
   })
+  if (error?.code === 'captcha_failed') return { error: 'No pudimos verificar que no sos un robot. Probá de nuevo.' }
   if (error?.status === 429) return { error: 'Demasiados intentos. Esperá unos minutos.' }
   // Respuesta idéntica exista o no la cuenta.
   return { ok: 'Si hay una cuenta con ese email, te mandamos un link para crear una contraseña nueva. Vence en 1 hora.' }
