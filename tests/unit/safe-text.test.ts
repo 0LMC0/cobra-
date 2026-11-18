@@ -36,3 +36,12 @@ describe('alias para transferir', () => {
     expect(normalizeTransferAlias('abc')).toBeNull()
   })
 })
+
+describe('topes de sentido común en un cobro', () => {
+  it('rechaza importes gigantes y fechas imposibles', () => {
+    const base = { customerId: UUID, concept: 'Cuota', currency: 'ARS', dueDate: '2026-12-01' }
+    expect(chargeSchema.safeParse({ ...base, amount: '99999999999999' }).success).toBe(false)
+    expect(chargeSchema.safeParse({ ...base, amount: '150.000' }).success).toBe(true)
+    expect(chargeSchema.safeParse({ ...base, amount: '1000', dueDate: '9999-01-01' }).success).toBe(false)
+  })
+})

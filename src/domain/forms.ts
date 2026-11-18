@@ -48,19 +48,27 @@ export const customerSchema = z
 
 export type CustomerInput = z.output<typeof customerSchema>
 
+/** 10.000 millones (en unidades menores, con 2 decimales). */
+export const MAX_AMOUNT_MINOR = 1_000_000_000_000
+
 export const chargeSchema = z
   .object({
     customerId: z.string().uuid('Elegí un cliente.'),
     concept: emailText(1, 200, 'Poné qué le cobrás, por ejemplo "Cuota de noviembre".'),
     amount: z.string().trim().min(1, 'Poné el importe.'),
     currency: z.string().refine(isCurrency, 'Elegí una moneda.'),
-    dueDate: isoDate('Elegí la fecha de vencimiento.'),
+    dueDate: isoDate('Elegí la fecha de vencimiento.').refine((v) => v >= '2000-01-01' && v <= '2099-12-31', 'Elegí una fecha real de vencimiento.'),
     repeatMonthly: checkbox,
   })
   .transform((d, ctx) => {
     const amountMinor = parseAmount(d.amount, d.currency as CurrencyCode)
     if (amountMinor === null || amountMinor <= 0) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['amount'], message: 'Ese importe no es válido. Escribilo así: 150.000 o 150.000,50.' })
+      return z.NEVER
+    }
+    // Tope de sentido común: evita totales que desborden y errores de tipeo de muchos ceros.
+    if (amountMinor > MAX_AMOUNT_MINOR) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['amount'], message: 'Ese importe es demasiado grande. Revisá los ceros.' })
       return z.NEVER
     }
     return { customerId: d.customerId, concept: d.concept, amountMinor, currency: d.currency as CurrencyCode, dueDate: d.dueDate, repeatMonthly: d.repeatMonthly }
