@@ -1,4 +1,5 @@
 import 'server-only'
+import { isTestAddress } from '@/domain/email-address'
 
 /**
  * Envío de emails con Resend (API HTTP, sin SDK). Sin RESEND_API_KEY no se
@@ -57,6 +58,8 @@ async function sendOnce(e: OutgoingEmail): Promise<SendResult> {
 
 /** Envía y, si el error es pasajero (red, 429, 5xx), reintenta hasta 3 veces con espera creciente. */
 export async function sendEmail(e: OutgoingEmail, waits: readonly number[] = [1000, 4000]): Promise<SendResult> {
+  // Dominios de prueba: no existen y sólo generarían rebotes.
+  if (isTestAddress(e.to)) return { ok: false, error: 'Dirección de prueba: no se envía.', retryable: false }
   let res = await sendOnce(e)
   for (const ms of waits) {
     if (res.ok || !res.retryable) break
