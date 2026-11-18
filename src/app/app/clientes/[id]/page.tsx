@@ -8,21 +8,27 @@ import { clearPromise, createCharge, recordPayment, setCustomerArchived, setProm
 import { todayIn } from '@/domain/dates'
 import { isCurrency } from '@/domain/money'
 import { hasRole } from '@/domain/roles'
+import { createClient } from '@/lib/supabase/server'
+import { turnOnReminders } from '@/server/actions/reminder-settings'
 
 export const metadata: Metadata = { title: 'Cliente' }
 
-export default async function CustomerPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ nuevo?: string; guardado?: string }> }) {
+export default async function CustomerPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ nuevo?: string; guardado?: string; avisos?: string }> }) {
   const { org, role } = await requireOrg('viewer')
   const { id } = await params
-  const { nuevo, guardado } = await searchParams
+  const { nuevo, guardado, avisos } = await searchParams
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound()
   const today = todayIn(org.timezone)
   const data = await getCustomer(org.id, id, today)
   if (!data) notFound()
-  const [timeline, plan] = await Promise.all([
+  const supabase = await createClient()
+  const [timeline, plan, { data: sending }] = await Promise.all([
     getCustomerTimeline(org.id, { id: data.customer.id, createdAt: data.customer.createdAt }),
     getOrgPlan(org.id),
+    supabase.from('organizations').select('reminders_enabled').eq('id', org.id).maybeSingle(),
   ])
+  // Avisos apagados con cobros cargados: es el momento de ofrecer prenderlos.
+  const offerReminders = !sending?.reminders_enabled && data.charges.length > 0 && hasRole(role, 'admin')
   return (
     <CustomerDetailView
       customer={data.customer}
@@ -42,6 +48,8 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       whatsappLocked={!planIncludes(plan, 'whatsapp')}
       justCreated={nuevo === '1'}
       justSaved={guardado === '1'}
+      turnOnRemindersAction={offerReminders ? turnOnReminders : undefined}
+      remindersJustOn={avisos === '1' && !!sending?.reminders_enabled}
     />
   )
 }

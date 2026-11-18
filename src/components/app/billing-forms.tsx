@@ -270,3 +270,22 @@ export function PromiseButton({ action, clearAction, chargeId, promisedFor, toda
     </form>
   )
 }
+
+/** Un toque para que Cobra+ empiece a avisar. Aparece cuando hay cobros y los avisos están apagados. */
+export function TurnOnReminders({ action, customerName, customerId }: { action: (state: FormState, formData: FormData) => Promise<FormState>; customerName: string; customerId: string }) {
+  const [state, formAction, pending] = useActionState(action, initialFormState)
+  if (state.ok) return <FormFeedback state={state} />
+  return (
+    <form action={formAction} className="flex flex-col gap-3 rounded-[18px] bg-marker/40 p-5 ring-2 ring-ink sm:flex-row sm:items-center sm:justify-between">
+      <input type="hidden" name="customerId" value={customerId} />
+      <div>
+        <p className="text-[16.5px] font-bold">Falta un paso: prendé los avisos</p>
+        <p className="text-[14px] leading-snug text-muted">
+          Así Cobra+ le escribe a {customerName} antes y después de que venza, sin que vos hagas nada.
+        </p>
+        <FormFeedback state={state} />
+      </div>
+      <Button type="submit" size="lg" loading={pending} className="shrink-0">Prender los avisos</Button>
+    </form>
+  )
+}

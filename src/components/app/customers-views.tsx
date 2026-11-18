@@ -9,7 +9,7 @@ import type { CurrencyCode } from '@/domain/money'
 import type { WhatsAppMoment } from '@/domain/whatsapp'
 import type { ChargeView, CustomerView } from '@/server/queries'
 import type { FormState } from '@/server/actions/form-state'
-import { ArchiveCustomer, ChargeForm, CustomerForm, PayButton, PromiseButton, type CustomerInitial } from './billing-forms'
+import { ArchiveCustomer, ChargeForm, CustomerForm, PayButton, PromiseButton, TurnOnReminders, type CustomerInitial } from './billing-forms'
 import { CustomerTimeline } from './customer-timeline'
 import type { TimelineEvent } from '@/domain/timeline'
 import { ChargeSummary, CustomersTable, Owed, initials } from './billing-ui'
@@ -200,8 +200,11 @@ export function momentFor(c: ChargeView, today: string): WhatsAppMoment {
 
 export function CustomerDetailView({
   customer, charges, today, businessName, transferAlias, defaultCurrency, chargeAction, payAction, promiseAction, clearPromiseAction, justCreated, backHref = '/app/clientes',
-  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false,
+  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false, turnOnRemindersAction, remindersJustOn = false,
 }: {
+  /** Si viene, los avisos están apagados: se ofrece prenderlos con un toque. */
+  turnOnRemindersAction?: Action
+  remindersJustOn?: boolean
   customer: CustomerView
   charges: ChargeView[]
   today: string
@@ -254,6 +257,8 @@ export function CustomerDetailView({
       )}
 
       {justCreated && <Alert tone="ok" title="Cliente guardado">Ahora creale su primer cobro: con eso Cobra+ ya sabe cuándo avisarle.</Alert>}
+      {turnOnRemindersAction && <TurnOnReminders action={turnOnRemindersAction} customerName={customer.name} customerId={customer.id} />}
+      {remindersJustOn && <Alert tone="ok" title="¡Listo! Los avisos están prendidos">Cobra+ le escribe por email a tus clientes antes y después de cada vencimiento, sólo en días hábiles. El email de respuestas lo cambiás en Configuración.</Alert>}
 
       <header className="flex flex-wrap items-center gap-4">
         <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-full bg-brand-soft text-[18px] font-extrabold text-brand-text">{initials(customer.name)}</span>
