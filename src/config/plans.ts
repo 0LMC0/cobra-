@@ -38,10 +38,10 @@ export type PlanTier = 'free' | PlanId
 export const FREE_PLAN = {
   id: 'free' as const,
   name: 'Gratis',
-  tagline: 'Para arrancar con tus primeros clientes.',
+  tagline: 'Para probarlo con tus primeros 5 clientes.',
   features: [
     { label: '10 avisos automáticos por mes', available: true },
-    { label: 'Hasta 10 clientes activos', available: true },
+    { label: 'Hasta 5 clientes activos', available: true },
     { label: 'Panel de cobranzas y vencimientos', available: true },
     { label: 'Historial de cada cliente', available: true },
     { label: '1 usuario', available: true },
@@ -73,7 +73,7 @@ export const MONTHLY_REMINDERS: Record<PlanTier, number | null> = {
 
 /** Clientes activos (no archivados) según el plan. Archivar libera lugar. */
 export const ACTIVE_CUSTOMERS: Record<PlanTier, number> = {
-  free: 10,
+  free: 5,
   starter: 30,
   growth: 200,
   business: 1000,

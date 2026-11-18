@@ -6,7 +6,7 @@ import { MonthStrip } from '@/components/marketing/month-strip'
 import { DigestPreview, EmailPreview, HumanCases } from '@/components/marketing/story'
 import { Pricing } from '@/components/marketing/pricing'
 import { StickyCta } from '@/components/marketing/sticky-cta'
-import { MONTHLY_REMINDERS } from '@/config/plans'
+import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS } from '@/config/plans'
 import { cn } from '@/lib/cn'
 
 const WHO = ['Agencias', 'Estudios contables', 'Estudios de diseño', 'Mantenimiento', 'Consultoras', 'Independientes']
@@ -15,7 +15,7 @@ const FAQ = [
   ['¿Para quién es?', 'Para quien les cobra a los mismos clientes todos los meses: agencias, estudios contables y de diseño, servicios de mantenimiento, consultoras y profesionales independientes.'],
   ['¿Cobra+ cobra la plata por mí?', 'No. El dinero va directo de tu cliente a tu cuenta, como siempre. Cobra+ sólo ordena tus cobros y avisa. Nunca recibimos ni guardamos tu plata.'],
   ['¿Cobra+ me avisa a mí también?', 'Sí. Te manda un resumen por email con quién te pagó, qué vence hoy y quién está atrasado. Sólo te escribe los días que hay novedades.'],
-  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y hasta 10 clientes. Si necesitás más, te pasás a un plan pago, desde $ 18.900 por mes.`],
+  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y hasta ${ACTIVE_CUSTOMERS.free} clientes. Si necesitás más, te pasás a un plan pago, desde $ 18.900 por mes.`],
   ['¿Puedo pasar mis clientes desde Excel?', 'Por ahora los cargás uno por uno: con el nombre y el email alcanza. Importar desde Excel está en camino. Exportar ya se puede, desde el plan Growth.'],
   ['¿Qué pasa si un cliente paga una parte?', 'Anotás el pago parcial. Lo que falta queda pendiente y los avisos siguen sólo por ese saldo.'],
   ['¿Puedo cobrar en pesos y en dólares?', 'Sí. Cada cobro tiene su moneda y los totales se muestran por separado. Nunca se suman monedas distintas.'],
