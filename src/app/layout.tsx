@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Caveat, Figtree, Poppins } from 'next/font/google'
+import Script from 'next/script'
 import { siteUrl } from '@/config/env'
 import './globals.css'
 
@@ -40,6 +41,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="es-AR">
       <body className={`${poppins.variable} ${figtree.variable} ${caveat.variable} min-h-dvh`}>
         {children}
+        {/* Visitas y conversión, sin cookies (Vercel Web Analytics). Sólo existe en Vercel; en local no carga nada. */}
+        {process.env.VERCEL && <Script src="/_vercel/insights/script.js" strategy="afterInteractive" />}
       </body>
     </html>
   )

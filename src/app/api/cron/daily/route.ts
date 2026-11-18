@@ -221,6 +221,7 @@ export async function GET(req: Request) {
 
   let digests = 0
   for (const d of plan.digests) {
+    if (isTestAddress(d.to)) continue // cuentas de prueba: no se manda ni se cuenta como error
     // Igual con el resumen: se marca el día antes de mandarlo, así no sale dos veces.
     const { data: claimed } = await db
       .from('organization_members')
