@@ -43,7 +43,8 @@ export async function startSubscription(_: FormState, formData: FormData): Promi
         plan,
         interval,
         // En pruebas, Mercado Pago exige el email de la cuenta de prueba compradora.
-        payerEmail: process.env.MP_TEST_PAYER_EMAIL || ctx.email,
+        // En producción nunca: con credenciales reales rompería el pago.
+        payerEmail: (process.env.VERCEL_ENV !== 'production' && process.env.MP_TEST_PAYER_EMAIL) || ctx.email,
         backUrl: `${process.env.MP_BACK_URL_BASE || siteUrl()}/app/plan/volver`,
       }),
       randomUUID(),

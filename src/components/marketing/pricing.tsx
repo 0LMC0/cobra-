@@ -93,7 +93,7 @@ export function Pricing() {
               <ButtonLink href="/registro" size="lg" variant={p.highlighted ? 'primary' : 'secondary'} className="mt-6 w-full">
                 Empezá gratis
               </ButtonLink>
-              <p className="mt-2 text-center text-[12.5px] font-semibold text-muted">Te pasás a {p.name} con Mercado Pago (muy pronto).</p>
+              <p className="mt-2 text-center text-[12.5px] font-semibold text-muted">Empezás gratis y te pasás a {p.name} cuando quieras, con Mercado Pago.</p>
               <ul className="mt-7 flex flex-col gap-3 border-t border-line-2 pt-6 text-[14.5px]">
                 {p.features.map((f) => (
                   <li key={f.label} className={cn('flex items-start gap-2.5 font-semibold', !f.available && 'text-faint')}>
