@@ -7,12 +7,13 @@ import { createClient } from '@/lib/supabase/server'
 import { ACTIVE_ORG_COOKIE, getOrgContext, getUser } from '@/server/auth'
 import { isValidTimeZone } from '@/domain/dates'
 import { SUPPORTED_CURRENCIES } from '@/domain/money'
+import { emailText } from '@/domain/forms'
 import type { FormState } from './form-state'
 
 const FREQUENCIES = ['weekly', 'biweekly', 'monthly', 'quarterly', 'semiannual', 'annual'] as const
 
 const companySchema = z.object({
-  name: z.string().trim().min(2, 'El nombre tiene que tener al menos 2 caracteres.').max(120),
+  name: emailText(2, 120, 'El nombre tiene que tener al menos 2 caracteres.'),
   industry: z.string().trim().max(60).optional().default(''),
   currency: z.enum(SUPPORTED_CURRENCIES as unknown as [string, ...string[]], { errorMap: () => ({ message: 'Elegí una moneda.' }) }),
   timezone: z.string().refine(isValidTimeZone, 'Zona horaria inválida.'),

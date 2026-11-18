@@ -2,20 +2,28 @@ import { z } from 'zod'
 import { daysBetween, isIsoDate } from './dates'
 import { isCurrency, parseAmount, type CurrencyCode } from './money'
 import { toWhatsAppNumber } from './whatsapp'
+import { cleanText, hasLink } from './safe-text'
 
 /**
  * Validación de los formularios del producto. Puras y probadas: las Server
  * Actions sólo las aplican y guardan. Mensajes en el idioma de la persona.
  */
 
-const optionalText = (max: number) => z.string().trim().max(max, `Usá ${max} caracteres o menos.`).optional().transform((v) => (v ? v : null))
+const optionalText = (max: number) => z.string().transform(cleanText).pipe(z.string().max(max, `Usá ${max} caracteres o menos.`)).optional().transform((v) => (v ? v : null))
+const NO_LINKS = 'Sin links ni direcciones web: este texto aparece en los emails que le llegan a tu cliente.'
+/** Texto que viaja en los emails: limpio de caracteres invisibles y sin links. */
+const emailText = (min: number, max: number, minMsg: string) =>
+  z.string().transform(cleanText).pipe(z.string().min(min, minMsg).max(max, `Usá ${max} caracteres o menos.`).refine((v) => !hasLink(v), NO_LINKS))
+const optionalEmailText = (max: number) =>
+  z.string().transform(cleanText).pipe(z.string().max(max, `Usá ${max} caracteres o menos.`).refine((v) => !hasLink(v), NO_LINKS)).optional().transform((v) => (v ? v : null))
+export { emailText }
 const checkbox = z.union([z.literal('on'), z.literal('true'), z.literal('')]).optional().transform((v) => v === 'on' || v === 'true')
 const isoDate = (msg: string) => z.string().refine(isIsoDate, msg)
 
 export const customerSchema = z
   .object({
-    name: z.string().trim().min(1, 'Poné el nombre del cliente.').max(160, 'Usá 160 caracteres o menos.'),
-    contactName: optionalText(120),
+    name: emailText(1, 160, 'Poné el nombre del cliente.'),
+    contactName: optionalEmailText(120),
     email: z.union([z.literal(''), z.string().trim().toLowerCase().email('Ese email no parece válido.').max(254)]).optional().transform((v) => (v ? v : null)),
     phone: optionalText(40),
     whatsappOk: checkbox,
@@ -43,7 +51,7 @@ export type CustomerInput = z.output<typeof customerSchema>
 export const chargeSchema = z
   .object({
     customerId: z.string().uuid('Elegí un cliente.'),
-    concept: z.string().trim().min(1, 'Poné qué le cobrás, por ejemplo "Cuota de noviembre".').max(200),
+    concept: emailText(1, 200, 'Poné qué le cobrás, por ejemplo "Cuota de noviembre".'),
     amount: z.string().trim().min(1, 'Poné el importe.'),
     currency: z.string().refine(isCurrency, 'Elegí una moneda.'),
     dueDate: isoDate('Elegí la fecha de vencimiento.'),

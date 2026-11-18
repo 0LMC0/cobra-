@@ -6,10 +6,19 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { AuthorizationError, authorize } from '@/server/auth'
 import type { FormState } from './form-state'
+import { normalizeTransferAlias } from '@/domain/safe-text'
 
 const schema = z.object({
   enabled: z.union([z.literal('on'), z.literal('')]).optional().transform((v) => v === 'on'),
-  transferAlias: z.string().trim().max(80, 'Usá 80 caracteres o menos.').optional().transform((v) => (v ? v : null)),
+  transferAlias: z.string().optional().transform((v, ctx) => {
+    if (!v || !v.trim()) return null
+    const alias = normalizeTransferAlias(v)
+    if (!alias) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Poné tu alias (por ejemplo estudio.rivas.mp) o tu CBU/CVU de 22 números.' })
+      return z.NEVER
+    }
+    return alias
+  }),
   replyTo: z.union([z.literal(''), z.string().trim().toLowerCase().email('Ese email no parece válido.').max(254)]).optional().transform((v) => (v ? v : null)),
 })
 

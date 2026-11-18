@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
   // Permite compilar en otra carpeta sin pisar el servidor de desarrollo (NEXT_DIST_DIR=.next-build).
   distDir: process.env.NEXT_DIST_DIR || '.next',
   poweredByHeader: false,
+  // Importar clientes manda el CSV en el formulario: 1 MB (el valor por defecto) queda justo.
+  experimental: { serverActions: { bodySizeLimit: '3mb' } },
   async headers() {
     return [
       {
