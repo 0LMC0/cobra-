@@ -146,13 +146,18 @@ export function CustomersListView({
 
 /* ───────────── Cliente nuevo ───────────── */
 
-export function NewCustomerView({ action, backHref = '/app/clientes', limitReached = null }: { action: Action; backHref?: string; limitReached?: string | null }) {
+export function NewCustomerView({ action, backHref = '/app/clientes', limitReached = null, firstTime = false }: { action: Action; backHref?: string; limitReached?: string | null; firstTime?: boolean }) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <Link href={backHref} className="inline-flex w-fit items-center gap-1.5 text-[14px] font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> Clientes</Link>
       <header>
-        <h1 className="text-[32px] sm:text-[38px]">Nuevo cliente</h1>
-        <p className="text-[14.5px] text-muted">Con un email o un celular alcanza para empezar. Lo demás lo completás cuando quieras.</p>
+        {firstTime && <p className="mb-2 w-fit rounded-full bg-marker px-3 py-1 text-[12.5px] font-extrabold">Paso 4 de 4 · Ya casi</p>}
+        <h1 className="text-[32px] sm:text-[38px]">{firstTime ? 'Cargá tu primer cliente' : 'Nuevo cliente'}</h1>
+        <p className="text-[14.5px] text-muted">
+          {firstTime
+            ? 'Elegí a alguien que te pague seguido. Con el nombre y el email alcanza; en el paso siguiente le cargás cuánto te paga y cuándo vence.'
+            : 'Con un email o un celular alcanza para empezar. Lo demás lo completás cuando quieras.'}
+        </p>
       </header>
       {limitReached ? (
         <section className="flex flex-col items-start gap-4 rounded-[22px] bg-surface p-5 ring-2 ring-brand sm:p-7">
@@ -256,7 +261,11 @@ export function CustomerDetailView({
         </Alert>
       )}
 
-      {justCreated && <Alert tone="ok" title="Cliente guardado">Ahora creale su primer cobro: con eso Cobra+ ya sabe cuándo avisarle.</Alert>}
+      {justCreated && charges.length === 0 && (
+        <Alert tone="ok" title="¡Cliente guardado! Ahora, su primer cobro">
+          Completá <b>Nuevo cobro</b>: qué le cobrás, cuánto y cuándo vence. Con eso Cobra+ ya sabe cuándo avisarle. Si te paga todos los meses, tildá “Se repite todos los meses”.
+        </Alert>
+      )}
       {turnOnRemindersAction && <TurnOnReminders action={turnOnRemindersAction} customerName={customer.name} customerId={customer.id} />}
       {remindersJustOn && <Alert tone="ok" title="¡Listo! Los avisos están prendidos">Cobra+ le escribe por email a tus clientes antes y después de cada vencimiento, sólo en días hábiles. El email de respuestas lo cambiás en Configuración.</Alert>}
 

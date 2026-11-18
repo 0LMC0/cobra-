@@ -45,7 +45,7 @@ export async function createOrganization(_: FormState, formData: FormData): Prom
   }
 
   ;(await cookies()).set(ACTIVE_ORG_COOKIE, orgId, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/', maxAge: 60 * 60 * 24 * 365 })
-  redirect('/app')
+  redirect('/onboarding/avisos')
 }
 
 /** Cambia la empresa activa, sólo a una de la que el usuario sea miembro. */

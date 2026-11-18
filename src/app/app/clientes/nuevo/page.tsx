@@ -6,8 +6,9 @@ import { createCustomer } from '@/server/actions/billing'
 
 export const metadata: Metadata = { title: 'Nuevo cliente' }
 
-export default async function NewCustomerPage() {
+export default async function NewCustomerPage({ searchParams }: { searchParams: Promise<{ primero?: string }> }) {
   const { org } = await requireOrg('operator')
   const limit = await customerLimitReached(org.id)
-  return <NewCustomerView action={createCustomer} limitReached={limit} />
+  const { primero } = await searchParams
+  return <NewCustomerView action={createCustomer} limitReached={limit} firstTime={primero === '1'} />
 }

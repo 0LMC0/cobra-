@@ -22,6 +22,14 @@ describe('formulario de cliente', () => {
     expect(r.success && r.data).toMatchObject({ name: 'Estudio Rivas', email: 'hola@rivas.example', contactName: null, notes: null, whatsappNumber: null, whatsappOk: false })
   })
 
+  it('la casilla "Que Cobra+ le avise por email" se guarda como avisos no pausados', () => {
+    const on = customerSchema.safeParse({ name: 'Con avisos', email: 'a@b.example', autoReminders: 'on' })
+    const off = customerSchema.safeParse({ name: 'Sin avisos', email: 'a@b.example' })
+    expect(on.success && on.data.remindersPaused).toBe(false)
+    expect(off.success && off.data.remindersPaused).toBe(true)
+    expect(on.success && 'autoReminders' in on.data).toBe(false)
+  })
+
   it('avisa si el celular no se reconoce', () => {
     expect(errors(customerSchema.safeParse({ name: 'X', phone: '1234' })).phone?.[0]).toMatch(/No reconocemos ese celular/)
   })

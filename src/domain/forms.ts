@@ -19,7 +19,8 @@ export const customerSchema = z
     email: z.union([z.literal(''), z.string().trim().toLowerCase().email('Ese email no parece válido.').max(254)]).optional().transform((v) => (v ? v : null)),
     phone: optionalText(40),
     whatsappOk: checkbox,
-    remindersPaused: checkbox,
+    /** Tildado = Cobra+ le avisa por email. Se guarda al revés, como reminders_paused. */
+    autoReminders: checkbox,
     taxId: optionalText(20),
     notes: optionalText(2000),
   })
@@ -32,7 +33,8 @@ export const customerSchema = z
         return z.NEVER
       }
     }
-    return { ...d, whatsappNumber, whatsappOk: Boolean(whatsappNumber) && d.whatsappOk }
+    const { autoReminders, ...rest } = d
+    return { ...rest, remindersPaused: !autoReminders, whatsappNumber, whatsappOk: Boolean(whatsappNumber) && d.whatsappOk }
   })
   .refine((d) => d.email || d.whatsappNumber, { path: ['email'], message: 'Cargá al menos un email o un celular, así Cobra+ le puede avisar.' })
 

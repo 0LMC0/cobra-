@@ -46,9 +46,29 @@ export function CustomerForm({ action, initial }: { action: Action; initial?: Cu
       <Field label="Nombre del cliente" hint="La persona o la empresa a la que le cobrás." error={firstError(state, 'name')}>
         {(p) => <Input {...p} name="name" placeholder="Ej.: Estudio Rivas" required autoFocus={!editing} defaultValue={initial?.name} />}
       </Field>
-      <Field label="Email" hint="Ahí le llegan los avisos automáticos." error={firstError(state, 'email')}>
-        {(p) => <Input {...p} name="email" type="email" inputMode="email" placeholder="marina@estudiorivas.com" autoComplete="off" defaultValue={initial?.email ?? ''} />}
-      </Field>
+      <div className="flex flex-col gap-2.5">
+        <Field label="Email" hint="Ahí le llegan los avisos automáticos." error={firstError(state, 'email')}>
+          {(p) => <Input {...p} name="email" type="email" inputMode="email" placeholder="marina@estudiorivas.com" autoComplete="off" defaultValue={initial?.email ?? ''} />}
+        </Field>
+        {initial?.optedOut ? (
+          <>
+            {!initial.remindersPaused && <input type="hidden" name="autoReminders" value="on" />}
+            <p className="rounded-[14px] bg-warn-soft px-4 py-3 text-[14px] leading-snug text-warn">
+              <b className="font-bold">Pidió no recibir avisos automáticos.</b> Cobra+ no le escribe por email; podés seguir avisándole por WhatsApp.
+            </p>
+          </>
+        ) : (
+          <label className="flex cursor-pointer items-start gap-3 rounded-[14px] bg-brand-soft p-4 text-[14.5px] leading-snug ring-1 ring-brand/30">
+            <input type="checkbox" name="autoReminders" defaultChecked={initial ? !initial.remindersPaused : true} className="mt-0.5 size-5 shrink-0 accent-[var(--brand)]" />
+            <span>
+              <b className="font-bold">Que Cobra+ le avise por email</b>
+              <span className="block text-[13.5px] text-muted">
+                5 días antes de que venza, el día anterior, el día que vence y si se atrasa. Sólo días hábiles, y se corta apenas anotás el pago.
+              </span>
+            </span>
+          </label>
+        )}
+      </div>
       <div className="flex flex-col gap-2.5">
         <Field label="Celular" optional hint="Con código de área. Ej.: 11 2345-6789." error={firstError(state, 'phone')}>
           {(p) => <Input {...p} name="phone" type="tel" inputMode="tel" placeholder="11 2345-6789" autoComplete="off" value={phone} onChange={(e) => setPhone(e.target.value)} />}
@@ -76,16 +96,6 @@ export function CustomerForm({ action, initial }: { action: Action; initial?: Cu
           </Field>
         </div>
       </details>
-      {initial && (initial.optedOut ? (
-        <p className="rounded-[14px] bg-warn-soft px-4 py-3 text-[14px] leading-snug text-warn">
-          <b className="font-bold">Pidió no recibir avisos automáticos.</b> Cobra+ no le escribe por email; podés seguir avisándole por WhatsApp.
-        </p>
-      ) : (
-        <label className="flex items-start gap-3 rounded-[14px] bg-surface p-3 text-[14px] leading-snug ring-1 ring-line-2">
-          <input type="checkbox" name="remindersPaused" defaultChecked={initial.remindersPaused} className="mt-0.5 size-[18px] shrink-0 accent-[var(--brand)]" />
-          <span><b className="font-bold">Pausar los avisos automáticos.</b> Útil si estás arreglando algo con este cliente. Lo podés reanudar cuando quieras.</span>
-        </label>
-      ))}
       <Button type="submit" size="lg" loading={pending} className="w-full sm:w-auto sm:self-start">
         {pending ? 'Guardando…' : editing ? 'Guardar cambios' : 'Guardar cliente'}
       </Button>

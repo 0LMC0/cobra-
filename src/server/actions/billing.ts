@@ -21,6 +21,14 @@ async function guard(): Promise<OrgContext | FormState> {
 }
 const isState = (v: OrgContext | FormState): v is FormState => !('org' in v)
 
+/** Prende los avisos de la empresa si están apagados. Email de respuestas: el que haya o el de la persona. */
+async function ensureRemindersOn(ctx: OrgContext) {
+  const supabase = await createClient()
+  const { data: org } = await supabase.from('organizations').select('reminders_enabled, reply_to_email').eq('id', ctx.org.id).maybeSingle()
+  if (!org || org.reminders_enabled) return
+  await supabase.from('organizations').update({ reminders_enabled: true, reply_to_email: (org.reply_to_email as string | null) || ctx.email }).eq('id', ctx.org.id)
+}
+
 /** Avanza el checklist del inicio. Sólo administración puede editar la empresa. */
 async function advanceOnboarding(ctx: OrgContext, from: string, to: string) {
   if (ctx.org.onboarding_step !== from || !hasRole(ctx.role, 'admin')) return
@@ -44,6 +52,7 @@ export async function createCustomer(_: FormState, formData: FormData): Promise<
     .insert({
       org_id: ctx.org.id, name: d.name, contact_name: d.contactName, email: d.email, phone: d.phone,
       whatsapp_number: d.whatsappNumber, whatsapp_ok: d.whatsappOk, tax_id: d.taxId, notes: d.notes, created_by: ctx.userId,
+      reminders_paused: d.remindersPaused,
     })
     .select('id')
     .single()
@@ -53,6 +62,8 @@ export async function createCustomer(_: FormState, formData: FormData): Promise<
     return { error: 'No pudimos guardar el cliente. Probá de nuevo.' }
   }
   await advanceOnboarding(ctx, 'first_customer', 'first_charge')
+  // Si eligió que le avise y los avisos de la empresa están apagados, se prenden (sólo administración).
+  if (!d.remindersPaused && d.email && hasRole(ctx.role, 'admin')) await ensureRemindersOn(ctx)
   revalidatePath('/app', 'layout')
   redirect(`/app/clientes/${data.id}?nuevo=1`)
 }
@@ -86,8 +97,19 @@ export async function createCharge(_: FormState, formData: FormData): Promise<Fo
   })
   if (error) return { error: 'No pudimos crear el cobro. Probá de nuevo.' }
 
-  await advanceOnboarding(ctx, 'first_charge', 'reminders')
+  const firstCharge = ctx.org.onboarding_step === 'first_charge'
+  const { data: sending } = await supabase.from('organizations').select('reminders_enabled').eq('id', ctx.org.id).maybeSingle()
+  const remindersOn = Boolean(sending?.reminders_enabled)
+  // Con los avisos ya prendidos no queda nada por configurar: el checklist termina acá.
+  await advanceOnboarding(ctx, 'first_charge', remindersOn ? 'done' : 'reminders')
   revalidatePath('/app', 'layout')
+  if (firstCharge) {
+    return {
+      ok: remindersOn
+        ? `¡Listo, Cobra+ ya está trabajando! Le va a avisar por email antes del ${formatDate(d.dueDate, { day: 'numeric', month: 'long' })}. Cuando te pague, tocá “Pagó” y los avisos se cortan.`
+        : '¡Listo, tu primer cobro está cargado! Prendé los avisos para que Cobra+ le escriba por vos.',
+    }
+  }
   return { ok: d.repeatMonthly ? 'Listo: el cobro quedó creado y se va a repetir todos los meses.' : 'Listo: el cobro quedó creado.' }
 }
 
