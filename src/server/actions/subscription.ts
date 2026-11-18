@@ -58,7 +58,7 @@ export async function startSubscription(_: FormState, formData: FormData): Promi
 }
 
 /** Cancela la renovación: el plan sigue hasta el fin de lo pagado y después pasa a Gratis. */
-export async function cancelSubscription(_: FormState): Promise<FormState> {
+export async function cancelSubscription(_state: FormState): Promise<FormState> {
   const ctx = await owner()
   if (isState(ctx)) return ctx
   const supabase = await createClient()
