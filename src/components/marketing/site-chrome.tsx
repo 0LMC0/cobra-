@@ -49,12 +49,19 @@ export function SiteFooter() {
         </div>
         <FooterCol title="Producto" links={SECTIONS.map(([h, l]) => [h, l])} />
         <FooterCol title="Cuenta" links={[['/registro', 'Crear cuenta'], ['/ingresar', 'Ingresar'], ['/recuperar', 'Recuperar contraseña']]} />
-        <FooterCol title="Legal" links={[['/legal/terminos', 'Términos y condiciones'], ['/legal/privacidad', 'Política de privacidad']]} />
+        <FooterCol title="Legal" links={[['/legal/terminos', 'Términos y condiciones'], ['/legal/privacidad', 'Política de privacidad'], ['/arrepentimiento', 'Botón de arrepentimiento'], ['/boton-de-baja', 'Botón de baja']]} />
       </div>
       <div className="border-t border-line-2">
-        <p className="mx-auto max-w-[1180px] px-4 py-5 text-[12.5px] font-semibold text-muted sm:px-6">
-          © {new Date().getFullYear()} PrimerosPrecios · Cobra+ no recibe ni custodia el dinero de tus clientes.
-        </p>
+        <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p className="text-[12.5px] font-semibold text-muted">
+            © {new Date().getFullYear()} PrimerosPrecios · Cobra+ no recibe ni custodia el dinero de tus clientes.
+          </p>
+          {/* Disp. 954/2025: botones de arrepentimiento y de baja bien visibles, sin iniciar sesión. */}
+          <div className="flex flex-wrap gap-2">
+            <Link href="/arrepentimiento" className="rounded-[10px] px-3 py-1.5 text-[13px] font-bold ring-1 ring-ink/30 hover:bg-surface">Botón de arrepentimiento</Link>
+            <Link href="/boton-de-baja" className="rounded-[10px] px-3 py-1.5 text-[13px] font-bold ring-1 ring-ink/30 hover:bg-surface">Botón de baja</Link>
+          </div>
+        </div>
       </div>
     </footer>
   )
