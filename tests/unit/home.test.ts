@@ -60,3 +60,25 @@ describe('remindersForToday', () => {
     expect(remindersForToday({ ...base, charges: [charge({})], customers: [{ ...customer, whatsappOk: false }] })[0]?.phone).toBeNull()
   })
 })
+
+describe('cobrado por mes (gráfico del inicio)', () => {
+  it('suma por mes sólo la moneda principal y completa los meses vacíos', async () => {
+    const { collectedByMonth } = await import('@/domain/home')
+    const bars = collectedByMonth([
+      { amountMinor: 10_000, currency: 'ARS', paidOn: '2026-11-03' },
+      { amountMinor: 5_000, currency: 'ARS', paidOn: '2026-11-20' },
+      { amountMinor: 7_000, currency: 'USD', paidOn: '2026-11-04' },
+      { amountMinor: 2_000, currency: 'ARS', paidOn: '2026-09-30' },
+      { amountMinor: 9_999, currency: 'ARS', paidOn: '2026-04-30' },
+    ], 'ARS', '2026-11-18')
+    expect(bars.map((b) => b.month)).toEqual(['2026-06', '2026-07', '2026-08', '2026-09', '2026-10', '2026-11'])
+    expect(bars.map((b) => b.collectedMinor)).toEqual([0, 0, 0, 2_000, 0, 15_000])
+    expect(bars.at(-1)?.current).toBe(true)
+    expect(bars[0].label).toBe('jun')
+  })
+
+  it('cruza el cambio de año', async () => {
+    const { collectedByMonth } = await import('@/domain/home')
+    expect(collectedByMonth([], 'ARS', '2027-02-01', 3).map((b) => b.month)).toEqual(['2026-12', '2027-01', '2027-02'])
+  })
+})

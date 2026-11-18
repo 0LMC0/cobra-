@@ -5,6 +5,8 @@ import { cn } from '@/lib/cn'
 import type { HomeTotals } from '@/domain/home'
 import { formatMoneyClean, type CurrencyCode } from '@/domain/money'
 import { TodayReminders, type TodayReminder } from './today-reminders'
+import { CollectedChart } from './collected-chart'
+import type { MonthBar } from '@/domain/home'
 
 /**
  * Inicio del panel. Componente de presentación puro: la página real le pasa
@@ -22,8 +24,9 @@ const STEPS = [
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
 
 export function HomeView({
-  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false,
+  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false, collected,
 }: {
+  collected?: MonthBar[]
   dateLabel: string
   onboardingStep: OnboardingStep
   currency: CurrencyCode
@@ -52,6 +55,8 @@ export function HomeView({
           <Kpi icon={CircleAlert} label="Atrasado" value={formatMoneyClean(totals.overdueMinor, currency)} tone="danger" muted={totals.overdueMinor === 0} />
         </section>
       )}
+
+      {totals?.hasData && collected && <CollectedChart bars={collected} currency={currency} />}
 
       <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} whatsappLocked={whatsappLocked} />
 

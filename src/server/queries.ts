@@ -7,7 +7,7 @@ import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, customerLimitError, type PlanTier 
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart } from '@/domain/quota'
 import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
-import { homeTotals, remindersForToday, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
+import { collectedByMonth, homeTotals, remindersForToday, type MonthBar, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
 
 /** Lecturas del producto. Todas pasan por la sesión del usuario: la RLS filtra por empresa. */
 
@@ -158,18 +158,23 @@ export type HomeData = {
   totals: HomeTotals
   reminders: HomeReminder[]
   transferAlias: string | null
+  /** Cobrado por mes, últimos 6 meses, en la moneda principal. */
+  collected: MonthBar[]
 }
 
 /** Totales del mes y avisos de hoy, con los datos reales de la empresa. */
 export async function getHomeData(orgId: string, currency: CurrencyCode, today: IsoDate): Promise<HomeData> {
   const supabase = await createClient()
   const monthStart = `${today.slice(0, 7)}-01`
-  const [charges, customersRes, paymentsRes, orgRes, sentRes] = await Promise.all([
+  const d6 = new Date(`${monthStart}T12:00:00Z`); d6.setUTCMonth(d6.getUTCMonth() - 5)
+  const sixMonthsAgo = d6.toISOString().slice(0, 10)
+  const [charges, customersRes, paymentsRes, orgRes, sentRes, historyRes] = await Promise.all([
     loadCharges(orgId, today),
     supabase.from('customers').select('id, name, contact_name, email, phone, whatsapp_ok, contact_opt_out, reminders_paused').eq('org_id', orgId).eq('status', 'active'),
     supabase.from('payments').select('amount_minor, currency, paid_on').eq('org_id', orgId).eq('status', 'confirmed').gte('paid_on', monthStart),
     supabase.from('organizations').select('reminders_enabled, transfer_alias').eq('id', orgId).single(),
     supabase.from('reminder_deliveries').select('charge_id, step_id').eq('org_id', orgId).eq('send_on', today).eq('status', 'sent'),
+    supabase.from('payments').select('amount_minor, currency, paid_on').eq('org_id', orgId).eq('status', 'confirmed').gte('paid_on', sixMonthsAgo),
   ])
   if (customersRes.error || paymentsRes.error || orgRes.error || sentRes.error) throw new Error('No pudimos cargar el inicio.')
 
@@ -194,6 +199,10 @@ export async function getHomeData(orgId: string, currency: CurrencyCode, today: 
       sent: new Set((sentRes.data ?? []).map((d) => `${d.charge_id}:${d.step_id}`)),
     }),
     transferAlias: (orgRes.data?.transfer_alias as string | null) ?? null,
+    collected: collectedByMonth(
+      (historyRes.data ?? []).map((p) => ({ amountMinor: Number(p.amount_minor), currency: p.currency as string, paidOn: p.paid_on as string })),
+      currency, today,
+    ),
   }
 }
 

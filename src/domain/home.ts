@@ -111,3 +111,30 @@ export function remindersForToday(input: {
   const rank: Record<WhatsAppMoment, number> = { final: 0, after: 1, promise: 2, due: 3, before: 4 }
   return out.sort((a, b) => rank[a.moment] - rank[b.moment] || a.dueDate.localeCompare(b.dueDate))
 }
+
+export type MonthBar = { month: string; label: string; collectedMinor: number; current: boolean }
+
+/**
+ * Cobrado por mes (pagos confirmados) en la moneda principal, de los últimos `months`
+ * meses incluido el actual. Los meses sin pagos van en 0 para que el gráfico no salte.
+ */
+export function collectedByMonth(payments: { amountMinor: number; currency: string; paidOn: string }[], currency: string, today: string, months = 6): MonthBar[] {
+  const [y, m] = today.split('-').map(Number)
+  const keys: string[] = []
+  for (let i = months - 1; i >= 0; i--) {
+    const d = new Date(Date.UTC(y, m - 1 - i, 1))
+    keys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`)
+  }
+  const sums = new Map(keys.map((k) => [k, 0]))
+  for (const p of payments) {
+    const k = p.paidOn.slice(0, 7)
+    if (p.currency === currency && sums.has(k)) sums.set(k, (sums.get(k) ?? 0) + p.amountMinor)
+  }
+  const fmt = new Intl.DateTimeFormat('es-AR', { month: 'short', timeZone: 'UTC' })
+  return keys.map((k, i) => ({
+    month: k,
+    label: fmt.format(new Date(`${k}-15T12:00:00Z`)).replace('.', ''),
+    collectedMinor: sums.get(k) ?? 0,
+    current: i === keys.length - 1,
+  }))
+}
