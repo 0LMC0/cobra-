@@ -27,6 +27,7 @@ export default async function AppHome() {
       transferAlias={home.transferAlias}
       totals={home.totals}
       collected={home.collected}
+      upcoming={home.upcoming}
       todayReminders={home.reminders}
       whatsappLocked={!planIncludes(usage.plan, 'whatsapp')}
     />

@@ -6,7 +6,8 @@ import type { HomeTotals } from '@/domain/home'
 import { formatMoneyClean, type CurrencyCode } from '@/domain/money'
 import { TodayReminders, type TodayReminder } from './today-reminders'
 import { CollectedChart } from './collected-chart'
-import type { MonthBar } from '@/domain/home'
+import { UpcomingWeeks } from './upcoming-weeks'
+import type { MonthBar, UpcomingWeek } from '@/domain/home'
 
 /**
  * Inicio del panel. Componente de presentación puro: la página real le pasa
@@ -24,9 +25,10 @@ const STEPS = [
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
 
 export function HomeView({
-  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false, collected,
+  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false, collected, upcoming,
 }: {
   collected?: MonthBar[]
+  upcoming?: UpcomingWeek[]
   dateLabel: string
   onboardingStep: OnboardingStep
   currency: CurrencyCode
@@ -56,7 +58,12 @@ export function HomeView({
         </section>
       )}
 
-      {totals?.hasData && collected && <CollectedChart bars={collected} currency={currency} />}
+      {totals?.hasData && (collected || upcoming) && (
+        <div className="grid grid-cols-1 gap-4 2xl:grid-cols-2">
+          {upcoming && <UpcomingWeeks weeks={upcoming} currency={currency} />}
+          {collected && <CollectedChart bars={collected} currency={currency} />}
+        </div>
+      )}
 
       <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} whatsappLocked={whatsappLocked} />
 

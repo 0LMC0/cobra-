@@ -82,3 +82,36 @@ describe('cobrado por mes (gráfico del inicio)', () => {
     expect(collectedByMonth([], 'ARS', '2027-02-01', 3).map((b) => b.month)).toEqual(['2026-12', '2027-01', '2027-02'])
   })
 })
+
+describe('lo que vence en las próximas semanas', () => {
+  const base = { amountMinor: 100_00, currency: 'ARS' as const, promisedFor: null, promisedOn: null }
+  const names = new Map([['c1', 'Estudio Rivas'], ['c2', 'Pyme Sur']])
+
+  it('agrupa de lunes a domingo, arrancando hoy, y deja afuera lo vencido', async () => {
+    const { upcomingByWeek } = await import('@/domain/home')
+    // 2026-11-18 es miércoles: esta semana va hasta el domingo 22.
+    const weeks = upcomingByWeek([
+      { ...base, id: 'a', customerId: 'c1', concept: 'Cuota', balanceMinor: 50_00, dueDate: '2026-11-22' },
+      { ...base, id: 'b', customerId: 'c2', concept: 'Abono', balanceMinor: 80_00, dueDate: '2026-11-23' },
+      { ...base, id: 'c', customerId: 'c2', concept: 'Viejo', balanceMinor: 10_00, dueDate: '2026-11-10' },
+      { ...base, id: 'd', customerId: 'c1', concept: 'Lejos', balanceMinor: 10_00, dueDate: '2027-01-30' },
+      { ...base, id: 'e', customerId: 'c1', concept: 'Dólares', balanceMinor: 20_00, currency: 'USD', dueDate: '2026-11-19' },
+    ] as never, names, '2026-11-18')
+    expect(weeks.map((w) => [w.from, w.to])).toEqual([
+      ['2026-11-18', '2026-11-22'], ['2026-11-23', '2026-11-29'], ['2026-11-30', '2026-12-06'], ['2026-12-07', '2026-12-13'],
+    ])
+    expect(weeks[0].items.map((i) => i.concept)).toEqual(['Dólares', 'Cuota'])
+    expect(weeks[0].totals).toEqual([{ currency: 'USD', minor: 20_00 }, { currency: 'ARS', minor: 50_00 }])
+    expect(weeks[1]).toMatchObject({ label: 'La semana que viene', totals: [{ currency: 'ARS', minor: 80_00 }] })
+    expect(weeks[1].items[0].customerName).toBe('Pyme Sur')
+    expect(weeks.flatMap((w) => w.items).some((i) => i.concept === 'Viejo' || i.concept === 'Lejos')).toBe(false)
+  })
+
+  it('si prometió pagar otro día, cuenta esa fecha', async () => {
+    const { upcomingByWeek } = await import('@/domain/home')
+    const weeks = upcomingByWeek([
+      { ...base, id: 'a', customerId: 'c1', concept: 'Cuota', balanceMinor: 50_00, dueDate: '2026-11-10', promisedFor: '2026-11-25' },
+    ] as never, names, '2026-11-18')
+    expect(weeks[1].items[0]).toMatchObject({ date: '2026-11-25', promised: true })
+  })
+})

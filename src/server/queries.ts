@@ -7,7 +7,7 @@ import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, customerLimitError, type PlanTier 
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart } from '@/domain/quota'
 import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
-import { collectedByMonth, homeTotals, remindersForToday, type MonthBar, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
+import { collectedByMonth, homeTotals, remindersForToday, upcomingByWeek, type MonthBar, type UpcomingWeek, type HomeCharge, type HomeCustomer, type HomePayment, type HomeReminder, type HomeTotals } from '@/domain/home'
 
 /** Lecturas del producto. Todas pasan por la sesión del usuario: la RLS filtra por empresa. */
 
@@ -160,6 +160,8 @@ export type HomeData = {
   transferAlias: string | null
   /** Cobrado por mes, últimos 6 meses, en la moneda principal. */
   collected: MonthBar[]
+  /** Lo que vence en las próximas 4 semanas. */
+  upcoming: UpcomingWeek[]
 }
 
 /** Totales del mes y avisos de hoy, con los datos reales de la empresa. */
@@ -199,6 +201,7 @@ export async function getHomeData(orgId: string, currency: CurrencyCode, today: 
       sent: new Set((sentRes.data ?? []).map((d) => `${d.charge_id}:${d.step_id}`)),
     }),
     transferAlias: (orgRes.data?.transfer_alias as string | null) ?? null,
+    upcoming: upcomingByWeek(homeCharges, new Map(customers.map((c) => [c.id, c.name])), today),
     collected: collectedByMonth(
       (historyRes.data ?? []).map((p) => ({ amountMinor: Number(p.amount_minor), currency: p.currency as string, paidOn: p.paid_on as string })),
       currency, today,

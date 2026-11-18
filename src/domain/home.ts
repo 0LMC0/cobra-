@@ -138,3 +138,45 @@ export function collectedByMonth(payments: { amountMinor: number; currency: stri
     current: i === keys.length - 1,
   }))
 }
+
+export type UpcomingItem = { chargeId: string; customerId: string; customerName: string; concept: string; balanceMinor: number; currency: CurrencyCode; date: IsoDate; promised: boolean }
+export type UpcomingWeek = { label: string; from: IsoDate; to: IsoDate; totals: { currency: CurrencyCode; minor: number }[]; items: UpcomingItem[] }
+
+const addDaysIso = (d: string, n: number): IsoDate => {
+  const t = new Date(`${d}T12:00:00Z`)
+  t.setUTCDate(t.getUTCDate() + n)
+  return t.toISOString().slice(0, 10) as IsoDate
+}
+
+/**
+ * Lo que vence en las próximas semanas (de lunes a domingo; la primera arranca hoy).
+ * Usa la fecha que prometió el cliente si la hay. Lo vencido no entra: ya está en "Atrasado".
+ * Los totales van por moneda: nunca se suman monedas distintas.
+ */
+export function upcomingByWeek(charges: HomeCharge[], names: Map<string, string>, today: IsoDate, weeks = 4): UpcomingWeek[] {
+  const dow = (new Date(`${today}T12:00:00Z`).getUTCDay() + 6) % 7 // 0 = lunes
+  const fmt = new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+  const short = (d: string) => fmt.format(new Date(`${d}T12:00:00Z`)).replace('.', '')
+  const out: UpcomingWeek[] = []
+  for (let w = 0; w < weeks; w++) {
+    const from = w === 0 ? today : addDaysIso(today, 7 * w - dow)
+    const to = addDaysIso(today, 7 * w - dow + 6)
+    const label = w === 0 ? 'Esta semana' : w === 1 ? 'La semana que viene' : `Del ${short(from)} al ${short(to)}`
+    out.push({ label, from, to, totals: [], items: [] })
+  }
+  for (const c of charges) {
+    if (c.balanceMinor <= 0) continue
+    const date = (c.promisedFor && c.promisedFor >= today ? c.promisedFor : c.dueDate) as IsoDate
+    if (date < today) continue
+    const week = out.find((w) => date >= w.from && date <= w.to)
+    if (!week) continue
+    week.items.push({ chargeId: c.id, customerId: c.customerId, customerName: names.get(c.customerId) ?? 'Cliente', concept: c.concept, balanceMinor: c.balanceMinor, currency: c.currency, date, promised: date === c.promisedFor })
+  }
+  for (const w of out) {
+    w.items.sort((a, b) => a.date.localeCompare(b.date) || b.balanceMinor - a.balanceMinor)
+    const sums = new Map<CurrencyCode, number>()
+    for (const i of w.items) sums.set(i.currency, (sums.get(i.currency) ?? 0) + i.balanceMinor)
+    w.totals = [...sums].map(([currency, minor]) => ({ currency, minor }))
+  }
+  return out
+}
