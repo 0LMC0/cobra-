@@ -24,7 +24,7 @@ const DOCS = {
       ['Qué datos guardamos', 'Datos de tu cuenta (nombre, email), de tu empresa, y los que cargues sobre tus clientes y cobros. Pedimos lo mínimo: CUIT y dirección son opcionales.'],
       ['Para qué', 'Para prestar el servicio: mostrarte tus cobros, enviar los recordatorios que configures y facturarte el plan. No vendemos datos.'],
       ['Proveedores', 'Usamos proveedores de infraestructura (base de datos, hosting y envío de emails) que tratan datos por cuenta nuestra.'],
-      ['Tus derechos', 'Podés acceder, rectificar, exportar y pedir la eliminación de tus datos conforme a la Ley 25.326. La Agencia de Acceso a la Información Pública es el órgano de control.'],
+      ['Tus derechos', 'Podés acceder, rectificar, exportar y eliminar tus datos conforme a la Ley 25.326. Para borrar tu cuenta y tus datos, entrá a Configuración → Tu cuenta → Borrar mi cuenta: se borra al instante. La Agencia de Acceso a la Información Pública es el órgano de control.'],
       ['Seguridad', 'Aislamos los datos de cada empresa, ciframos las conexiones y registramos los cambios financieros. Ningún sistema es infalible; te avisaremos ante incidentes que te afecten.'],
     ],
   },
