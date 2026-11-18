@@ -11,6 +11,7 @@ import { ReminderSettingsForm } from '@/components/app/reminder-settings-form'
 import { updateReminderSettings } from '@/server/actions/reminder-settings'
 import { PlanUsageCard } from '@/components/app/plan-usage'
 import { CancelSubscription, PlanPicker } from '@/components/app/plan-picker'
+import { DeleteAccount } from '@/components/app/delete-account'
 import { cancelSubscription, startSubscription } from '@/server/actions/subscription'
 import { PLAN_NAME } from '@/config/plans'
 import { getPlanUsage } from '@/server/queries'
@@ -49,6 +50,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const renewing = usage.plan !== 'free' && sub?.status !== 'cancelled'
   const until = sub?.current_period_end ? formatDate((sub.current_period_end as string).slice(0, 10), { day: 'numeric', month: 'long' }) : null
   const canManageBilling = can(ctx.role, 'billing.manage')
+  // Empresas que se borrarían con la cuenta (donde sos la única persona dueña).
+  const ownedIds = ctx.memberships.filter((m) => m.role === 'owner').map((m) => m.orgId)
+  const { data: owners } = ownedIds.length
+    ? await supabase.from('organization_members').select('org_id').in('org_id', ownedIds).eq('role', 'owner')
+    : { data: [] as { org_id: string }[] }
+  const soleOwnerOf = ctx.memberships
+    .filter((m) => m.role === 'owner' && (owners ?? []).filter((o) => o.org_id === m.orgId).length === 1)
+    .map((m) => m.name)
 
   const rows: [string, string][] = [
     ['Nombre', org.name],
@@ -152,6 +161,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </Card>
         )}
         <p className="text-[12.5px] text-muted">Las invitaciones a colaboradores llegan junto con los planes (Fase 4).</p>
+      </section>
+
+      <section className="flex flex-col gap-3 border-t border-line-2 pt-6">
+        <h2 className="text-[19px]">Tu cuenta</h2>
+        <p className="text-[14px] text-muted">Podés borrar tu cuenta y tus datos cuando quieras (Ley 25.326 de protección de datos personales).</p>
+        <DeleteAccount soleOwnerOf={soleOwnerOf} />
       </section>
     </div>
   )
