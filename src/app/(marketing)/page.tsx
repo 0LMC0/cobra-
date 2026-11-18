@@ -6,7 +6,9 @@ import { MonthStrip } from '@/components/marketing/month-strip'
 import { DigestPreview, EmailPreview, HumanCases } from '@/components/marketing/story'
 import { Pricing } from '@/components/marketing/pricing'
 import { StickyCta } from '@/components/marketing/sticky-cta'
-import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS } from '@/config/plans'
+import type { Metadata } from 'next'
+import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, PLANS } from '@/config/plans'
+import { siteUrl } from '@/config/env'
 import { cn } from '@/lib/cn'
 
 const WHO = ['Agencias', 'Estudios contables', 'Estudios de diseño', 'Mantenimiento', 'Consultoras', 'Independientes']
@@ -25,9 +27,47 @@ const FAQ = [
   ['¿Quién está detrás de Cobra+?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. Cobra+ es la nuestra para quienes cobran todos los meses.'],
 ]
 
+export const metadata: Metadata = {
+  title: { absolute: 'Cobra+: recordatorios de pago automáticos para tus clientes | PrimerosPrecios' },
+  description:
+    'App para cobrar a tiempo: Cobra+ les manda a tus clientes un email antes y después del vencimiento, se corta sola cuando te pagan y te avisa quién debe. Gratis para siempre, sin tarjeta.',
+  alternates: { canonical: '/' },
+  keywords: ['recordatorio de pago', 'cobranzas', 'cobrar a clientes', 'abonos mensuales', 'clientes morosos', 'app de cobranzas', 'recordatorios por email', 'pymes Argentina'],
+}
+
+/** Datos estructurados para Google: qué es la app, cuánto sale y las preguntas frecuentes. */
+function StructuredData() {
+  const base = siteUrl()
+  const data = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Cobra+',
+      url: `${base}/`,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      inLanguage: 'es-AR',
+      description: 'Recordatorios de pago automáticos por email para tus clientes, con panel de cobranzas, promesas de pago y resumen diario.',
+      publisher: { '@type': 'Organization', name: 'PrimerosPrecios', url: 'https://primerosprecios.com' },
+      offers: [
+        { '@type': 'Offer', name: 'Gratis', price: '0', priceCurrency: 'ARS' },
+        ...PLANS.map((p) => ({ '@type': 'Offer', name: p.name, price: String(p.priceArsMonthly), priceCurrency: 'ARS' })),
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+    },
+  ]
+  // JSON dentro de <script>: se escapa "<" para que ningún texto pueda cerrar la etiqueta.
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }} />
+}
+
 export default function LandingPage() {
   return (
     <main className="grid-paper">
+      <StructuredData />
       {/* ───────────── 1. ¿Qué es Cobra+? + los 4 pasos ───────────── */}
       <section id="que-es" className="scroll-mt-16">
         <div className="mx-auto max-w-[1180px] px-4 pt-9 pb-16 sm:px-6 lg:pt-12 lg:pb-20">

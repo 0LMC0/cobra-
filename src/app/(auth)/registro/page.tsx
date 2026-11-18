@@ -2,7 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SignUpForm } from './sign-up-form'
 
-export const metadata: Metadata = { title: 'Crear cuenta' }
+export const metadata: Metadata = {
+  title: 'Crear cuenta gratis',
+  description: 'Creá tu cuenta de Cobra+ gratis, sin tarjeta, y empezá a mandarles recordatorios de pago automáticos a tus clientes.',
+  alternates: { canonical: '/registro' },
+}
 
 export default function SignUpPage() {
   return (
