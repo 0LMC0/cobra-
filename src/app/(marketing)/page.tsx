@@ -15,12 +15,12 @@ const FAQ = [
   ['¿Para quién es?', 'Para quien les cobra a los mismos clientes todos los meses: agencias, estudios contables y de diseño, servicios de mantenimiento, consultoras y profesionales independientes.'],
   ['¿Cobra+ cobra la plata por mí?', 'No. El dinero va directo de tu cliente a tu cuenta, como siempre. Cobra+ sólo ordena tus cobros y avisa. Nunca recibimos ni guardamos tu plata.'],
   ['¿Cobra+ me avisa a mí también?', 'Sí. Te manda un resumen por email con quién te pagó, qué vence hoy y quién está atrasado. Sólo te escribe los días que hay novedades.'],
-  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y el botón de WhatsApp sin límite. Si necesitás más avisos, te pasás a un plan pago.`],
-  ['¿Puedo pasar mis clientes desde Excel?', 'Sí, desde un archivo CSV. Antes de importar te mostramos los repetidos y los datos con errores.'],
+  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y hasta 10 clientes. Si necesitás más, te pasás a un plan pago, desde $ 18.900 por mes.`],
+  ['¿Puedo pasar mis clientes desde Excel?', 'Por ahora los cargás uno por uno: con el nombre y el email alcanza. Importar desde Excel está en camino. Exportar ya se puede, desde el plan Growth.'],
   ['¿Qué pasa si un cliente paga una parte?', 'Anotás el pago parcial. Lo que falta queda pendiente y los avisos siguen sólo por ese saldo.'],
   ['¿Puedo cobrar en pesos y en dólares?', 'Sí. Cada cobro tiene su moneda y los totales se muestran por separado. Nunca se suman monedas distintas.'],
-  ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Para WhatsApp, Cobra+ te deja el mensaje escrito y lo mandás vos desde tu teléfono con un toque. El envío automático por la API oficial de WhatsApp Business viene después.'],
-  ['¿Y si a mi cliente le molesta que le escriban?', 'Vos decidís el tono, los días y a quién. Podés leer cada mensaje antes de que salga y pausar los avisos de un cliente cuando quieras.'],
+  ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Desde el plan Starter, Cobra+ también te deja el mensaje de WhatsApp escrito y lo mandás vos desde tu teléfono con un toque.'],
+  ['¿Y si a mi cliente le molesta que le escriban?', 'Los avisos son amables, salen sólo en días hábiles y se cortan apenas anotás el pago. Podés pausar los avisos de un cliente cuando quieras, y tu cliente puede darse de baja con un clic.'],
   ['¿Qué pasa si me dice que paga otro día?', 'Anotás la fecha que te prometió. Cobra+ no le escribe hasta ese día y, si no pagó, vuelve a avisarle.'],
   ['¿Quién está detrás de Cobra+?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. Cobra+ es la nuestra para quienes cobran todos los meses.'],
 ]
@@ -42,6 +42,7 @@ export default function LandingPage() {
               <ButtonLink href="/registro" size="lg">
                 Empezá gratis <ArrowRight className="size-4" />
               </ButtonLink>
+              <p className="text-[14px] font-bold lg:text-right">Gratis para siempre · Sin tarjeta</p>
               <p className="max-w-[19rem] text-[13.5px] font-semibold text-muted lg:text-right">
                 Cobra+ no toca tu plata: tus clientes te pagan a vos, como siempre.
               </p>
@@ -79,6 +80,7 @@ export default function LandingPage() {
         intro="Estudio Rivas te paga todos los meses y vence el día 10. Mirá qué hace Cobra+ sola, sin que vos escribas nada."
       >
         <MonthStrip />
+        <InlineCta text="¿Querés que esto pase con tus clientes?" />
       </Section>
 
       {/* ───────────── 4. Personas ───────────── */}
@@ -101,6 +103,7 @@ export default function LandingPage() {
                 Cuánto te falta cobrar, cuánto ya cobraste y quién está atrasado. Cuando alguien te paga, lo marcás con un toque.
               </p>
               <PlainList items={['Los totales se actualizan solos', 'Los atrasados aparecen en rojo', 'Pesos y dólares, cada uno por su lado']} />
+              <InlineCta text="Cargá tu primer cliente y miralo funcionando." />
             </div>
             <PanelDemo />
           </div>
@@ -117,7 +120,7 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-[21px] text-white">A tu cliente: el recordatorio</h3>
                 <p className="mt-1.5 text-[15.5px] leading-relaxed text-white/75">
-                  Claro y amable, con el nombre de tu empresa. Lo marcado en amarillo lo completa Cobra+; el texto lo podés cambiar.
+                  Claro y amable, con el nombre de tu empresa. Lo marcado en amarillo lo completa Cobra+ con los datos de cada cobro.
                 </p>
               </div>
               <EmailPreview />
@@ -205,6 +208,18 @@ function Section({
         </div>
       </div>
     </section>
+  )
+}
+
+/** Llamado a la acción en el medio de la página: aparece justo después de cada "ah, mirá". */
+function InlineCta({ text }: { text: string }) {
+  return (
+    <div className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
+      <ButtonLink href="/registro" size="lg">
+        Empezá gratis <ArrowRight className="size-4" />
+      </ButtonLink>
+      <p className="text-[15px] font-bold">{text} <span className="font-semibold text-muted">Sin tarjeta.</span></p>
+    </div>
   )
 }
 

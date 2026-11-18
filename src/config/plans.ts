@@ -102,6 +102,7 @@ export const PLANS: readonly Plan[] = [
     priceUsdMonthly: 12,
     priceArsMonthly: 18_900,
     limits: { activeCustomers: 30, seats: 1 },
+    highlighted: true,
     features: [
       { label: 'Avisos automáticos por email sin tope', available: true },
       { label: 'Botón de WhatsApp con el mensaje listo', available: true },
@@ -118,15 +119,13 @@ export const PLANS: readonly Plan[] = [
     priceUsdMonthly: 29,
     priceArsMonthly: 45_900,
     limits: { activeCustomers: 200, seats: 2 },
-    highlighted: true,
     features: [
       { label: 'Todo lo de Starter', available: true },
       { label: 'Hasta 200 clientes activos', available: true },
-      { label: 'Secuencias de recordatorios configurables', available: true },
-      { label: 'Importación y exportación CSV', available: true },
-      { label: 'Reportes completos', available: true },
-      { label: 'Seguimiento de morosidad', available: true },
-      { label: 'Hasta 2 usuarios', available: true },
+      { label: 'Exportar clientes, cobros y pagos a Excel (CSV)', available: true },
+      { label: 'Importar clientes desde Excel', available: false },
+      { label: 'Elegir los días de cada aviso', available: false },
+      { label: 'Hasta 2 usuarios', available: false },
     ],
   },
   {
@@ -138,7 +137,7 @@ export const PLANS: readonly Plan[] = [
     limits: { activeCustomers: 1000, seats: 5 },
     features: [
       { label: 'Hasta 1.000 clientes activos', available: true },
-      { label: 'Hasta 5 usuarios con roles', available: true },
+      { label: 'Hasta 5 usuarios con roles', available: false },
       { label: 'Todo lo de Growth', available: true },
       { label: 'Soporte prioritario', available: true },
       { label: 'Portal de clientes', available: false },

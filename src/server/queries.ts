@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { chargeStatus, type ChargeStatus, type StoredChargeState } from '@/domain/charge-status'
 import type { IsoDate } from '@/domain/dates'
 import type { CurrencyCode } from '@/domain/money'
-import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, type PlanTier } from '@/config/plans'
+import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, customerLimitError, type PlanTier } from '@/config/plans'
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart } from '@/domain/quota'
 import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
@@ -304,6 +304,16 @@ export async function getOrgPlan(orgId: string): Promise<PlanTier> {
   const supabase = await createClient()
   const { data } = await supabase.from('subscriptions').select('plan, status, current_period_end').eq('org_id', orgId).maybeSingle()
   return effectivePlan(data ? { plan: data.plan as string, status: data.status as string, currentPeriodEnd: data.current_period_end as string | null } : null)
+}
+
+/** null si puede sumar un cliente activo más; si no, el mensaje del tope del plan. */
+export async function customerLimitReached(orgId: string): Promise<string | null> {
+  const supabase = await createClient()
+  const [plan, { count }] = await Promise.all([
+    getOrgPlan(orgId),
+    supabase.from('customers').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'active'),
+  ])
+  return customerLimitError(plan, count ?? 0)
 }
 
 /** Plan vigente y cuántos avisos automáticos salieron este mes. */

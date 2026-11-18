@@ -77,7 +77,7 @@ export function Pricing() {
             >
               {p.highlighted && (
                 <span className="absolute -top-3.5 left-6 rounded-[8px] border-[1.5px] border-ink bg-marker px-2.5 py-1 text-[12px] font-extrabold whitespace-nowrap">
-                  El más elegido para empezar
+                  Recomendado: sin tope de avisos
                 </span>
               )}
               <h3 className="text-[24px] tracking-[-0.03em]">{p.name}</h3>

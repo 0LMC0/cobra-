@@ -12,7 +12,7 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
 
 /** Las mismas reglas que valida el servidor (src/server/actions/auth.ts). */
 export const PASSWORD_RULES = [
-  { label: '10 caracteres o más', test: (v: string) => v.length >= 10 },
+  { label: '8 caracteres o más', test: (v: string) => v.length >= 8 },
   { label: 'Una letra', test: (v: string) => /[a-zA-Z]/.test(v) },
   { label: 'Un número', test: (v: string) => /\d/.test(v) },
 ] as const

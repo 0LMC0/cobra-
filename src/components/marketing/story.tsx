@@ -201,8 +201,8 @@ export function DigestPreview() {
 const CASES = [
   { who: 'Tu cliente dice', says: 'Mañana te transfiero.', tag: 'Promesa de pago', does: 'Anotás el día que te prometió. Cobra+ no le escribe hasta entonces y, si no pagó, retoma sola.', mine: false },
   { who: 'Tu cliente dice', says: 'Ya te pagué, fijate.', tag: 'Comprobante', does: 'Responde el email con el comprobante y te llega a vos. Lo marcás como pagado y no recibe más avisos.', mine: false },
-  { who: 'Tu cliente dice', says: 'Yo los mails ni los abro.', tag: 'WhatsApp con un toque', does: 'Cobra+ te deja el mensaje de WhatsApp ya escrito. Lo mandás desde tu teléfono con un toque.', mine: false },
-  { who: 'Vos pensás', says: 'Me da cosa reclamarle.', tag: 'Vos tenés el control', does: 'El aviso sale amable, a tiempo y con tu firma. Podés leerlo antes de que salga y pausar a quien quieras.', mine: true },
+  { who: 'Tu cliente dice', says: 'Yo los mails ni los abro.', tag: 'WhatsApp con un toque', does: 'Desde Starter, Cobra+ te deja el mensaje de WhatsApp ya escrito. Lo mandás desde tu teléfono con un toque.', mine: false },
+  { who: 'Vos pensás', says: 'Me da cosa reclamarle.', tag: 'Vos tenés el control', does: 'El aviso sale amable, a tiempo y con tu firma. Queda en el historial de cada cliente y pausás a quien quieras.', mine: true },
 ]
 
 export function HumanCases() {

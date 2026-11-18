@@ -9,7 +9,7 @@ import type { FormState } from './form-state'
 const email = z.string().trim().toLowerCase().email('Ingresá un email válido.').max(254)
 const password = z
   .string()
-  .min(10, 'Usá al menos 10 caracteres.')
+  .min(8, 'Usá al menos 8 caracteres.')
   .max(72, 'Máximo 72 caracteres.')
   .refine((s) => /[a-zA-Z]/.test(s) && /\d/.test(s), 'Combiná letras y números.')
 
@@ -27,7 +27,6 @@ const signUpSchema = z.object({
   fullName: z.string().trim().min(2, 'Decinos cómo te llamás.').max(120),
   email,
   password,
-  terms: z.literal('on', { errorMap: () => ({ message: 'Necesitamos que aceptes los términos.' }) }),
 })
 
 export async function signUp(_: FormState, formData: FormData): Promise<FormState> {

@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { NewCustomerView } from '@/components/app/customers-views'
 import { requireOrg } from '@/server/auth'
+import { customerLimitReached } from '@/server/queries'
 import { createCustomer } from '@/server/actions/billing'
 
 export const metadata: Metadata = { title: 'Nuevo cliente' }
 
 export default async function NewCustomerPage() {
-  await requireOrg('operator')
-  return <NewCustomerView action={createCustomer} />
+  const { org } = await requireOrg('operator')
+  const limit = await customerLimitReached(org.id)
+  return <NewCustomerView action={createCustomer} limitReached={limit} />
 }

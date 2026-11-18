@@ -146,7 +146,7 @@ export function CustomersListView({
 
 /* ───────────── Cliente nuevo ───────────── */
 
-export function NewCustomerView({ action, backHref = '/app/clientes' }: { action: Action; backHref?: string }) {
+export function NewCustomerView({ action, backHref = '/app/clientes', limitReached = null }: { action: Action; backHref?: string; limitReached?: string | null }) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <Link href={backHref} className="inline-flex w-fit items-center gap-1.5 text-[14px] font-semibold text-muted hover:text-ink"><ArrowLeft className="size-4" /> Clientes</Link>
@@ -154,9 +154,20 @@ export function NewCustomerView({ action, backHref = '/app/clientes' }: { action
         <h1 className="text-[32px] sm:text-[38px]">Nuevo cliente</h1>
         <p className="text-[14.5px] text-muted">Con un email o un celular alcanza para empezar. Lo demás lo completás cuando quieras.</p>
       </header>
-      <section className="rounded-[22px] bg-surface p-5 ring-1 ring-line-2 sm:p-7">
-        <CustomerForm action={action} />
-      </section>
+      {limitReached ? (
+        <section className="flex flex-col items-start gap-4 rounded-[22px] bg-surface p-5 ring-2 ring-brand sm:p-7">
+          <p className="text-[19px] font-bold">Llegaste al tope de clientes de tu plan</p>
+          <p className="max-w-xl text-[15px] leading-relaxed text-muted">{limitReached}</p>
+          <div className="flex flex-wrap gap-2">
+            <ButtonLink href="/app/configuracion#tu-plan" size="lg">Ver planes</ButtonLink>
+            <ButtonLink href={backHref} size="lg" variant="secondary">Archivar clientes</ButtonLink>
+          </div>
+        </section>
+      ) : (
+        <section className="rounded-[22px] bg-surface p-5 ring-1 ring-line-2 sm:p-7">
+          <CustomerForm action={action} />
+        </section>
+      )}
     </div>
   )
 }
