@@ -95,7 +95,8 @@ export function Pricing() {
               </ButtonLink>
               <p className="mt-2 text-center text-[12.5px] font-semibold text-muted">Empezás gratis y te pasás a {p.name} cuando quieras, con Mercado Pago.</p>
               <ul className="mt-7 flex flex-col gap-3 border-t border-line-2 pt-6 text-[14.5px]">
-                {p.features.map((f) => (
+                {/* Sólo lo que ya existe: lo "próximamente" confunde al elegir. */}
+                {p.features.filter((f) => f.available).map((f) => (
                   <li key={f.label} className={cn('flex items-start gap-2.5 font-semibold', !f.available && 'text-faint')}>
                     {f.available
                       ? <Check className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={3} />

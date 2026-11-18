@@ -1,9 +1,8 @@
 import { ArrowRight, Plus } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button'
 import { HeroSteps } from '@/components/marketing/hero-steps'
-import { PanelDemo } from '@/components/marketing/hero-demo'
 import { MonthStrip } from '@/components/marketing/month-strip'
-import { DigestPreview, EmailPreview, HumanCases } from '@/components/marketing/story'
+import { HumanCases } from '@/components/marketing/story'
 import { Pricing } from '@/components/marketing/pricing'
 import { StickyCta } from '@/components/marketing/sticky-cta'
 import type { Metadata } from 'next'
@@ -14,17 +13,14 @@ import { cn } from '@/lib/cn'
 const WHO = ['Agencias', 'Estudios contables', 'Estudios de diseño', 'Mantenimiento', 'Consultoras', 'Independientes']
 
 const FAQ = [
-  ['¿Para quién es?', 'Para quien les cobra a los mismos clientes todos los meses: agencias, estudios contables y de diseño, servicios de mantenimiento, consultoras y profesionales independientes.'],
-  ['¿Cobra+ cobra la plata por mí?', 'No. El dinero va directo de tu cliente a tu cuenta, como siempre. Cobra+ sólo ordena tus cobros y avisa. Nunca recibimos ni guardamos tu plata.'],
-  ['¿Cobra+ me avisa a mí también?', 'Sí. Te manda un resumen por email con quién te pagó, qué vence hoy y quién está atrasado. Sólo te escribe los días que hay novedades.'],
-  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y hasta ${ACTIVE_CUSTOMERS.free} clientes. Si necesitás más, te pasás a un plan pago, desde $ 18.900 por mes.`],
-  ['¿Puedo pasar mis clientes desde Excel?', 'Sí. Guardás tu planilla como CSV y la subís. Antes de importar te mostramos qué entra, qué tiene errores y qué ya estaba cargado. Exportar a Excel está desde el plan Growth.'],
-  ['¿Qué pasa si un cliente paga una parte?', 'Anotás el pago parcial. Lo que falta queda pendiente y los avisos siguen sólo por ese saldo.'],
-  ['¿Puedo cobrar en pesos y en dólares?', 'Sí. Cada cobro tiene su moneda y los totales se muestran por separado. Nunca se suman monedas distintas.'],
+  ['¿Cobra+ cobra la plata por mí?', 'No. Tus clientes te pagan a vos, como siempre (transferencia, efectivo, lo que uses). Cobra+ sólo les recuerda que te paguen y te ordena quién debe. Nunca toca tu plata.'],
+  ['¿Es gratis?', `Sí. El plan Gratis no vence y no pide tarjeta: incluye ${MONTHLY_REMINDERS.free} avisos automáticos por mes y hasta ${ACTIVE_CUSTOMERS.free} clientes. Si necesitás más, te pasás a un plan pago desde $ 18.900 por mes, y lo cancelás cuando quieras.`],
+  ['¿Qué le llega a mi cliente?', 'Un email amable con el nombre de tu empresa: qué te debe, cuánto, cuándo vence y tu alias para transferir. Sale 5 días antes, el día anterior, el día que vence y, si se atrasa, a los 3 y a los 7 días. Sólo días hábiles. Antes de que salga lo podés ver en la ficha de cada cliente.'],
+  ['¿Y cuando me paga?', 'Tocás “Pagó” y Cobra+ deja de escribirle. Si te paga una parte, anotás lo que pagó y los avisos siguen sólo por lo que falta.'],
+  ['¿Y si me dice que paga otro día?', 'Anotás la fecha que te prometió. Cobra+ no le escribe hasta ese día y, si no pagó, le vuelve a avisar.'],
   ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Desde el plan Starter, Cobra+ también te deja el mensaje de WhatsApp escrito y lo mandás vos desde tu teléfono con un toque.'],
-  ['¿Y si a mi cliente le molesta que le escriban?', 'Los avisos son amables, salen sólo en días hábiles y se cortan apenas anotás el pago. Podés pausar los avisos de un cliente cuando quieras, y tu cliente puede darse de baja con un clic.'],
-  ['¿Qué pasa si me dice que paga otro día?', 'Anotás la fecha que te prometió. Cobra+ no le escribe hasta ese día y, si no pagó, vuelve a avisarle.'],
-  ['¿Quién está detrás de Cobra+?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. Cobra+ es la nuestra para quienes cobran todos los meses.'],
+  ['¿Puedo pasar mis clientes desde Excel?', 'Sí. Guardás tu planilla como CSV y la subís. Antes de importar te mostramos qué entra, qué tiene errores y qué ya estaba cargado.'],
+  ['¿Quién está detrás de Cobra+?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. Cobra+ es la nuestra para quienes les cobran a los mismos clientes todos los meses.'],
 ]
 
 export const metadata: Metadata = {
@@ -76,6 +72,9 @@ export default function LandingPage() {
               <span className="display-xl text-[50px] sm:text-[80px] lg:text-[96px]">¿Qué es <span className="text-brand">Cobra+</span>?</span>
               <span className="max-w-[780px] font-display text-[26px] leading-[1.15] font-extrabold tracking-[-0.03em] sm:text-[36px] lg:text-[40px]">
                 Una app que les recuerda a tus clientes <span className="marker">que te paguen.</span>
+              </span>
+              <span className="max-w-[640px] text-[17px] leading-relaxed font-semibold text-muted sm:text-[19px]">
+                Cargás a quién le cobrás y cuándo vence. Cobra+ le manda un email antes y después del vencimiento. Cuando te paga, deja de escribirle.
               </span>
             </h1>
             <div className="flex flex-col items-start gap-3 lg:items-end lg:pb-1.5">
@@ -131,52 +130,6 @@ export default function LandingPage() {
       >
         <HumanCases />
       </Section>
-
-      {/* ───────────── 5. El panel ───────────── */}
-      <section>
-        <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
-          <div className="grid grid-cols-1 items-center gap-12 border-t border-line-2 py-16 sm:py-20 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
-            <div>
-              <p className="eyebrow">Tu panel</p>
-              <h2 className="mt-4 text-[32px] sm:text-[44px]">Quién te pagó y quién te debe, <span className="marker">en una pantalla.</span></h2>
-              <p className="mt-4 max-w-lg text-[17px] leading-relaxed text-muted">
-                Cuánto te falta cobrar, cuánto ya cobraste y quién está atrasado. Cuando alguien te paga, lo marcás con un toque.
-              </p>
-              <PlainList items={['Los totales se actualizan solos', 'Los atrasados aparecen en rojo', 'Pesos y dólares, cada uno por su lado']} />
-              <InlineCta text="Cargá tu primer cliente y miralo funcionando." />
-            </div>
-            <PanelDemo />
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────── 6. Los dos emails ───────────── */}
-      <section className="px-4 sm:px-6">
-        <div className="mx-auto max-w-[1180px] rounded-[28px] bg-navy px-5 py-12 text-white sm:px-10 sm:py-14">
-          <p className="eyebrow eyebrow-light">Los emails</p>
-          <h2 className="mt-4 max-w-3xl text-[32px] text-white sm:text-[44px]">Cobra+ manda dos emails: uno a tu cliente y otro a vos.</h2>
-          <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-8">
-            <div className="flex min-w-0 flex-col gap-5">
-              <div>
-                <h3 className="text-[21px] text-white">A tu cliente: el recordatorio</h3>
-                <p className="mt-1.5 text-[15.5px] leading-relaxed text-white/75">
-                  Claro y amable, con el nombre de tu empresa. Lo marcado en amarillo lo completa Cobra+ con los datos de cada cobro.
-                </p>
-              </div>
-              <EmailPreview />
-            </div>
-            <div className="flex min-w-0 flex-col gap-5">
-              <div>
-                <h3 className="text-[21px] text-white">A vos: el resumen del día</h3>
-                <p className="mt-1.5 text-[15.5px] leading-relaxed text-white/75">
-                  Quién te pagó, qué vence hoy y quién está atrasado. Te enterás sin abrir la app ni revisar el banco cliente por cliente.
-                </p>
-              </div>
-              <DigestPreview />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ───────────── 7. Precios ───────────── */}
       <Section
@@ -260,16 +213,5 @@ function InlineCta({ text }: { text: string }) {
       </ButtonLink>
       <p className="text-[15px] font-bold">{text} <span className="font-semibold text-muted">Sin tarjeta.</span></p>
     </div>
-  )
-}
-
-/** Lista simple, separada por líneas. */
-function PlainList({ items }: { items: string[] }) {
-  return (
-    <ul className="mt-7 max-w-md border-t border-line-2 text-[16px] font-semibold">
-      {items.map((t) => (
-        <li key={t} className="border-b border-line-2 py-3">{t}</li>
-      ))}
-    </ul>
   )
 }
