@@ -227,7 +227,7 @@ export function momentFor(c: ChargeView, today: string): WhatsAppMoment {
 
 export function CustomerDetailView({
   customer, charges, today, businessName, transferAlias, defaultCurrency, chargeAction, payAction, promiseAction, clearPromiseAction, justCreated, backHref = '/app/clientes',
-  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false, turnOnRemindersAction, remindersJustOn = false, emailPreview = null,
+  archiveAction, editHref, justSaved, canEdit = true, timeline, timeZone = 'America/Argentina/Buenos_Aires', whatsappLocked = false, whatsappRemaining = null, turnOnRemindersAction, remindersJustOn = false, emailPreview = null,
 }: {
   /** Si viene, los avisos están apagados: se ofrece prenderlos con un toque. */
   turnOnRemindersAction?: Action
@@ -254,6 +254,7 @@ export function CustomerDetailView({
   timeline?: TimelineEvent[]
   timeZone?: string
   whatsappLocked?: boolean
+  whatsappRemaining?: number | null
 }) {
   const open = charges.filter((c) => isCollectible(c.status))
   const settled = charges.filter((c) => !isCollectible(c.status))
@@ -336,6 +337,8 @@ export function CustomerDetailView({
                         }}
                         className="w-full sm:w-auto"
                         locked={whatsappLocked}
+                        chargeId={c.id}
+                        remaining={whatsappRemaining}
                       />
                     )}
                   </div>

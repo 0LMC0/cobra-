@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CustomerDetailView } from '@/components/app/customers-views'
 import { requireOrg } from '@/server/auth'
-import { getCustomer, getCustomerTimeline, getOrgPlan } from '@/server/queries'
-import { planIncludes } from '@/config/plans'
+import { getCustomer, getCustomerTimeline, getWhatsAppQuota } from '@/server/queries'
 import { clearPromise, createCharge, recordPayment, setCustomerArchived, setPromise } from '@/server/actions/billing'
 import { todayIn } from '@/domain/dates'
 import { renderReminderEmail } from '@/domain/emails'
@@ -23,9 +22,9 @@ export default async function CustomerPage({ params, searchParams }: { params: P
   const data = await getCustomer(org.id, id, today)
   if (!data) notFound()
   const supabase = await createClient()
-  const [timeline, plan, { data: sending }] = await Promise.all([
+  const [timeline, wa, { data: sending }] = await Promise.all([
     getCustomerTimeline(org.id, { id: data.customer.id, createdAt: data.customer.createdAt }),
-    getOrgPlan(org.id),
+    getWhatsAppQuota(org.id, today),
     supabase.from('organizations').select('reminders_enabled, transfer_alias').eq('id', org.id).maybeSingle(),
   ])
   // Vista previa del aviso: el cobro abierto más próximo, con el texto que le llegaría hoy.
@@ -56,7 +55,8 @@ export default async function CustomerPage({ params, searchParams }: { params: P
       canEdit={hasRole(role, 'operator')}
       timeline={timeline}
       timeZone={org.timezone}
-      whatsappLocked={!planIncludes(plan, 'whatsapp')}
+      whatsappLocked={wa.locked}
+      whatsappRemaining={wa.remaining}
       justCreated={nuevo === '1'}
       justSaved={guardado === '1'}
       turnOnRemindersAction={offerReminders ? turnOnReminders : undefined}

@@ -9,7 +9,7 @@ import { cn } from '@/lib/cn'
  */
 const STEPS = [
   { title: 'Cargás a tu cliente', text: 'Nombre, email, cuánto te paga y cuándo vence. Una sola vez.', Screen: ScreenForm },
-  { title: 'Cobra+ le avisa por vos', text: 'Por email, sola. Y desde Starter, también te deja el WhatsApp escrito.', Screen: ScreenReminder },
+  { title: 'Cobra+ le avisa por vos', text: 'Por email, sola. Y si querés, te deja el WhatsApp escrito para mandarlo con un toque.', Screen: ScreenReminder },
   { title: 'Te paga a vos y lo marcás', text: 'La plata va a tu cuenta. Marcás “Pagó” y Cobra+ no le escribe más.', Screen: ScreenPaid },
   { title: 'A vos también te avisa', text: 'Te llega un resumen: quién pagó, qué vence hoy y quién se atrasó.', Screen: ScreenDigest },
 ] as const

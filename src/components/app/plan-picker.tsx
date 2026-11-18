@@ -12,7 +12,7 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 
 /** Elegir un plan pago: se paga en Mercado Pago, en pesos. */
 export function PlanPicker({ current, renewing = false, action, canManage }: { current: PlanTier; renewing?: boolean; action: Action; canManage: boolean }) {
-  const [interval, setInterval] = useState<BillingInterval>('month')
+  const [interval, setInterval] = useState<BillingInterval>('year')
   const [state, formAction, pending] = useActionState(action, initialFormState)
 
   return (
@@ -25,7 +25,7 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
               key={i} type="button" role="radio" aria-checked={interval === i} onClick={() => setInterval(i)}
               className={cn('rounded-[9px] px-3 py-1.5', interval === i ? 'bg-navy text-white' : 'text-muted hover:text-ink')}
             >
-              {i === 'month' ? 'Mensual' : 'Anual −20%'}
+              {i === 'month' ? 'Mensual' : 'Anual · ahorrá 20%'}
             </button>
           ))}
         </div>
@@ -42,9 +42,12 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
               <input type="hidden" name="interval" value={interval} />
               <div>
                 <p className="text-[16px] font-bold">{p.name}</p>
-                <p className="money text-[22px]">{formatPlanPrice(price, 'ARS')}<span className="text-[13px] font-semibold text-muted"> /mes</span></p>
+                <p className="money text-[22px]">
+                  {formatPlanPrice(price, 'ARS')}<span className="text-[13px] font-semibold text-muted"> /mes</span>
+                  {interval === 'year' && <s className="ml-2 text-[13px] font-bold text-faint">{formatPlanPrice(monthlyPriceFor(p, 'month', 'ARS'), 'ARS')}</s>}
+                </p>
                 <p className="text-[12.5px] font-semibold text-muted">
-                  {interval === 'year' ? `${formatPlanPrice(yearlyTotalFor(p, 'ARS'), 'ARS')} por año, en un pago` : 'Se cobra todos los meses'}
+                  {interval === 'year' ? `Pagás ${formatPlanPrice(yearlyTotalFor(p, 'ARS'), 'ARS')} por año · precio fijo 12 meses` : 'Se cobra todos los meses'}
                 </p>
               </div>
               <ul className="flex flex-col gap-1.5 text-[13px]">

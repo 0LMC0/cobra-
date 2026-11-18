@@ -25,7 +25,7 @@ const STEPS = [
 const ORDER: OnboardingStep[] = ['company', 'first_customer', 'first_charge', 'reminders', 'done']
 
 export function HomeView({
-  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false, collected, upcoming,
+  dateLabel, onboardingStep, currency, businessName = '', transferAlias = null, todayReminders = [], totals, whatsappLocked = false, whatsappRemaining = null, collected, upcoming,
 }: {
   collected?: MonthBar[]
   upcoming?: UpcomingWeek[]
@@ -34,6 +34,7 @@ export function HomeView({
   currency: CurrencyCode
   totals?: HomeTotals
   whatsappLocked?: boolean
+  whatsappRemaining?: number | null
   businessName?: string
   transferAlias?: string | null
   todayReminders?: TodayReminder[]
@@ -65,7 +66,7 @@ export function HomeView({
         </div>
       )}
 
-      <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} whatsappLocked={whatsappLocked} />
+      <TodayReminders items={todayReminders} businessName={businessName} transferAlias={transferAlias} whatsappLocked={whatsappLocked} whatsappRemaining={whatsappRemaining} />
 
       {onboardingStep !== 'done' && next && (
         <section aria-labelledby="setup-title" className="overflow-hidden rounded-[22px] bg-surface ring-1 ring-line-2">

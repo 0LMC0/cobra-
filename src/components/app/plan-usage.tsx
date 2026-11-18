@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { PLAN_NAME } from '@/config/plans'
-import type { PlanUsage } from '@/server/queries'
+import type { PlanUsage, WhatsAppQuota } from '@/server/queries'
 import { cn } from '@/lib/cn'
 
 /** Plan vigente y avisos usados en el mes. En Gratis muestra la barra y cómo pasar a más. */
-export function PlanUsageCard({ usage, compact = false }: { usage: PlanUsage; compact?: boolean }) {
+export function PlanUsageCard({ usage, compact = false, whatsapp }: { usage: PlanUsage; compact?: boolean; whatsapp?: WhatsAppQuota }) {
   const { plan, limit, used, held, monthLabel, customers, customerLimit } = usage
   const customersFull = customers >= customerLimit
   const capped = limit !== null
@@ -25,6 +25,12 @@ export function PlanUsageCard({ usage, compact = false }: { usage: PlanUsage; co
           <div className={cn('h-full rounded-full', exhausted ? 'bg-warn' : 'bg-brand')} style={{ width: `${pct}%` }} />
         </div>
       )}
+      {whatsapp && whatsapp.limit !== null && (
+        <p className={cn('text-[13.5px] font-semibold', whatsapp.locked ? 'text-warn' : 'text-muted')}>
+          {Math.min(whatsapp.used, whatsapp.limit)} de {whatsapp.limit} avisos por WhatsApp en {monthLabel}
+          {whatsapp.locked && ' · se terminaron: desde Starter no tienen tope'}
+        </p>
+      )}
       <p className={cn('text-[13.5px] font-semibold', customersFull ? 'text-warn' : 'text-muted')}>
         {customers.toLocaleString('es-AR')} de {customerLimit.toLocaleString('es-AR')} clientes activos
         {customersFull && ' · llegaste al tope: archivá los que ya no te deben o pasate a un plan más grande'}
@@ -37,8 +43,8 @@ export function PlanUsageCard({ usage, compact = false }: { usage: PlanUsage; co
       {capped && (
         <p className="text-[13.5px] leading-snug text-muted">
           {exhausted
-            ? <>Llegaste al tope de este mes: los avisos por email vuelven el 1° del mes que viene. El botón de WhatsApp sigue funcionando sin límite.</>
-            : <>Te quedan <b className="text-ink">{left}</b> este mes. El botón de WhatsApp no cuenta: lo mandás vos.</>}
+            ? <>Llegaste al tope de este mes: los avisos por email vuelven el 1° del mes que viene.</>
+            : <>Te quedan <b className="text-ink">{left}</b> este mes.</>}
           {compact && <> <Link href="/app/configuracion#tu-plan" className="font-bold text-brand-text hover:underline">Pasate a un plan sin tope</Link></>}
         </p>
       )}

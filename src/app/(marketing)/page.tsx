@@ -18,7 +18,7 @@ const FAQ = [
   ['¿Qué le llega a mi cliente?', 'Un email amable con el nombre de tu empresa: qué te debe, cuánto, cuándo vence y tu alias para transferir. Sale 5 días antes, el día anterior, el día que vence y, si se atrasa, a los 3 y a los 7 días. Sólo días hábiles. Antes de que salga lo podés ver en la ficha de cada cliente.'],
   ['¿Y cuando me paga?', 'Tocás “Pagó” y Cobra+ deja de escribirle. Si te paga una parte, anotás lo que pagó y los avisos siguen sólo por lo que falta.'],
   ['¿Y si me dice que paga otro día?', 'Anotás la fecha que te prometió. Cobra+ no le escribe hasta ese día y, si no pagó, le vuelve a avisar.'],
-  ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Desde el plan Starter, Cobra+ también te deja el mensaje de WhatsApp escrito y lo mandás vos desde tu teléfono con un toque.'],
+  ['¿Funciona con WhatsApp?', 'Los avisos automáticos salen por email. Además, Cobra+ te deja el mensaje de WhatsApp escrito y lo mandás vos desde tu teléfono con un toque: 3 por mes en el plan Gratis y sin tope desde Starter.'],
   ['¿Puedo pasar mis clientes desde Excel?', 'Sí. Guardás tu planilla como CSV y la subís. Antes de importar te mostramos qué entra, qué tiene errores y qué ya estaba cargado.'],
   ['¿Quién está detrás de Cobra+?', 'PrimerosPrecios: hacemos herramientas para emprendedores y pymes argentinas. Cobra+ es la nuestra para quienes les cobran a los mismos clientes todos los meses.'],
 ]
@@ -137,7 +137,7 @@ export default function LandingPage() {
         id="precios"
         label="Precios"
         title="Elegí según cuántos clientes tenés."
-        intro={`En pesos o en dólares. Empezás gratis, sin tarjeta, con ${MONTHLY_REMINDERS.free} avisos por mes.`}
+        intro={`Empezás gratis, sin tarjeta, con ${MONTHLY_REMINDERS.free} avisos por mes. Cuando necesitás más, te pasás de plan.`}
       >
         <Pricing />
       </Section>

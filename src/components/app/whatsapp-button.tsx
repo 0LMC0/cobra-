@@ -17,15 +17,19 @@ type Props = {
   message: WhatsAppMessageInput
   className?: string
   compact?: boolean
-  /** Plan Gratis: se ve, pero con candado y lleva a los planes. */
+  /** Plan Gratis sin cupo: se ve, pero con candado y lleva a los planes. */
   locked?: boolean
+  /** Cobro al que corresponde: con esto el toque queda registrado (historial y cupo de Gratis). */
+  chargeId?: string
+  /** Plan Gratis: cuántos le quedan este mes. null = sin tope. */
+  remaining?: number | null
 }
 
 /**
  * "Con un toque": abre el WhatsApp de quien cobra con el chat del cliente y el
  * mensaje ya escrito. El envío lo hace la persona; Cobra+ no manda nada sola.
  */
-export function WhatsAppButton({ phone, message, className, compact, locked }: Props) {
+export function WhatsAppButton({ phone, message, className, compact, locked, chargeId, remaining = null }: Props) {
   const number = phone ? toWhatsAppNumber(phone) : null
   const label = compact ? 'WhatsApp' : 'Avisar por WhatsApp'
   const base = cn(
@@ -39,9 +43,9 @@ export function WhatsAppButton({ phone, message, className, compact, locked }: P
       <Link
         href="/app/configuracion#tu-plan"
         className={cn(base, 'bg-surface text-[#128c4a] ring-1 ring-inset ring-[#25d366]/60 hover:bg-[#25d366]/10')}
-        title="El botón de WhatsApp está en los planes pagos, desde Starter"
+        title="Usaste los 3 avisos por WhatsApp del mes. Desde Starter no tienen tope."
       >
-        <Lock className="size-3.5" /> <WhatsAppIcon className="size-4" /> {compact ? 'WhatsApp' : 'WhatsApp · desde Starter'}
+        <Lock className="size-3.5" /> <WhatsAppIcon className="size-4" /> {compact ? 'WhatsApp' : 'WhatsApp · sin tope desde Starter'}
       </Link>
     )
   }
@@ -55,13 +59,16 @@ export function WhatsAppButton({ phone, message, className, compact, locked }: P
   }
   return (
     <a
-      href={whatsAppLink(number, buildWhatsAppMessage(message))}
+      href={chargeId
+        ? `/app/whatsapp?cobro=${chargeId}&a=${encodeURIComponent(whatsAppLink(number, buildWhatsAppMessage(message)))}`
+        : whatsAppLink(number, buildWhatsAppMessage(message))}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(base, 'bg-[#25d366] text-[#0b3d22] shadow-[inset_0_1px_0_rgba(255,255,255,.35),0_1px_2px_rgba(22,35,59,.15)] hover:bg-[#2fe074] active:scale-[0.98]')}
       aria-label={`${label}: se abre WhatsApp con el mensaje listo para enviar`}
     >
       <WhatsAppIcon className="size-[18px]" /> {label}
+      {remaining !== null && !compact && <span className="rounded-full bg-white/50 px-1.5 text-[11.5px] font-bold">te quedan {remaining}</span>}
     </a>
   )
 }

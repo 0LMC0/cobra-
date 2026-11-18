@@ -46,7 +46,7 @@ export const FREE_PLAN = {
     { label: 'Historial de cada cliente', available: true },
     { label: 'Importar clientes desde Excel', available: true },
     { label: '1 usuario', available: true },
-    { label: 'Botón de WhatsApp (desde Starter)', available: false },
+    { label: 'Avisar por WhatsApp con un toque: 3 por mes', available: true },
   ],
 }
 
@@ -62,6 +62,14 @@ export function planIncludes(plan: PlanTier, feature: PlanFeature): boolean {
 /** El plan más barato que incluye esa función (para el candado: "Disponible en Starter"). */
 export function planFor(feature: PlanFeature): PlanTier {
   return FEATURE_FROM[feature]
+}
+
+/** Avisos por WhatsApp con un toque por mes. null = sin tope. En Gratis, para probarlo. */
+export const MONTHLY_WHATSAPP: Record<PlanTier, number | null> = {
+  free: 3,
+  starter: null,
+  growth: null,
+  business: null,
 }
 
 /** Avisos automáticos por mes según el plan. null = sin tope. */
@@ -106,7 +114,7 @@ export const PLANS: readonly Plan[] = [
     highlighted: true,
     features: [
       { label: 'Avisos automáticos por email sin tope', available: true },
-      { label: 'Botón de WhatsApp con el mensaje listo', available: true },
+      { label: 'Avisar por WhatsApp con un toque, sin tope', available: true },
       { label: 'Hasta 30 clientes activos', available: true },
       { label: 'Cobros únicos y recurrentes', available: true },
       { label: 'Panel de cobranzas y vencimientos', available: true },

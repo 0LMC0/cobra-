@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { ChargesView } from '@/components/app/charges-view'
 import { requireOrg } from '@/server/auth'
-import { getOrgPlan, listCharges } from '@/server/queries'
+import { getOrgPlan, getWhatsAppQuota, listCharges } from '@/server/queries'
 import { planIncludes } from '@/config/plans'
 import { clearPromise, recordPayment, setPromise } from '@/server/actions/billing'
 import { todayIn } from '@/domain/dates'
@@ -14,6 +14,7 @@ export default async function ChargesPage({ searchParams }: { searchParams: Prom
   const { ver } = await searchParams
   const today = todayIn(org.timezone)
   const [charges, plan] = await Promise.all([listCharges(org.id, today), getOrgPlan(org.id)])
+  const wa = await getWhatsAppQuota(org.id, today, plan)
   return (
     <ChargesView
       charges={charges}
@@ -23,7 +24,8 @@ export default async function ChargesPage({ searchParams }: { searchParams: Prom
       payAction={recordPayment}
       canExport={can(role, 'reports.export')}
       exportLocked={!planIncludes(plan, 'csvExport')}
-      whatsappLocked={!planIncludes(plan, 'whatsapp')}
+      whatsappLocked={wa.locked}
+      whatsappRemaining={wa.remaining}
       promiseAction={setPromise}
       clearPromiseAction={clearPromise}
     />

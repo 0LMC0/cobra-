@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { chargeStatus, type ChargeStatus, type StoredChargeState } from '@/domain/charge-status'
 import type { IsoDate } from '@/domain/dates'
 import type { CurrencyCode } from '@/domain/money'
-import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, customerLimitError, type PlanTier } from '@/config/plans'
+import { ACTIVE_CUSTOMERS, MONTHLY_REMINDERS, MONTHLY_WHATSAPP, customerLimitError, type PlanTier } from '@/config/plans'
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart } from '@/domain/quota'
 import { buildTimeline, type TimelineEvent } from '@/domain/timeline'
@@ -316,6 +316,20 @@ export async function getOrgPlan(orgId: string): Promise<PlanTier> {
   const supabase = await createClient()
   const { data } = await supabase.from('subscriptions').select('plan, status, current_period_end').eq('org_id', orgId).maybeSingle()
   return effectivePlan(data ? { plan: data.plan as string, status: data.status as string, currentPeriodEnd: data.current_period_end as string | null } : null)
+}
+
+export type WhatsAppQuota = { limit: number | null; used: number; remaining: number | null; locked: boolean }
+
+/** Avisos por WhatsApp con un toque usados este mes (Gratis: 3). El mes es el de la empresa. */
+export async function getWhatsAppQuota(orgId: string, today: IsoDate, plan?: PlanTier): Promise<WhatsAppQuota> {
+  const tier = plan ?? (await getOrgPlan(orgId))
+  const limit = MONTHLY_WHATSAPP[tier]
+  if (limit === null) return { limit, used: 0, remaining: null, locked: false }
+  const supabase = await createClient()
+  const { count } = await supabase.from('whatsapp_sends').select('id', { count: 'exact', head: true })
+    .eq('org_id', orgId).gte('created_at', `${monthStart(today)}T00:00:00-03:00`)
+  const used = count ?? 0
+  return { limit, used, remaining: Math.max(0, limit - used), locked: used >= limit }
 }
 
 /** null si puede sumar un cliente activo más; si no, el mensaje del tope del plan. */

@@ -14,7 +14,7 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 
 /** Todos los cobros en un solo lugar: lo que falta cobrar arriba, lo atrasado primero. */
 export function ChargesView({
-  charges, view, today, businessName, transferAlias, payAction, promiseAction, clearPromiseAction, hrefBase = '/app', canExport = false, exportLocked = false, whatsappLocked = false,
+  charges, view, today, businessName, transferAlias, payAction, promiseAction, clearPromiseAction, hrefBase = '/app', canExport = false, exportLocked = false, whatsappLocked = false, whatsappRemaining = null,
 }: {
   charges: ChargeListItem[]
   view: 'pendientes' | 'pagados'
@@ -28,6 +28,7 @@ export function ChargesView({
   /** Descargar CSV: sólo administración. */
   canExport?: boolean
   whatsappLocked?: boolean
+  whatsappRemaining?: number | null
   /** Exportar es de Growth en adelante. */
   exportLocked?: boolean
 }) {
@@ -112,6 +113,8 @@ export function ChargesView({
                           }}
                           className="w-full sm:w-auto"
                           locked={whatsappLocked}
+                          chargeId={c.id}
+                          remaining={whatsappRemaining}
                         />
                       )}
                     </div>

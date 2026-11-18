@@ -2,9 +2,8 @@ import type { Metadata } from 'next'
 import { HomeView } from '@/components/app/home-view'
 import { requireOrg } from '@/server/auth'
 import { formatDate, todayIn } from '@/domain/dates'
-import { getHomeData, getPlanUsage } from '@/server/queries'
+import { getHomeData, getPlanUsage, getWhatsAppQuota } from '@/server/queries'
 import { PlanUsageCard } from '@/components/app/plan-usage'
-import { planIncludes } from '@/config/plans'
 import type { CurrencyCode } from '@/domain/money'
 
 export const metadata: Metadata = { title: 'Inicio' }
@@ -14,6 +13,7 @@ export default async function AppHome() {
   const today = todayIn(org.timezone)
   const currency = org.currency as CurrencyCode
   const [home, usage] = await Promise.all([getHomeData(org.id, currency, today), getPlanUsage(org.id, today)])
+  const wa = await getWhatsAppQuota(org.id, today, usage.plan)
   // En Gratis, avisar cuando se está por terminar el cupo del mes (o ya se terminó).
   const nearLimit = usage.limit !== null && (usage.used >= usage.limit - 2 || usage.held > 0)
   return (
@@ -29,7 +29,8 @@ export default async function AppHome() {
       collected={home.collected}
       upcoming={home.upcoming}
       todayReminders={home.reminders}
-      whatsappLocked={!planIncludes(usage.plan, 'whatsapp')}
+      whatsappLocked={wa.locked}
+      whatsappRemaining={wa.remaining}
     />
     </div>
   )

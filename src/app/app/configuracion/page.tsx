@@ -14,12 +14,12 @@ import { CancelSubscription, PlanPicker } from '@/components/app/plan-picker'
 import { DeleteAccount } from '@/components/app/delete-account'
 import { cancelSubscription, startSubscription } from '@/server/actions/subscription'
 import { PLAN_NAME } from '@/config/plans'
-import { getPlanUsage } from '@/server/queries'
+import { getPlanUsage, getWhatsAppQuota } from '@/server/queries'
 import { todayIn } from '@/domain/dates'
 
 export const metadata: Metadata = { title: 'Configuración' }
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ plan?: string; wa?: string }> }) {
   const ctx = await requireOrg('viewer')
   const { org } = ctx
   const supabase = await createClient()
@@ -45,7 +45,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     .maybeSingle()
 
   const usage = await getPlanUsage(org.id, todayIn(org.timezone))
-  const { plan: planResult } = await searchParams
+  const { plan: planResult, wa: waResult } = await searchParams
+  const wa = await getWhatsAppQuota(org.id, todayIn(org.timezone), usage.plan)
   const { data: sub } = await supabase.from('subscriptions').select('status, current_period_end').eq('org_id', org.id).maybeSingle()
   const renewing = usage.plan !== 'free' && sub?.status !== 'cancelled'
   const until = sub?.current_period_end ? formatDate((sub.current_period_end as string).slice(0, 10), { day: 'numeric', month: 'long' }) : null
@@ -88,7 +89,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         {(planResult === 'error' || planResult === 'no-corresponde' || planResult === 'sin-datos') && (
           <Alert tone="warn" title="No pudimos confirmar el pago todavía">Si pagaste, se va a activar solo en unos minutos. Si no, probá de nuevo.</Alert>
         )}
-        <PlanUsageCard usage={usage} />
+        {waResult === 'tope' && (
+          <Alert tone="info" title="Usaste los 3 avisos por WhatsApp de este mes">
+            En el plan Gratis tenés 3 por mes para probarlo. Desde Starter no tienen tope, igual que los avisos por email.
+          </Alert>
+        )}
+        <PlanUsageCard usage={usage} whatsapp={wa} />
         {/* El selector siempre está: quien paga Starter tiene que poder pasarse a Growth. */}
         <Card className="p-5"><PlanPicker current={usage.plan} renewing={renewing} action={startSubscription} canManage={canManageBilling} /></Card>
         {renewing && canManageBilling && <CancelSubscription action={cancelSubscription} planName={PLAN_NAME[usage.plan]} until={until} />}
