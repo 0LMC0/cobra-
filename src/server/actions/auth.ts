@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { publicEnv, siteUrl } from '@/config/env'
 import type { FormState } from './form-state'
+import { safeNextPath } from '@/domain/safe-redirect'
 
 const email = z.string().trim().toLowerCase().email('Ingresá un email válido.').max(254)
 const password = z
@@ -17,11 +18,8 @@ function notConfigured(): FormState {
   return { error: 'El servicio de cuentas todavía no está configurado en este entorno.' }
 }
 
-/** Sólo rutas internas, para evitar open redirects. */
-function safeNext(raw: FormDataEntryValue | null): string {
-  const v = typeof raw === 'string' ? raw : ''
-  return v.startsWith('/') && !v.startsWith('//') && !v.startsWith('/\\') ? v : '/app'
-}
+/** Sólo rutas internas, para evitar open redirects (ver src/domain/safe-redirect.ts). */
+const safeNext = (raw: FormDataEntryValue | null) => safeNextPath(raw)
 
 const signUpSchema = z.object({
   fullName: z.string().trim().min(2, 'Decinos cómo te llamás.').max(120),

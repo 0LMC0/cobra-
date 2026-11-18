@@ -36,7 +36,8 @@ export async function middleware(request: NextRequest) {
 
   if (isProtected && !user) {
     const url = new URL('/ingresar', request.url)
-    url.searchParams.set('siguiente', path)
+    // Con la consulta incluida: p. ej. la vuelta de Mercado Pago trae ?preapproval_id=…
+    url.searchParams.set('siguiente', path + request.nextUrl.search)
     return NextResponse.redirect(url)
   }
   if (user && AUTH_ONLY.includes(path)) {

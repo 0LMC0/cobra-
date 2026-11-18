@@ -2,19 +2,21 @@ import { NextResponse, type NextRequest } from 'next/server'
 import type { EmailOtpType } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { publicEnv } from '@/config/env'
+import { safeNextPath } from '@/domain/safe-redirect'
 
 const ALLOWED_TYPES: EmailOtpType[] = ['signup', 'recovery', 'email_change', 'invite', 'magiclink', 'email']
 
 /**
  * Destino de los links de email de Supabase (confirmación y recupero).
  * Requiere que la plantilla de email use:
- *   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/onboarding
+ *   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/onboarding      (confirmar cuenta)
+ *   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/nueva-clave (cambiar contraseña)
+ * Así el link sirve aunque se abra en otro dispositivo (el flujo ?code= necesita el mismo navegador).
  * También acepta el flujo PKCE (?code=...).
  */
 export async function GET(request: NextRequest) {
   const url = request.nextUrl
-  const nextRaw = url.searchParams.get('next') ?? '/app'
-  const next = nextRaw.startsWith('/') && !nextRaw.startsWith('//') ? nextRaw : '/app'
+  const next = safeNextPath(url.searchParams.get('next'))
   const fail = NextResponse.redirect(new URL('/ingresar?error=link', request.url))
 
   if (!publicEnv()) return fail
