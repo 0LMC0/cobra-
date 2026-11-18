@@ -7,7 +7,9 @@ import { AuthorizationError, authorize, type OrgContext } from '@/server/auth'
 import { chargeSchema, customerSchema, paymentSchema, promiseSchema } from '@/domain/forms'
 import { addMonths, formatDate, todayIn } from '@/domain/dates'
 import { hasRole } from '@/domain/roles'
-import { customerLimitReached } from '@/server/queries'
+import { customerLimitReached, getOrgPlan } from '@/server/queries'
+import { ACTIVE_CUSTOMERS, PLAN_NAME } from '@/config/plans'
+import { previewImport } from '@/domain/import-customers'
 import type { FormState } from './form-state'
 
 /** Acciones del producto: clientes, cobros y pagos. La RLS vuelve a verificar todo. */
@@ -240,4 +242,52 @@ export async function setCustomerArchived(_: FormState, formData: FormData): Pro
   if (!data?.length) return { error: 'No encontramos ese cliente.' }
   revalidatePath('/app', 'layout')
   return { ok: archive ? 'Cliente archivado. No le llegan más avisos.' : 'Cliente reactivado.' }
+}
+
+/**
+ * Importa clientes de un CSV. El servidor vuelve a validar todo (no confía en la
+ * vista previa del navegador), saltea repetidos y respeta el tope de clientes del plan.
+ */
+export async function importCustomers(_: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await guard()
+  if (isState(ctx)) return ctx
+  const csv = String(formData.get('csv') ?? '')
+  if (!csv.trim()) return { error: 'Elegí un archivo primero.' }
+  if (csv.length > 2_000_000) return { error: 'El archivo es muy grande. Dividilo en partes.' }
+
+  const supabase = await createClient()
+  const [{ data: existing }, plan] = await Promise.all([
+    supabase.from('customers').select('email, tax_id, status').eq('org_id', ctx.org.id),
+    getOrgPlan(ctx.org.id),
+  ])
+  const list = existing ?? []
+  const preview = previewImport(csv, {
+    emails: list.filter((c) => c.status === 'active' && c.email).map((c) => c.email as string),
+    taxIds: list.filter((c) => c.tax_id).map((c) => c.tax_id as string),
+  })
+  if (preview.fileError) return { error: preview.fileError }
+  const rows = preview.rows.flatMap((r) => (r.status === 'ok' ? [r.data] : []))
+  if (!rows.length) return { error: 'No hay clientes nuevos para importar: todos tienen errores o ya estaban cargados.' }
+
+  const active = list.filter((c) => c.status === 'active').length
+  const room = ACTIVE_CUSTOMERS[plan] - active
+  if (rows.length > room) {
+    return {
+      error: room <= 0
+        ? `Tu plan ${PLAN_NAME[plan]} ya está en el tope de ${ACTIVE_CUSTOMERS[plan]} clientes activos. Pasate a un plan más grande para importarlos.`
+        : `Tu plan ${PLAN_NAME[plan]} tiene lugar para ${room} ${room === 1 ? 'cliente' : 'clientes'} más y el archivo trae ${rows.length}. Pasate a un plan más grande o importá menos.`,
+    }
+  }
+
+  const { error } = await supabase.from('customers').insert(rows.map((d) => ({
+    org_id: ctx.org.id, name: d.name, contact_name: d.contactName, email: d.email, phone: d.phone,
+    whatsapp_number: d.whatsappNumber, whatsapp_ok: d.whatsappOk, tax_id: d.taxId, notes: d.notes,
+    reminders_paused: d.remindersPaused, created_by: ctx.userId,
+  })))
+  if (error) return { error: 'No pudimos importar los clientes. Revisá que no haya repetidos y probá de nuevo.' }
+
+  await advanceOnboarding(ctx, 'first_customer', 'first_charge')
+  if (rows.some((d) => d.email) && hasRole(ctx.role, 'admin')) await ensureRemindersOn(ctx)
+  revalidatePath('/app', 'layout')
+  redirect(`/app/clientes?importados=${rows.length}`)
 }

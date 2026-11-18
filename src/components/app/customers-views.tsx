@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, Download, Lock, Mail, Pencil, Phone, Plus, Search, UserPlus } from 'lucide-react'
+import { ArrowLeft, Download, FileUp, Lock, Mail, Pencil, Phone, Plus, Search, UserPlus } from 'lucide-react'
 import { ButtonLink, buttonClass } from '@/components/ui/button'
 import { Alert } from '@/components/ui/misc'
 import { isCollectible } from '@/domain/charge-status'
@@ -20,8 +20,10 @@ type Action = (state: FormState, formData: FormData) => Promise<FormState>
 /* ───────────── Lista de clientes ───────────── */
 
 export function CustomersListView({
-  customers, newHref = '/app/clientes/nuevo', hrefBase, q = '', view = 'todos', activeCount, archivedCount = 0, canEdit = true, exportHref, exportLocked = false,
+  imported = 0, customers, newHref = '/app/clientes/nuevo', hrefBase, q = '', view = 'todos', activeCount, archivedCount = 0, canEdit = true, exportHref, exportLocked = false,
 }: {
+  /** Recién importados desde un CSV (para el mensaje de "listo"). */
+  imported?: number
   customers: CustomerView[]
   newHref?: string
   hrefBase?: string
@@ -51,6 +53,11 @@ export function CustomersListView({
 
   return (
     <div className="flex flex-col gap-6">
+      {imported > 0 && (
+        <Alert tone="ok" title={`¡Listo! Importaste ${imported} ${imported === 1 ? 'cliente' : 'clientes'}`}>
+          Ahora entrá a cada uno y creale su cobro (cuánto te paga y cuándo vence). Con eso Cobra+ ya sabe cuándo avisarle.
+        </Alert>
+      )}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-[34px] sm:text-[40px]">Clientes</h1>
@@ -72,7 +79,10 @@ export function CustomersListView({
               <a href={exportHref} download className={buttonClass('secondary', 'md')}><Download className="size-4" /> Descargar CSV</a>
             ))}
             {total > 0 && canEdit && view !== 'archivados' && (
-              <ButtonLink href={newHref}><Plus className="size-4" /> Nuevo cliente</ButtonLink>
+              <>
+                <ButtonLink href="/app/clientes/importar" variant="secondary"><FileUp className="size-4" /> Importar</ButtonLink>
+                <ButtonLink href={newHref}><Plus className="size-4" /> Nuevo cliente</ButtonLink>
+              </>
             )}
           </div>
         )}
@@ -83,7 +93,12 @@ export function CustomersListView({
           <span className="grid size-14 place-items-center rounded-[18px] bg-brand-soft text-brand-text"><UserPlus className="size-6" /></span>
           <h2 className="text-[19px] tracking-[-0.02em]">{archivedCount > 0 ? 'No tenés clientes activos' : 'Cargá tu primer cliente'}</h2>
           <p className="max-w-sm text-[14.5px] text-muted">Con su email o su celular, Cobra+ le puede recordar que te pague.</p>
-          {canEdit && <ButtonLink href={newHref} size="lg" className="mt-2"><Plus className="size-4" /> Nuevo cliente</ButtonLink>}
+          {canEdit && (
+            <div className="mt-2 flex flex-wrap justify-center gap-2">
+              <ButtonLink href={newHref} size="lg"><Plus className="size-4" /> Nuevo cliente</ButtonLink>
+              <ButtonLink href="/app/clientes/importar" size="lg" variant="secondary"><FileUp className="size-4" /> Importar desde Excel</ButtonLink>
+            </div>
+          )}
           {archivedCount > 0 && (
             <Link href={hrefFor('archivados')} className="mt-1 text-[14px] font-bold text-brand-text hover:underline">
               Ver {archivedCount === 1 ? 'el cliente archivado' : `los ${archivedCount} clientes archivados`}
@@ -158,6 +173,9 @@ export function NewCustomerView({ action, backHref = '/app/clientes', limitReach
             ? 'Elegí a alguien que te pague seguido. Con el nombre y el email alcanza; en el paso siguiente le cargás cuánto te paga y cuándo vence.'
             : 'Con un email o un celular alcanza para empezar. Lo demás lo completás cuando quieras.'}
         </p>
+        <Link href="/app/clientes/importar" className="mt-1 inline-flex w-fit items-center gap-1.5 text-[14px] font-bold text-brand-text hover:underline">
+          <FileUp className="size-4" /> ¿Los tenés en Excel? Importalos todos juntos
+        </Link>
       </header>
       {limitReached ? (
         <section className="flex flex-col items-start gap-4 rounded-[22px] bg-surface p-5 ring-2 ring-brand sm:p-7">

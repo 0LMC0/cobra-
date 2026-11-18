@@ -9,9 +9,9 @@ import { can, hasRole } from '@/domain/roles'
 
 export const metadata: Metadata = { title: 'Clientes' }
 
-export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string; ver?: string }> }) {
+export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string; ver?: string; importados?: string }> }) {
   const { org, role } = await requireOrg('viewer')
-  const { q: rawQ, ver } = await searchParams
+  const { q: rawQ, ver, importados } = await searchParams
   const view = parseCustomerView(ver)
   const q = (rawQ ?? '').trim().slice(0, 80)
   const today = todayIn(org.timezone)
@@ -24,6 +24,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   return (
     <CustomersListView
       customers={customers}
+      imported={Math.max(0, Math.min(1000, Number(importados) || 0))}
       q={q}
       view={view}
       activeCount={active?.length}
