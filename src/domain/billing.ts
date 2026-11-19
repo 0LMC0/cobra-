@@ -28,6 +28,16 @@ export function parseExternalReference(ref: unknown): { orgId: string; plan: Pla
 }
 
 /** Cuerpo para POST /preapproval: la persona termina el pago en Mercado Pago (init_point). */
+/**
+ * Título de la suscripción para Mercado Pago. En producción MP rechaza algunos
+ * símbolos (por ejemplo "·") con "Parameters passed are invalid": se dejan sólo
+ * letras (con acentos), números y puntuación común.
+ */
+export function preapprovalReason(planName: string, interval: BillingInterval, orgName: string): string {
+  const clean = (s: string) => s.normalize('NFC').replace(/[^\p{L}\p{N} .,&()'"+\-/]/gu, ' ').replace(/\s+/g, ' ').trim()
+  return clean(`Cobra+ ${planName} (${interval === 'year' ? 'anual' : 'mensual'}) - ${orgName}`).slice(0, 120)
+}
+
 export function preapprovalRequest(input: {
   orgId: string
   orgName: string
@@ -38,7 +48,7 @@ export function preapprovalRequest(input: {
 }) {
   const p = getPlan(input.plan)
   return {
-    reason: `Cobra+ ${p.name} (${input.interval === 'year' ? 'anual' : 'mensual'}) · ${input.orgName}`.slice(0, 120),
+    reason: preapprovalReason(p.name, input.interval, input.orgName),
     external_reference: buildExternalReference(input.orgId, input.plan, input.interval),
     payer_email: input.payerEmail,
     back_url: input.backUrl,

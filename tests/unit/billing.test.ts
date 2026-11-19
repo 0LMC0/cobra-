@@ -22,7 +22,13 @@ describe('suscripción con Mercado Pago', () => {
       status: 'pending',
       auto_recurring: { frequency: 12, frequency_type: 'months', transaction_amount: 440_640, currency_id: 'ARS' },
     })
-    expect(body.reason).toBe('Cobra+ Growth (anual) · Estudio Prueba')
+    expect(body.reason).toBe('Cobra+ Growth (anual) - Estudio Prueba')
+  })
+
+  it('el título no lleva símbolos que Mercado Pago rechaza en producción', async () => {
+    const { preapprovalReason } = await import('@/domain/billing')
+    expect(preapprovalReason('Starter', 'month', 'Café · “Rico” ★ Ñandú & Hijos')).toBe('Cobra+ Starter (mensual) - Café Rico Ñandú & Hijos')
+    expect(preapprovalReason('Starter', 'month', 'x'.repeat(300)).length).toBe(120)
   })
 
   it('lee la referencia y rechaza lo que no es de Cobra+', () => {
