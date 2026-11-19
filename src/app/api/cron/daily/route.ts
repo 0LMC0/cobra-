@@ -11,7 +11,7 @@ import { siteUrl } from '@/config/env'
 import { MONTHLY_REMINDERS } from '@/config/plans'
 import { effectivePlan } from '@/domain/plan-status'
 import { monthStart, remainingReminders } from '@/domain/quota'
-import { unsubscribeToken } from '@/server/unsubscribe'
+import { paidClaimToken, unsubscribeToken } from '@/server/unsubscribe'
 import { isTestAddress } from '@/domain/email-address'
 import { needsNudge, nudgeEmail } from '@/domain/onboarding-nudge'
 
@@ -155,6 +155,7 @@ export async function GET(req: Request) {
     alreadySent: new Set(sentRows.filter((s) => !(s.status === 'failed' && s.attempts < MAX_ATTEMPTS)).map((s) => `${s.charge_id}:${s.step_id}`)),
     appUrl: siteUrl(),
     unsubscribeUrlFor: (customerId) => `${siteUrl()}/baja?t=${unsubscribeToken(customerId)}`,
+    paidUrlFor: (chargeId) => `${siteUrl()}/ya-pague?t=${paidClaimToken(chargeId)}`,
   })
 
   if (!emailConfigured()) {

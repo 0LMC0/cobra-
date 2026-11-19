@@ -1,4 +1,4 @@
-import { escapeHtml } from './emails'
+import { button, emailLayout, escapeHtml, p } from './email-layout'
 
 /** Botón de arrepentimiento y botón de baja (Disp. 954/2025). Textos y códigos, puros. */
 export type ConsumerRequestKind = 'arrepentimiento' | 'baja'
@@ -21,13 +21,13 @@ export const KIND_LABEL: Record<ConsumerRequestKind, string> = {
 type Email = { subject: string; text: string; html: string }
 
 function wrap(title: string, paragraphs: string[], cta?: { href: string; label: string }): Email {
-  const html = `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#16233b">
-<p style="font-size:22px;font-weight:800;margin:0 0 16px">Cobra<span style="color:#1d4ed8">+</span></p>
-<h2 style="font-size:19px;margin:0 0 12px">${escapeHtml(title)}</h2>
-${paragraphs.map((p) => `<p style="font-size:15px;line-height:1.5;margin:0 0 12px">${escapeHtml(p)}</p>`).join('\n')}
-${cta ? `<p style="margin:18px 0 22px"><a href="${escapeHtml(cta.href)}" style="display:inline-block;padding:12px 20px;border-radius:12px;background:#1d4ed8;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none">${escapeHtml(cta.label)}</a></p>` : ''}
-<p style="font-size:12.5px;color:#5f6b82;margin:16px 0 0">Cobra+ es una app de PrimerosPrecios.</p>
-</div>`
+  const html = emailLayout({
+    preheader: escapeHtml(paragraphs[0] ?? title),
+    header: 'cobra',
+    heading: escapeHtml(title),
+    body: paragraphs.map((t) => p(escapeHtml(t))).join('') + (cta ? button(cta.href, cta.label) : ''),
+    footer: p('Este email es por un trámite que se pidió en cobra.primerosprecios.com con tu dirección.', { muted: true, size: 12.5 }),
+  })
   const text = [title, '', ...paragraphs, ...(cta ? ['', `${cta.label}: ${cta.href}`] : [])].join('\n')
   return { subject: title, text, html }
 }

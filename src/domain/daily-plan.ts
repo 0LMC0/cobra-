@@ -56,6 +56,8 @@ export function planDailyEmails(input: {
   appUrl: string
   /** Arma el link de baja firmado de cada cliente (la firma vive en el servidor). */
   unsubscribeUrlFor?: (customerId: string) => string
+  /** Arma el link "Ya pagué" firmado de cada cobro. */
+  paidUrlFor?: (chargeId: string) => string
 }): { reminders: ReminderSend[]; digests: DigestSend[]; held: { orgId: string; count: number }[]; heldItems: ReminderSend[] } {
   const customers = new Map(input.customers.map((c) => [c.id, c]))
   const reminders: ReminderSend[] = []
@@ -89,6 +91,7 @@ export function planDailyEmails(input: {
               moment: MOMENT[step.kind], customerName: customer.name, contactName: customer.contactName, businessName: org.name,
               concept: charge.concept, amountMinor: charge.balanceMinor, currency: charge.currency, dueDate: charge.dueDate,
               promisedFor: charge.promisedFor, transferAlias: org.transferAlias, unsubscribeUrl,
+              paidUrl: input.paidUrlFor?.(charge.id) ?? null,
             }),
           })
         }
