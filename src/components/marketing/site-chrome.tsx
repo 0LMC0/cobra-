@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button'
 import { Logo, PPMark } from '@/components/ui/misc'
+import { providerLine } from '@/config/provider'
 
 const SECTIONS = [
   ['#que-es', '¿Qué es?'],
@@ -55,6 +56,7 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p className="text-[12.5px] font-semibold text-muted">
             © {new Date().getFullYear()} PrimerosPrecios · Cobra+ no recibe ni custodia el dinero de tus clientes.
+            {providerLine() && <span className="mt-1 block font-medium">{providerLine()}</span>}
           </p>
           {/* Disp. 954/2025: botones de arrepentimiento y de baja bien visibles, sin iniciar sesión. */}
           <div className="flex flex-wrap gap-2">

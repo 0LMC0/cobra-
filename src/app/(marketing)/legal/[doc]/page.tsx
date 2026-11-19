@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { providerLine } from '@/config/provider'
 
 /**
  * BORRADORES. Deben ser revisados por un profesional antes de publicar
@@ -59,6 +60,12 @@ export default async function LegalPage({ params }: { params: Promise<{ doc: str
             <p className="text-[15px] leading-relaxed text-muted">{p}</p>
           </section>
         ))}
+        {providerLine() && (
+          <section className="flex flex-col gap-2">
+            <h2 className="text-[17px] font-semibold">Quién presta el servicio</h2>
+            <p className="text-[15px] leading-relaxed text-muted">{providerLine()}</p>
+          </section>
+        )}
       </div>
     </main>
   )
