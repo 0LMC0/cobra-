@@ -13,6 +13,7 @@ import { effectivePlan } from '@/domain/plan-status'
 import { monthStart, remainingReminders } from '@/domain/quota'
 import { unsubscribeToken } from '@/server/unsubscribe'
 import { isTestAddress } from '@/domain/email-address'
+import { needsNudge, nudgeEmail } from '@/domain/onboarding-nudge'
 
 /** Intentos por aviso: si una corrida falla, otra corrida del mismo día lo reintenta. */
 const MAX_ATTEMPTS = 3
@@ -236,5 +237,27 @@ export async function GET(req: Request) {
     else failed += 1
   }
 
-  return NextResponse.json({ generatedCharges: generated, reminders: sent, heldByPlanLimit: plan.held, digests, failed })
+  // Un solo recordatorio a quien se registró y no terminó de configurar (entre 1 y 4 días después).
+  let nudges = 0
+  const now = new Date()
+  const { data: fresh } = await db.from('organizations')
+    .select('id, onboarding_step, created_at, onboarding_nudged_at')
+    .is('onboarding_nudged_at', null)
+    .gte('created_at', new Date(now.getTime() - 96 * 3_600_000).toISOString())
+  for (const o of fresh ?? []) {
+    if (!needsNudge({ onboardingStep: o.onboarding_step as string, createdAt: o.created_at as string, nudgedAt: null }, now)) continue
+    const owner = (membersRes.data ?? []).find((m) => m.org_id === o.id && m.role === 'owner')
+    if (!owner) continue
+    const { data: claimed } = await db.from('organizations').update({ onboarding_nudged_at: now.toISOString() })
+      .eq('id', o.id).is('onboarding_nudged_at', null).select('id')
+    if (!claimed?.length) continue
+    const { data: u } = await db.auth.admin.getUserById(owner.user_id)
+    const email = u.user?.email
+    if (!email || isTestAddress(email)) continue
+    const firstName = ((u.user?.user_metadata?.full_name as string | undefined) ?? '').split(' ')[0] || null
+    const res = await sendEmail({ to: email, ...nudgeEmail(o.onboarding_step as 'first_customer', { firstName, appUrl: siteUrl() }), idempotencyKey: `empujon-${o.id}` })
+    if (res.ok) nudges += 1
+  }
+
+  return NextResponse.json({ generatedCharges: generated, reminders: sent, heldByPlanLimit: plan.held, digests, nudges, failed })
 }
