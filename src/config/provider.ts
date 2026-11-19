@@ -3,10 +3,10 @@
  * pie y en los términos. Completar con los datos reales; si un campo es null no se muestra.
  */
 export const PROVIDER = {
-  legalName: null as string | null, // Razón social o nombre y apellido del titular
-  cuit: null as string | null, // 20-12345678-9
+  legalName: 'Lautaro Caceres' as string | null, // Razón social o nombre y apellido del titular
+  cuit: '20-42622941-3' as string | null, // 20-12345678-9
   address: null as string | null, // Domicilio legal
-  email: null as string | null, // Email de atención al cliente
+  email: 'lautaroprimerosprecios@gmail.com' as string | null, // Email de atención al cliente
 }
 
 /** Línea corta para el pie: "Titular: X · CUIT Y · Domicilio Z · Atención: W". */
