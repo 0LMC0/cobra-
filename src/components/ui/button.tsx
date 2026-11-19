@@ -7,18 +7,18 @@ type Variant = 'primary' | 'secondary' | 'dark' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
 const base =
-  'group/btn inline-flex items-center justify-center gap-2 font-display font-semibold tracking-[-0.01em] whitespace-nowrap transition-[background-color,box-shadow,color,transform] duration-150 active:scale-[0.98] disabled:opacity-55 disabled:pointer-events-none select-none [&>svg]:transition-transform [&>svg]:duration-150 hover:[&>svg:last-child]:translate-x-0.5'
+  'group/btn inline-flex items-center justify-center gap-2 font-display font-semibold tracking-[-0.01em] whitespace-nowrap transition-[background-color,box-shadow,color,translate,scale] duration-200 ease-[cubic-bezier(.2,.8,.2,1)] active:scale-[0.97] active:duration-75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/25 disabled:opacity-55 disabled:pointer-events-none select-none [&>svg]:transition-transform [&>svg]:duration-150 hover:[&>svg:last-child]:translate-x-0.5'
 
 /* Relieve suave: un brillo arriba y una sombra corta abajo. Sin bordes gruesos. */
 const variants: Record<Variant, string> = {
   primary:
-    'bg-brand text-brand-ink shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_6px_16px_-6px_rgba(29,78,216,.55)] hover:bg-brand-hover hover:shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_10px_22px_-8px_rgba(29,78,216,.65)]',
+    'bg-brand text-brand-ink shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_6px_16px_-6px_rgba(29,78,216,.55)] hover:bg-brand-hover hover:-translate-y-px active:translate-y-0 hover:shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_1px_2px_rgba(22,35,59,.18),0_10px_22px_-8px_rgba(29,78,216,.65)]',
   secondary:
-    'bg-surface text-ink ring-1 ring-inset ring-line-2 shadow-[0_1px_2px_rgba(22,35,59,.06)] hover:bg-surface-2 hover:ring-ink/25',
+    'bg-surface text-ink ring-1 ring-inset ring-line-2 shadow-[0_1px_2px_rgba(22,35,59,.06)] hover:bg-surface-2 hover:ring-ink/25 hover:-translate-y-px active:translate-y-0',
   dark:
-    'bg-navy text-white shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_1px_2px_rgba(22,35,59,.25)] hover:bg-navy-2',
+    'bg-navy text-white shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_1px_2px_rgba(22,35,59,.25)] hover:bg-navy-2 hover:-translate-y-px active:translate-y-0',
   ghost: 'text-ink hover:bg-surface-3',
-  danger: 'bg-danger text-white shadow-[0_1px_2px_rgba(22,35,59,.18)] hover:bg-[#b02e33]',
+  danger: 'bg-danger text-white shadow-[0_1px_2px_rgba(22,35,59,.18)] hover:bg-[#b02e33] hover:-translate-y-px active:translate-y-0',
 }
 
 const sizes: Record<Size, string> = {

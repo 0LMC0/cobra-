@@ -12,7 +12,7 @@ export function OnboardingShell({ step, title, intro, children, wide = false }: 
         <div className="flex flex-col gap-2">
           <div className="flex gap-1.5" aria-hidden>
             {[1, 2, 3].map((i) => (
-              <span key={i} className={`h-2 flex-1 rounded-full ${i <= step ? 'bg-brand' : 'bg-line-2'}`} />
+              <span key={i} className="h-2 flex-1 overflow-hidden rounded-full bg-line-2"><span className={`block h-full rounded-full bg-brand ${i === step ? 'bar-fill' : i < step ? '' : 'hidden'}`} /></span>
             ))}
           </div>
           <h1 className="mt-5 text-[32px] leading-tight sm:text-[40px]">{title}</h1>

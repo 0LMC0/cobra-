@@ -228,6 +228,35 @@
   .dots > i:nth-child(2) { background: #ffd23f; }
   .dots > i:nth-child(3) { background: #4fd07b; }
 
+
+  /* ── Movimiento: corto, suave y con rebote mínimo. Todo respeta "reducir movimiento". ── */
+  @keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .page-in { animation: page-in 320ms cubic-bezier(.2,.8,.2,1) both; }
+
+  @keyframes pop-in { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
+  [role="alert"], [role="status"] { animation: pop-in 260ms cubic-bezier(.2,.8,.2,1) both; }
+  details[open] > :not(summary) { animation: pop-in 220ms cubic-bezier(.2,.8,.2,1) both; }
+
+  /* Barra de pasos del onboarding: el paso actual se llena al entrar. */
+  @keyframes bar-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .bar-fill { transform-origin: left; animation: bar-fill 600ms cubic-bezier(.2,.8,.2,1) 120ms both; }
+
+  /* Casillas y opciones: se hunden un toque al tocarlas. */
+  input[type="checkbox"], input[type="radio"] { transition: scale 120ms ease; cursor: pointer; }
+  input[type="checkbox"]:active, input[type="radio"]:active { scale: .88; }
+  label:has(> input[type="checkbox"]), label:has(> input[type="radio"]) {
+    transition: background-color 160ms ease, box-shadow 160ms ease, scale 120ms ease;
+  }
+  label:has(> input[type="checkbox"]):active, label:has(> input[type="radio"]):active { scale: .99; }
+
+  /* Tarjeta que se puede tocar: sube un poquito. */
+  .lift { transition: translate 200ms cubic-bezier(.2,.8,.2,1), box-shadow 200ms ease; }
+  @media (hover: hover) { .lift:hover { translate: 0 -2px; box-shadow: 0 12px 28px -14px rgba(22,35,59,.28); } }
+  .lift:active { translate: 0; }
+
+  /* En el celu, sin el recuadro gris al tocar. */
+  a, button, label, summary { -webkit-tap-highlight-color: transparent; }
+
   /* Los 4 pasos del hero entran de a uno, en orden. Nunca arrancan invisibles. */
   @keyframes intro-up { from { transform: translateY(14px); } to { transform: none; } }
   .intro { animation: intro-up 0.5s cubic-bezier(.2,.7,.2,1) both; }

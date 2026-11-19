@@ -23,7 +23,7 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
           {(['month', 'year'] as const).map((i) => (
             <button
               key={i} type="button" role="radio" aria-checked={interval === i} onClick={() => setInterval(i)}
-              className={cn('rounded-[9px] px-3 py-1.5', interval === i ? 'bg-navy text-white' : 'text-muted hover:text-ink')}
+              className={cn('rounded-[9px] px-3 py-1.5 transition-[background-color,color,scale] duration-200 active:scale-95', interval === i ? 'bg-navy text-white' : 'text-muted hover:text-ink')}
             >
               {i === 'month' ? 'Mensual' : 'Anual · ahorrá 20%'}
             </button>
@@ -59,7 +59,7 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
           const isCurrent = p.id === current && renewing
           const price = monthlyPriceFor(p, interval, 'ARS')
           return (
-            <form key={p.id} action={formAction} className={cn('flex flex-col gap-3 rounded-[16px] bg-surface p-4 ring-1', p.highlighted ? 'ring-brand' : 'ring-line-2')}>
+            <form key={p.id} action={formAction} className={cn('lift flex flex-col gap-3 rounded-[16px] bg-surface p-4 ring-1', p.highlighted ? 'ring-brand' : 'ring-line-2')}>
               <input type="hidden" name="plan" value={p.id} />
               <input type="hidden" name="interval" value={interval} />
               <div>

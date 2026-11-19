@@ -134,7 +134,7 @@ export function CustomersListView({
                   href={hrefFor(v.value)}
                   aria-current={view === v.value ? 'page' : undefined}
                   className={cn(
-                    'shrink-0 rounded-full px-3.5 py-1.5 text-[13.5px] font-bold ring-1',
+                    'shrink-0 rounded-full px-3.5 py-1.5 text-[13.5px] font-bold ring-1 transition-[background-color,color,scale] duration-200 active:scale-95',
                     view === v.value ? 'bg-brand text-white ring-brand' : 'bg-surface text-muted ring-line-2 hover:text-ink',
                   )}
                 >

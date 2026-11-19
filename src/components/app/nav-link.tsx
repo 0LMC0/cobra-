@@ -20,7 +20,7 @@ export function NavLink({ href, compact, pathOverride }: { href: string; compact
   // Barra inferior del celular (fondo blanco).
   if (compact) {
     const cls = cn(
-      'flex flex-col items-center gap-1 rounded-[12px] py-2 text-[11px] font-bold',
+      'flex flex-col items-center gap-1 rounded-[12px] py-2 text-[11px] font-bold transition-[background-color,color,scale] duration-200 active:scale-90',
       active ? 'bg-brand-soft text-brand-text' : 'text-muted',
       !item.ready && 'opacity-45',
     )
@@ -35,7 +35,7 @@ export function NavLink({ href, compact, pathOverride }: { href: string; compact
 
   // Barra lateral azul: el activo va en naranja, como en PrimerosPrecios.
   const cls = cn(
-    'flex h-11 items-center gap-3 rounded-[12px] px-3 text-[14px] font-bold transition-colors',
+    'flex h-11 items-center gap-3 rounded-[12px] px-3 text-[14px] font-bold transition-[background-color,color,scale] duration-200 active:scale-[0.97] [&>svg]:transition-transform hover:[&>svg]:scale-110',
     active ? 'bg-brand text-white shadow-[inset_0_1px_0_rgba(255,255,255,.15)]' : 'text-white/75 hover:bg-white/10 hover:text-white',
   )
   if (!item.ready) {
