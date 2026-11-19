@@ -12,7 +12,7 @@ import { sendEmail } from '@/server/email/mailer'
 import { verifyPaidClaimToken } from '@/server/unsubscribe'
 
 /** Días que se frenan los avisos mientras quien cobra confirma el pago. */
-export const CLAIM_PAUSE_DAYS = 3
+const CLAIM_PAUSE_DAYS = 3
 
 /**
  * "Ya pagué" desde el aviso: NO marca el pago (eso lo confirma quien cobra).
