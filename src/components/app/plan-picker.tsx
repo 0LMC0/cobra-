@@ -1,10 +1,10 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FormFeedback } from '@/components/forms/form-feedback'
-import { PLANS, formatPlanPrice, monthlyPriceFor, yearlyTotalFor, type BillingInterval, type PlanTier } from '@/config/plans'
+import { FREE_PLAN, PLANS, formatPlanPrice, monthlyPriceFor, yearlyTotalFor, type BillingInterval, type PlanTier } from '@/config/plans'
 import { initialFormState, type FormState } from '@/server/actions/form-state'
 import { cn } from '@/lib/cn'
 
@@ -31,7 +31,29 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
         </div>
       </div>
       <FormFeedback state={state} />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className={cn('grid grid-cols-1 gap-3 md:grid-cols-2', current === 'free' ? 'xl:grid-cols-4' : 'xl:grid-cols-3')}>
+        {current === 'free' && (
+          <div className="flex flex-col gap-3 rounded-[16px] bg-surface-2 p-4 ring-2 ring-ink/15">
+            <div>
+              <p className="flex items-center gap-2 text-[16px] font-bold">
+                Gratis <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">Tu plan</span>
+              </p>
+              <p className="money text-[22px]">$ 0<span className="text-[13px] font-semibold text-muted"> /mes</span></p>
+              <p className="text-[12.5px] font-semibold text-muted">Para siempre, sin tarjeta</p>
+            </div>
+            <ul className="flex flex-col gap-1.5 text-[13px]">
+              {FREE_PLAN.features.slice(1, 5).map((f) => (
+                <li key={f.label} className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0 text-ok" strokeWidth={3} />{f.label}</li>
+              ))}
+            </ul>
+            <ul className="flex flex-col gap-1.5 border-t border-line-2 pt-3 text-[13px] text-muted">
+              {FREE_PLAN.limits.map((l) => (
+                <li key={l} className="flex items-start gap-1.5"><X className="mt-0.5 size-3.5 shrink-0 text-danger" strokeWidth={3} />{l}</li>
+              ))}
+            </ul>
+            <p className="mt-auto text-center text-[13.5px] font-bold text-muted">Estás acá</p>
+          </div>
+        )}
         {PLANS.map((p) => {
           // Con la renovación cancelada se puede volver a contratar el mismo plan.
           const isCurrent = p.id === current && renewing
@@ -41,7 +63,7 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
               <input type="hidden" name="plan" value={p.id} />
               <input type="hidden" name="interval" value={interval} />
               <div>
-                <p className="text-[16px] font-bold">{p.name}</p>
+                <p className="flex items-center gap-2 text-[16px] font-bold">{p.name}{p.highlighted && <span className="rounded-full bg-brand px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">El más elegido</span>}</p>
                 <p className="money text-[22px]">
                   {formatPlanPrice(price, 'ARS')}<span className="text-[13px] font-semibold text-muted"> /mes</span>
                   {interval === 'year' && <s className="ml-2 text-[13px] font-bold text-faint">{formatPlanPrice(monthlyPriceFor(p, 'month', 'ARS'), 'ARS')}</s>}
@@ -51,7 +73,7 @@ export function PlanPicker({ current, renewing = false, action, canManage }: { c
                 </p>
               </div>
               <ul className="flex flex-col gap-1.5 text-[13px]">
-                {p.features.filter((f) => f.available).slice(0, 3).map((f) => (
+                {p.features.filter((f) => f.available).map((f) => (
                   <li key={f.label} className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0 text-ok" strokeWidth={3} />{f.label}</li>
                 ))}
               </ul>

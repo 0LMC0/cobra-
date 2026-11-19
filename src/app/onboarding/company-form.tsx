@@ -39,13 +39,21 @@ export function CompanyForm({ defaultEmail }: { defaultEmail: string }) {
         <Field label="Nombre de tu empresa o marca" hint="Es el nombre que van a ver tus clientes en cada aviso." error={firstError(state, 'name')}>
           {(p) => <Input {...p} name="name" autoComplete="organization" required autoFocus placeholder="Ej.: Estudio Martínez" />}
         </Field>
-        <Field label="¿En qué moneda cobrás?" hint="Si cobrás en otra moneda también, podés hacerlo; nunca se mezclan." error={firstError(state, 'currency')}>
-          {(p) => (
-            <Select {...p} name="currency" defaultValue="ARS">
-              {CURRENCIES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </Select>
-          )}
-        </Field>
+        {/* Casi todos cobran en pesos: la moneda queda elegida y se cambia sólo si hace falta. */}
+        <details className="group text-[14px] [&_summary::-webkit-details-marker]:hidden">
+          <summary className="w-fit cursor-pointer list-none font-semibold text-muted hover:text-ink">
+            Cobrás en pesos argentinos · <span className="text-brand-text underline underline-offset-2">cambiar</span>
+          </summary>
+          <div className="mt-3">
+            <Field label="¿En qué moneda cobrás?" hint="Si cobrás en otra moneda también, podés hacerlo; nunca se mezclan." error={firstError(state, 'currency')}>
+              {(p) => (
+                <Select {...p} name="currency" defaultValue="ARS">
+                  {CURRENCIES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                </Select>
+              )}
+            </Field>
+          </div>
+        </details>
         <input type="hidden" name="timezone" value={tz} />
         <input type="hidden" name="billingFrequency" value="monthly" />
         <input type="hidden" name="contactEmail" value={defaultEmail} />

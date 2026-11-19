@@ -32,5 +32,5 @@ export async function saveOnboardingPreferences(_: FormState, formData: FormData
     supabase.rpc('set_digest_frequency', { p_org: ctx.org.id, p_frequency: d.frequency }),
   ])
   if (orgRes.error || digestRes.error) return { error: 'No pudimos guardar tus preferencias. Probá de nuevo.' }
-  redirect('/onboarding/como-funciona')
+  redirect('/onboarding/primer-cobro')
 }

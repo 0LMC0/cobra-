@@ -14,7 +14,7 @@ export function needsNudge(o: { onboardingStep: string; createdAt: string; nudge
 }
 
 const STEP: Record<NudgeStep, { title: string; line: string; cta: string; path: string }> = {
-  first_customer: { title: 'Te falta un paso: cargá tu primer cliente', line: 'Con el nombre y el email alcanza (o importalos todos juntos desde Excel). Son dos minutos y después Cobra+ trabaja sola.', cta: 'Cargar mi primer cliente', path: '/app/clientes/nuevo?primero=1' },
+  first_customer: { title: 'Te falta un paso: cargá tu primer cliente', line: 'Con el nombre y el email alcanza (o importalos todos juntos desde Excel). Son dos minutos y después Cobra+ trabaja sola.', cta: 'Cargar mi primer cliente', path: '/onboarding/primer-cobro' },
   first_charge: { title: 'Te falta un paso: creale el cobro a tu cliente', line: 'Poné qué le cobrás, cuánto y cuándo vence. Con eso Cobra+ ya sabe cuándo avisarle.', cta: 'Crear el cobro', path: '/app/clientes' },
   reminders: { title: 'Te falta un paso: prendé los avisos', line: 'Tus cobros ya están cargados. Prendé los avisos y Cobra+ les escribe a tus clientes antes y después de cada vencimiento.', cta: 'Prender los avisos', path: '/app/configuracion' },
 }

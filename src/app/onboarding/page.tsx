@@ -20,7 +20,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
     <OnboardingShell
       step={1}
       title={firstName ? `Hola, ${firstName}. ¿Cómo se llama tu empresa?` : '¿Cómo se llama tu empresa?'}
-      intro="Bienvenido a Cobra+. En 4 pasos cortos lo dejás andando. Primero, el nombre que van a ver tus clientes."
+      intro="Bienvenido a Cobra+. Son 3 pasos y te lleva 2 minutos. Primero, el nombre que van a ver tus clientes en cada aviso."
     >
       <CompanyForm defaultEmail={user.email ?? ''} />
     </OnboardingShell>

@@ -296,3 +296,61 @@ export async function importCustomers(_: FormState, formData: FormData): Promise
   revalidatePath('/app', 'layout')
   redirect(`/app/clientes?importados=${rows.length}`)
 }
+
+/**
+ * Último paso del onboarding: el primer cliente y su primer cobro en un solo
+ * formulario. Valida todo antes de guardar, así un error en el cobro no deja
+ * un cliente suelto. Termina en /onboarding/listo con el aviso de ejemplo.
+ */
+export async function createFirstCustomerAndCharge(_: FormState, formData: FormData): Promise<FormState> {
+  const ctx = await guard()
+  if (isState(ctx)) return ctx
+  const raw = Object.fromEntries(formData)
+  const customer = customerSchema.safeParse(raw)
+  const charge = chargeSchema.safeParse({ ...raw, customerId: '00000000-0000-0000-0000-000000000000' })
+  if (!customer.success || !charge.success) {
+    return { fieldErrors: { ...(customer.success ? {} : customer.error.flatten().fieldErrors), ...(charge.success ? {} : charge.error.flatten().fieldErrors) } }
+  }
+  const c = customer.data
+  const ch = charge.data
+
+  const limitError = await customerLimitReached(ctx.org.id)
+  if (limitError) return { error: limitError }
+
+  const supabase = await createClient()
+  const { data: created, error } = await supabase.from('customers').insert({
+    org_id: ctx.org.id, name: c.name, contact_name: c.contactName, email: c.email, phone: c.phone,
+    whatsapp_number: c.whatsappNumber, whatsapp_ok: c.whatsappOk, tax_id: c.taxId, notes: c.notes,
+    reminders_paused: c.remindersPaused, created_by: ctx.userId,
+  }).select('id').single()
+  if (error || !created) {
+    if (error?.message.includes('customers_active_email_uniq')) return { fieldErrors: { email: ['Ya tenés un cliente con ese email.'] } }
+    return { error: 'No pudimos guardar el cliente. Probá de nuevo.' }
+  }
+
+  let agreementId: string | null = null
+  if (ch.repeatMonthly) {
+    const { data: agreement } = await supabase.from('agreements').insert({
+      org_id: ctx.org.id, customer_id: created.id, name: ch.concept, amount_minor: ch.amountMinor, currency: ch.currency,
+      frequency: 'monthly', start_date: ch.dueDate, next_charge_date: addMonths(ch.dueDate, 1), created_by: ctx.userId,
+    }).select('id').single()
+    agreementId = agreement?.id ?? null
+  }
+  const { error: chargeError } = await supabase.from('charges').insert({
+    org_id: ctx.org.id, customer_id: created.id, agreement_id: agreementId, concept: ch.concept,
+    amount_minor: ch.amountMinor, currency: ch.currency, due_date: ch.dueDate,
+    period_start: agreementId ? ch.dueDate : null, created_by: ctx.userId,
+  })
+  if (chargeError) {
+    if (agreementId) await supabase.from('agreements').update({ status: 'ended', next_charge_date: null }).eq('org_id', ctx.org.id).eq('id', agreementId)
+    redirect(`/app/clientes/${created.id}?nuevo=1`) // el cliente quedó: que cargue el cobro desde su ficha
+  }
+
+  if (!c.remindersPaused && c.email && hasRole(ctx.role, 'admin')) await ensureRemindersOn(ctx)
+  const { data: sending } = await supabase.from('organizations').select('reminders_enabled').eq('id', ctx.org.id).maybeSingle()
+  for (const from of ['company', 'first_customer', 'first_charge', 'reminders']) {
+    await advanceOnboarding(ctx, from, sending?.reminders_enabled ? 'done' : 'reminders')
+  }
+  revalidatePath('/app', 'layout')
+  redirect(`/onboarding/listo?cliente=${created.id}`)
+}

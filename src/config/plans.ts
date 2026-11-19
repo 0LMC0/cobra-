@@ -48,6 +48,13 @@ export const FREE_PLAN = {
     { label: '1 usuario', available: true },
     { label: 'Avisar por WhatsApp con un toque: 3 por mes', available: true },
   ],
+  /** Lo que se pierde quedándose en Gratis (se muestra en el selector de planes). */
+  limits: [
+    'Tope de 5 clientes activos',
+    'Sólo 10 avisos automáticos por mes',
+    'Sólo 3 avisos por WhatsApp por mes',
+    'Sin exportar a Excel',
+  ],
 }
 
 /** Qué incluye cada plan. El servidor lo hace cumplir donde importa (exportar, avisos). */
