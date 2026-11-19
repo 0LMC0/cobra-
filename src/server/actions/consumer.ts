@@ -34,6 +34,10 @@ export async function submitConsumerRequest(_: ConsumerRequestState, formData: F
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString()
   const { count } = await db.from('consumer_requests').select('id', { count: 'exact', head: true }).eq('email', d.email).gte('created_at', since)
   if ((count ?? 0) >= 3) return { error: 'Ya recibimos varios pedidos con este email hoy. Revisá tu bandeja: ahí está tu código de trámite.' }
+  // Freno general: que nadie use el formulario para mandar emails a muchas direcciones.
+  const lastHour = new Date(Date.now() - 3600 * 1000).toISOString()
+  const { count: recent } = await db.from('consumer_requests').select('id', { count: 'exact', head: true }).gte('created_at', lastHour)
+  if ((recent ?? 0) >= 20) return { error: 'Estamos recibiendo muchos pedidos en este momento. Probá de nuevo en una hora o escribinos a lautaroprimerosprecios@gmail.com.' }
 
   const code = requestCode(randomBytes(6))
   const token = kind === 'baja' ? randomBytes(24).toString('base64url') : null

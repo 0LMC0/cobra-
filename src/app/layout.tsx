@@ -34,6 +34,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: '#fbf7f1',
   colorScheme: 'light',
+  // Sin zoom: se siente como app (y el celu no hace zoom al tocar un campo).
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
