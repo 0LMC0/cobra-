@@ -14,6 +14,8 @@ import { monthStart, remainingReminders } from '@/domain/quota'
 import { paidClaimToken, unsubscribeToken } from '@/server/unsubscribe'
 import { isTestAddress } from '@/domain/email-address'
 import { needsNudge, nudgeEmail } from '@/domain/onboarding-nudge'
+import { ownerReportEmail } from '@/domain/owner-report'
+import { formatDate } from '@/domain/dates'
 
 /** Intentos por aviso: si una corrida falla, otra corrida del mismo día lo reintenta. */
 const MAX_ATTEMPTS = 3
@@ -258,6 +260,28 @@ export async function GET(req: Request) {
     const firstName = ((u.user?.user_metadata?.full_name as string | undefined) ?? '').split(' ')[0] || null
     const res = await sendEmail({ to: email, ...nudgeEmail(o.onboarding_step as 'first_customer', { firstName, appUrl: siteUrl() }), idempotencyKey: `empujon-${o.id}` })
     if (res.ok) nudges += 1
+  }
+
+  // Parte diario para PrimerosPrecios (una vez por día: lo marca la idempotencia de Resend).
+  const owner = process.env.OWNER_NOTIFY_EMAIL
+  if (owner) {
+    const since = new Date(now.getTime() - 24 * 3_600_000).toISOString()
+    const head = { count: 'exact' as const, head: true }
+    const [u, o, ot, paid, rem, errs, reqs] = await Promise.all([
+      db.from('profiles').select('id', head).gte('created_at', since),
+      db.from('organizations').select('id', head).gte('created_at', since),
+      db.from('organizations').select('id', head),
+      db.from('subscriptions').select('org_id', head).eq('status', 'active'),
+      db.from('reminder_deliveries').select('id', head).eq('status', 'sent').gte('sent_at', since),
+      db.from('app_errors').select('id', head).gte('at', since),
+      db.from('consumer_requests').select('id', head).eq('status', 'pendiente'),
+    ])
+    const today = todayIn('America/Argentina/Buenos_Aires')
+    const report = ownerReportEmail({
+      newUsers: u.count ?? 0, newOrgs: o.count ?? 0, totalOrgs: ot.count ?? 0, activePaid: paid.count ?? 0,
+      remindersSent: rem.count ?? 0, errors: errs.count ?? 0, pendingRequests: reqs.count ?? 0,
+    }, formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' }), siteUrl())
+    await sendEmail({ to: owner, ...report, idempotencyKey: `parte-${today}` })
   }
 
   return NextResponse.json({ generatedCharges: generated, reminders: sent, heldByPlanLimit: plan.held, digests, nudges, failed })
